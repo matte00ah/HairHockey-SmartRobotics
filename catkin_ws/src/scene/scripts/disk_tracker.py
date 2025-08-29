@@ -4,11 +4,25 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
+import json
+import os
+from montecarlo_filter import MontecarloFilter
 
-class RedDiskTracker:
+script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
+config_path = os.path.join(script_dir, "config.json")
+
+with open(config_path, "r") as f:
+    config = json.load(f)
+
+l_red1 = config["lower_red1"]
+u_red1 = config["upper_red1"]
+l_red2 = config["lower_red2"]
+u_red2 = config["upper_red2"]
+
+class DiskTracker:
     def __init__(self):
         # Nodo ROS
-        rospy.init_node("red_disk_tracker")
+        rospy.init_node("disk_tracker")
 
         # CvBridge per convertire i messaggi ROS in immagini OpenCV
         self.bridge = CvBridge()
@@ -18,10 +32,10 @@ class RedDiskTracker:
         rospy.Subscriber(self.image_topic, Image, self.image_callback)
 
         # Parametri colore rosso in HSV
-        self.lower_red1 = np.array([0, 100, 100])
-        self.upper_red1 = np.array([10, 255, 255])
-        self.lower_red2 = np.array([160, 100, 100])
-        self.upper_red2 = np.array([179, 255, 255])
+        self.lower_red1 = np.array(l_red1)
+        self.upper_red1 = np.array(u_red1)
+        self.lower_red2 = np.array(l_red2)
+        self.upper_red2 = np.array(u_red2)
 
         # Kernel per pulizia mask
         self.kernel = np.ones((5,5), np.uint8)
@@ -55,6 +69,9 @@ class RedDiskTracker:
             if M["m00"] != 0:
                 cx = int(M["m10"]/M["m00"])
                 cy = int(M["m01"]/M["m00"])
+
+                
+
                 # Stampa posizione
                 rospy.loginfo("Posizione disco (pixel): x=%d y=%d", cx, cy)
                 # Disegna centro e contorno
@@ -68,7 +85,8 @@ class RedDiskTracker:
 
 if __name__ == "__main__":
     try:
-        tracker = RedDiskTracker()
+        montecarlo = MontecarloFilter()
+        tracker = DiskTracker()
     except rospy.ROSInterruptException:
         pass
     cv2.destroyAllWindows()
