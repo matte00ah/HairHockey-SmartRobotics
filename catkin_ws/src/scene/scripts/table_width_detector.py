@@ -16,6 +16,7 @@ with open(config_path, "r") as f:
 
 l_white = config["lower_white"]
 u_white = config["upper_white"]
+table_height_m = config["table_height_m"]
 table_width_m = config["table_width_m"]
 camera_topic = config["camera_topic"]
 canny_min = config["canny_threshold_min"]
@@ -39,10 +40,7 @@ def are_parallel(a1, b1, a2, b2, tol=1e-2):
 def parallel_distance(a, b, c1, c2):
     return abs(c2 - c1) / math.sqrt(a**2 + b**2)
 
-def process_frame(msg):
-    bridge = CvBridge()
-    frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-
+def apply_white_mask(frame):
     # Converti in HSV per filtrare il bianco
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     pix = hsv.reshape(-1, 3)
@@ -61,11 +59,20 @@ def process_frame(msg):
 
     mask = cv2.inRange(hsv, lower_white, upper_white)
 
-    num_white_pixels = cv2.countNonZero(mask)
-    print(f"Numero di pixel bianchi nella maschera: {num_white_pixels}")
+    # num_white_pixels = cv2.countNonZero(mask)
+    # print(f"Numero di pixel bianchi nella maschera: {num_white_pixels}")
 
     # Applica la maschera
     white_area = cv2.bitwise_and(frame, frame, mask=mask)
+
+    return white_area
+
+def process_frame(msg):
+    bridge = CvBridge()
+    frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+
+    # Applica la maschera
+    white_area = apply_white_mask(frame)
 
     # Converti in grayscale e trova i bordi
     gray = cv2.cvtColor(white_area, cv2.COLOR_BGR2GRAY)
@@ -104,7 +111,7 @@ def process_frame(msg):
     if best_pair is not None:
         rospy.loginfo(f"Larghezza visibile tavolo in pixel: {int(max_dist)} px")
 
-        pixel_size = table_width_m / int(max_dist)  # metri per pixel
+        pixel_size = table_height_m / int(max_dist)  # metri per pixel
         rospy.loginfo(f"Dimensione di un pixel: {pixel_size*1000:.2f} mm")
 
         # Disegna le due linee selezionate in rosso
