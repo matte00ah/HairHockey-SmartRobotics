@@ -28,8 +28,20 @@
       <inertia ixx="2.5" ixy="0.0" ixz="0.0"
                iyy="2.5" iyz="0.0"
                izz="1.0"/>
-   </inertial>
-      
+   </inertial>      
   </link>
   
+  <gazebo reference="table_link">
+	  <surface>
+	    <friction>
+	      <ode>
+		<mu>0.0001</mu>
+		<mu2>0.0001</mu2>
+	      </ode>
+	    </friction>
+	    <bounce>
+	      <restitution_coefficient>0.1</restitution_coefficient>
+	    </bounce>
+	  </surface>
+	</gazebo>  
 </robot>

@@ -1,5 +1,17 @@
 import numpy as np
+import json
+import os
 import matplotlib.pyplot as plt
+
+script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
+config_path = os.path.join(script_dir, "config.json")
+
+with open(config_path, "r") as f:
+    config = json.load(f)
+
+# TODO controllare se ho invertito w con h
+X_MAX = config["table_width_m"]
+Y_MAX = config["table_height_m"]
 
 class MontecarloFilter:
     def __init__(self, N=10000, dt=0.1, f=0.05, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
@@ -13,6 +25,8 @@ class MontecarloFilter:
         self.particles = None
         self.weights = None
 
+        self.initialize(X_MAX, Y_MAX)
+
     def initialize(self, X_MAX, Y_MAX):
         self.X_MAX, self.Y_MAX = X_MAX, Y_MAX
         self.particles = np.zeros((self.N, 6))
@@ -24,33 +38,28 @@ class MontecarloFilter:
         self.particles[:, 5] = np.random.normal(0.0, 0.1, self.N) # ay
         self.weights = np.ones(self.N) / self.N
 
-    def predict(self, particles, dt):
-        p = self.particles
-        dt = self.dt
-        f = self.f
-
-        particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
-        particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
-        particles[:, 2] += (particles[:, 4] - f * particles[:, 2]) * dt
-        particles[:, 3] += (particles[:, 5] - f * particles[:, 3]) * dt
-        particles[:, 0] += particles[:, 2] * dt
-        particles[:, 1] += particles[:, 3] * dt
+    def predict(self):
+        self.particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
+        self.particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
+        self.particles[:, 2] += (self.particles[:, 4] - self.f * self.particles[:, 2]) * self.dt
+        self.particles[:, 3] += (self.particles[:, 5] - self.f * self.particles[:, 3]) * self.dt
+        self.particles[:, 0] += self.particles[:, 2] * self.dt
+        self.particles[:, 1] += self.particles[:, 3] * self.dt
         
         # Gestione rimbalzi ai bordi
         for i in range(self.N):
-            if p[i, 0] <= 0 or p[i, 0] >= self.X_MAX:
-                p[i, 2] *= -1
-                p[i, 0] = np.clip(p[i, 0], 0, self.X_MAX)
-            if p[i, 1] <= 0 or p[i, 1] >= self.Y_MAX:
-                p[i, 3] *= -1
-                p[i, 1] = np.clip(p[i, 1], 0, self.Y_MAX)
+            if self.particles[i, 0] <= 0 or self.particles[i, 0] >= self.X_MAX:
+                self.particles[i, 2] *= -1
+                self.particles[i, 0] = np.clip(self.particles[i, 0], 0, self.X_MAX)
+            if self.particles[i, 1] <= 0 or self.particles[i, 1] >= self.Y_MAX:
+                self.particles[i, 3] *= -1
+                self.particles[i, 1] = np.clip(self.particles[i, 1], 0, self.Y_MAX)
 
     def update(self, measurement, velocity):
-        p = self.particles
         w = self.weights
 
-        dists = np.linalg.norm(p[:, 0:2] - measurement, axis=1)
-        v_dists = np.linalg.norm(p[:, 2:4] - velocity, axis=1)
+        dists = np.linalg.norm(self.particles[:, 0:2] - measurement, axis=1)
+        v_dists = np.linalg.norm(self.particles[:, 2:4] - velocity, axis=1)
 
         w *= np.exp(-0.5 * (dists / self.measurement_noise_std) ** 2)
         w *= np.exp(-0.5 * (v_dists / self.velocity_noise_std) ** 2)
@@ -76,10 +85,9 @@ class MontecarloFilter:
         rmse = np.sqrt(mse)
         return rmse  # array [rmse_x, rmse_y]
 
-    def run(self, X_MAX, Y_MAX, cx, cy, frame):
-        self.initialize(X_MAX, Y_MAX)
+    def run(self, cx, cy):
 
-        frame_h, frame_w = frame.shape[:2]
+        #frame_h, frame_w = frame.shape[:2]
         est_positions = []
         real_positions = []
         positions = [(cx, cy)]
@@ -91,10 +99,9 @@ class MontecarloFilter:
             if pos is None:
                 prev_measurement = None
                 continue
-
-            measurement = np.array([pos[0] / frame_w * X_MAX, 
-                                    pos[1] / frame_h * Y_MAX])
             
+            measurement = np.array([pos[0], pos[1]])
+
             # Calcolo velocità reale dal video
             if prev_measurement is not None:
                 velocity = (measurement - prev_measurement) / self.dt

@@ -19,12 +19,23 @@
       <geometry>
         <mesh filename="package://scene/meshes/airhockey-puck.stl" scale="0.001 0.001 0.001"/>
       </geometry>
+      <surface>
+	  <friction>
+	    <ode>
+	      <mu>0.0001</mu>
+	      <mu2>0.0001</mu2>
+	    </ode>
+	  </friction>
+	  <bounce>
+	    <restitution_coefficient>0.1</restitution_coefficient>
+	  </bounce>
+	</surface>
     </collision>
 
     <!-- Inerzia base -->
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.15"/>
+      <mass value="0.1"/>
       <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
                iyy="3.718e-05" iyz="0.0"
                izz="6.541e-05"/>
@@ -33,8 +44,7 @@
   </link> 
   
   <gazebo reference="puck_link">
-	<static>true</static>
-	<material>Gazebo/Red</material>
-	</gazebo> 
+	<material>Gazebo/Red</material>	
+  </gazebo> 
   
 </robot>
