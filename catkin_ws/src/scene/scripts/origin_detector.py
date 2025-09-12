@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-import rospy
+# import rospy
 import cv2
 import numpy as np
 import os
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
+import math
+# from sensor_msgs.msg import Image
+# from cv_bridge import CvBridge
 import json
+import matplotlib.pyplot as plt
 from table_width_detector import apply_white_mask
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -15,11 +17,6 @@ with open(config_path, "r") as f:
     config = json.load(f)
 
 camera_topic = config["camera_topic"]
-canny_min = config["canny_threshold_min"]
-canny_max = config["canny_threshold_max"]
-hough_threshold = config["hough_threshold"]
-hough_min_length = config["hough_min_length"]
-hough_max_gap = config["hough_max_gap"]
 
 # Funzione per trovare intersezione di due linee (Ax+By=C forma)
 def line_intersection(l1, l2):
@@ -42,19 +39,83 @@ def line_intersection(l1, l2):
     return int(x), int(y)
 
 def process_frame(msg):
-    bridge = CvBridge()
-    frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+    # bridge = CvBridge()
+    # frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+    
+    #MODIFICA PER PRENDERE FOTO INVECE CHE FRAME ROS
+    frame = cv2.imread("c:\\Users\\Matteo Bulgarelli\\Downloads\\1.jpg")
+    frame = cv2.resize(frame, (640, 480))
 
-    white_area = apply_white_mask(frame)
+    # white_area = apply_white_mask(frame)
 
-    gray = cv2.cvtColor(white_area, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
     # Rilevamento bordi
     edges = cv2.Canny(blur, 50, 150)
 
     # Rilevamento linee con Hough
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=hough_threshold, minLineLength=hough_min_length, maxLineGap=hough_max_gap)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+
+    best_lines = []
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        if abs(x1-x2)>10:  # non è verticale
+            m = (y2 - y1) / (x2 - x1)
+            angle = math.atan(m)  # angolo in radianti tra -pi/2 e pi/2
+            ang_coef = abs(angle) / (math.pi / 2)
+            q = y1 - m * x1
+        else:
+            # retta perfettamente verticale
+            ang_coef = 1
+            q = x1  # per rette verticali, uso l'intercetta x
+        
+        length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+        # controllo se linea è migliore di altra in best_lines
+        if len(best_lines) > 0:
+            cnt = 0
+            for b_line in best_lines:
+                if abs(b_line[1] - ang_coef) > 0.1 or abs(b_line[2] - q) > 10:  # coefficiente angolare simile e intercetta simile
+                    cnt+=1
+                    continue
+                else:    
+                    # rette sono molto simili, quindi si prende quella con lunghezza maggiore
+                    if b_line[3] > length:
+                        break
+                    else:
+                        b_line = [line[0], ang_coef, q, length]
+                        break
+            if cnt == len(best_lines):
+                best_lines.append([line[0], ang_coef, q, length])
+
+        else:
+            best_lines.append([line[0], ang_coef, q, length])
+
+    #DEBUG
+    print("numero linee trovate : ", len(best_lines))
+    
+    # trova retta verticale e quelle orizzontali
+    best_v = -1
+    v_line = None
+    for i in range(len(best_lines)):
+        if best_lines[i][1] > best_v:
+            best_v = best_lines[i][1]
+            v_line = i
+    
+    v_line = best_lines.pop(v_line)
+    h_lines = best_lines
+
+    # calcola punti di intersezione per trovare corner esatti
+    corners = []
+    if v_line is not None and h_lines is not None:
+        for line in h_lines:
+            pt = line_intersection(v_line[0], line[0])
+            if pt is not None:
+                corners.append(pt)
+
+    lines = h_lines
+    lines.append(v_line)
 
     # Disegna linee trovate
     line_img = frame.copy()
@@ -65,13 +126,14 @@ def process_frame(msg):
 
     # Calcola tutte le intersezioni
     intersections = []
-    for i in range(len(lines)):
-        for j in range(i+1, len(lines)):
-            pt = line_intersection(lines[i][0], lines[j][0])
-            if pt is not None:
-                x, y = pt
-                if 0 <= x < frame.shape[1] and 0 <= y < frame.shape[0]:
-                    intersections.append(pt)
+    if lines is not None and len(lines) >= 2:
+        for i in range(len(lines)):
+            for j in range(i+1, len(lines)):
+                pt = line_intersection(lines[i][0], lines[j][0])
+                if pt is not None:
+                    x, y = pt
+                    if 0 <= x < frame.shape[1] and 0 <= y < frame.shape[0]:
+                        intersections.append(pt)
 
     # Convex hull per trovare i 4 punti estremi
     pts = np.array(intersections)
@@ -95,14 +157,19 @@ def process_frame(msg):
     print(f"Corner selezionato come nostro WORLD: {origin_world} ")
     cv2.circle(line_img, (origin_world[0], origin_world[1]), 10, (255, 0, 0), -1)
 
-    cv2.imshow("Corner del tavolo", line_img)
-    cv2.waitKey(0)  # aspetta pressione di un tasto
-    cv2.destroyAllWindows()
+    plt.figure(figsize=(10, 6))
+    plt.imshow(cv2.cvtColor(line_img, cv2.COLOR_BGR2RGB))
+    cv2.imshow("Edges", edges)
+    plt.title("Corner del tavolo (da intersezioni linee)")
+    plt.axis("off")
+    plt.show()
 
 
 if __name__ == "__main__":
-    rospy.init_node("table_width_once", anonymous=True)
+    # rospy.init_node("table_width_once", anonymous=True)
 
     # Prende UN SOLO frame dal topic
-    msg = rospy.wait_for_message(camera_topic, Image)
-    process_frame(msg)
+    # msg = rospy.wait_for_message(camera_topic, Image)
+    # process_frame(msg)
+    #MODIFICA per funzionare con foto
+    process_frame(None)
