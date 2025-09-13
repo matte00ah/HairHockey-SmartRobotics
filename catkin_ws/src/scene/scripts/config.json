@@ -4,7 +4,7 @@
 
   "camera_topic": "/image_raw",
 
-  "lower_white": [ 0, 0, 150 ],
+  "lower_white": [ 0, 0, 50 ],
   "upper_white": [ 180, 50, 255 ],
   "canny_threshold_min": 50,
   "canny_threshold_max": 150,
