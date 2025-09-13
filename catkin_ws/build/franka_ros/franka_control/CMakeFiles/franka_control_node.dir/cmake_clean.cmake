@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_control/franka_control_node"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_control/franka_control_node.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node.pdb"
   "CMakeFiles/franka_control_node.dir/src/franka_control_node.cpp.o"
 )
 

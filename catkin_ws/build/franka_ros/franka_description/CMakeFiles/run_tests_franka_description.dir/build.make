@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/Desktop/project-franka/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/matte/HairHockey-SmartRobotics/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/Desktop/project-franka/catkin_ws/build
+CMAKE_BINARY_DIR = /home/matte/HairHockey-SmartRobotics/catkin_ws/build
 
 # Utility rule file for run_tests_franka_description.
 
@@ -63,10 +63,10 @@ franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/build:
 .PHONY : franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/build
 
 franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/clean:
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_description && $(CMAKE_COMMAND) -P CMakeFiles/run_tests_franka_description.dir/cmake_clean.cmake
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description && $(CMAKE_COMMAND) -P CMakeFiles/run_tests_franka_description.dir/cmake_clean.cmake
 .PHONY : franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/clean
 
 franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/depend:
-	cd /home/user/Desktop/project-franka/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/project-franka/catkin_ws/src /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_description /home/user/Desktop/project-franka/catkin_ws/build /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_description /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/matte/HairHockey-SmartRobotics/catkin_ws/src /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description /home/matte/HairHockey-SmartRobotics/catkin_ws/build /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : franka_ros/franka_description/CMakeFiles/run_tests_franka_description.dir/depend
 

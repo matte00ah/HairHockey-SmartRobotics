@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_hw_sim.pdb"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_hw_sim.so"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw_sim.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw_sim.so"
   "CMakeFiles/franka_hw_sim.dir/src/controller_verifier.cpp.o"
   "CMakeFiles/franka_hw_sim.dir/src/franka_hw_sim.cpp.o"
   "CMakeFiles/franka_hw_sim.dir/src/joint.cpp.o"

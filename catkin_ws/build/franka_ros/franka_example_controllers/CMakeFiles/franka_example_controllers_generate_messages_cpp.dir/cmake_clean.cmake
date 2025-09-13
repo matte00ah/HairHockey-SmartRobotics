@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/JointTorqueComparison.h"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/JointTorqueComparison.h"
   "CMakeFiles/franka_example_controllers_generate_messages_cpp"
 )
 

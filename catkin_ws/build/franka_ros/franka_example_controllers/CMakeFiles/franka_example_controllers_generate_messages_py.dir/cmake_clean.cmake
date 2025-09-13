@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/python3/dist-packages/franka_example_controllers/msg/_JointTorqueComparison.py"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/python3/dist-packages/franka_example_controllers/msg/__init__.py"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_example_controllers/msg/_JointTorqueComparison.py"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_example_controllers/msg/__init__.py"
   "CMakeFiles/franka_example_controllers_generate_messages_py"
 )
 

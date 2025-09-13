@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_test"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_test.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_test"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_test.pdb"
   "CMakeFiles/franka_hw_sim_test.dir/fk_tests.cpp.o"
   "CMakeFiles/franka_hw_sim_test.dir/gravity_tests.cpp.o"
   "CMakeFiles/franka_hw_sim_test.dir/jacobian_tests.cpp.o"

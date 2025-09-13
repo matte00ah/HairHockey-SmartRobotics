@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_visualization/gripper_joint_state_publisher"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_visualization/gripper_joint_state_publisher.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/gripper_joint_state_publisher"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/gripper_joint_state_publisher.pdb"
   "CMakeFiles/gripper_joint_state_publisher.dir/src/gripper_joint_state_publisher.cpp.o"
 )
 

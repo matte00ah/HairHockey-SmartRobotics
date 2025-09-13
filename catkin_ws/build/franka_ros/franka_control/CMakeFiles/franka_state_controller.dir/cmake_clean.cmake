@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_state_controller.pdb"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_state_controller.so"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_state_controller.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_state_controller.so"
   "CMakeFiles/franka_state_controller.dir/src/franka_state_controller.cpp.o"
 )
 

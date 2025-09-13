@@ -1,4 +1,4 @@
-prefix=/home/user/Desktop/project-franka/catkin_ws/devel
+prefix=/home/matte/HairHockey-SmartRobotics/catkin_ws/devel
 
 Name: franka_visualization
 Description: Description of franka_visualization

@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_hw.pdb"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_hw.so"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.so"
   "CMakeFiles/franka_hw.dir/src/control_mode.cpp.o"
   "CMakeFiles/franka_hw.dir/src/franka_combinable_hw.cpp.o"
   "CMakeFiles/franka_hw.dir/src/franka_combined_hw.cpp.o"

@@ -1,2 +1,2 @@
 franka_ros/franka_control:franka_ros/franka_description:franka_ros/franka_example_controllers:franka_ros/franka_gazebo:franka_ros/franka_gripper:franka_ros/franka_hw:franka_ros/franka_msgs:franka_ros/franka_ros:franka_ros/franka_visualization:scene
--DCATKIN_DEVEL_PREFIX=/home/user/Desktop/project-franka/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/user/Desktop/project-franka/catkin_ws/install -G Unix Makefiles
+-DCATKIN_DEVEL_PREFIX=/home/matte/HairHockey-SmartRobotics/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/matte/HairHockey-SmartRobotics/catkin_ws/install -G Unix Makefiles

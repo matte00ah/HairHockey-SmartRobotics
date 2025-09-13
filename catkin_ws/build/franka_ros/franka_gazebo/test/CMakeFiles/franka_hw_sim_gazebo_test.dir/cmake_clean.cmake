@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_gazebo_test"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_gazebo_test.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_gazebo_test"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_gazebo_test.pdb"
   "CMakeFiles/franka_hw_sim_gazebo_test.dir/franka_hw_sim_gazebo_test.cpp.o"
 )
 

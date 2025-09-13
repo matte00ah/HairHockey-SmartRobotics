@@ -1,8 +1,8 @@
-# Install script for directory: /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test
+# Install script for directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/user/Desktop/project-franka/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/matte/HairHockey-SmartRobotics/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Release")
+    set(CMAKE_INSTALL_CONFIG_NAME "")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()

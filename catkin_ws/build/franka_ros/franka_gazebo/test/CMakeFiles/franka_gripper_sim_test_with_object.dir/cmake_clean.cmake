@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test_with_object"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test_with_object.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test_with_object"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test_with_object.pdb"
   "CMakeFiles/franka_gripper_sim_test_with_object.dir/franka_gripper_sim_test_with_object.cpp.o"
   "CMakeFiles/franka_gripper_sim_test_with_object.dir/gripper_sim_test_setup.cpp.o"
 )

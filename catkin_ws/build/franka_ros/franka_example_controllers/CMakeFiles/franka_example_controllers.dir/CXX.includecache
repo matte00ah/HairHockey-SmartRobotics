@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/JointTorqueComparison.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/JointTorqueComparison.h
 string
 -
 vector
@@ -22,7 +22,7 @@ ros/builtin_message_traits.h
 ros/message_operations.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/compliance_paramConfig.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/compliance_paramConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -40,7 +40,7 @@ dynamic_reconfigure/config_init_mutex.h
 boost/any.hpp
 -
 
-/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/desired_mass_paramConfig.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/desired_mass_paramConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -58,7 +58,7 @@ dynamic_reconfigure/config_init_mutex.h
 boost/any.hpp
 -
 
-/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/dual_arm_compliance_paramConfig.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/dual_arm_compliance_paramConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -76,7 +76,7 @@ dynamic_reconfigure/config_init_mutex.h
 boost/any.hpp
 -
 
-/home/user/Desktop/project-franka/catkin_ws/devel/include/franka_example_controllers/teleop_paramConfig.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_example_controllers/teleop_paramConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -94,7 +94,7 @@ dynamic_reconfigure/config_init_mutex.h
 boost/any.hpp
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_impedance_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_impedance_example_controller.h
 memory
 -
 mutex
@@ -126,7 +126,7 @@ franka_hw/franka_model_interface.h
 franka_hw/franka_state_interface.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_pose_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_pose_example_controller.h
 array
 -
 memory
@@ -146,7 +146,7 @@ ros/time.h
 franka_hw/franka_cartesian_command_interface.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_velocity_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/cartesian_velocity_example_controller.h
 memory
 -
 string
@@ -164,7 +164,7 @@ ros/node_handle.h
 ros/time.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/dual_arm_cartesian_impedance_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/dual_arm_cartesian_impedance_example_controller.h
 memory
 -
 string
@@ -198,7 +198,7 @@ franka_hw/franka_state_interface.h
 franka_hw/trigger_rate.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/elbow_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/elbow_example_controller.h
 array
 -
 memory
@@ -218,7 +218,7 @@ ros/time.h
 franka_hw/franka_cartesian_command_interface.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/force_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/force_example_controller.h
 memory
 -
 string
@@ -246,7 +246,7 @@ Eigen/Core
 franka_example_controllers/desired_mass_paramConfig.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_impedance_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_impedance_example_controller.h
 memory
 -
 string
@@ -274,7 +274,7 @@ franka_hw/franka_model_interface.h
 franka_hw/trigger_rate.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_position_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_position_example_controller.h
 array
 -
 string
@@ -292,7 +292,7 @@ ros/node_handle.h
 ros/time.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_velocity_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_velocity_example_controller.h
 string
 -
 vector
@@ -310,13 +310,13 @@ ros/node_handle.h
 ros/time.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_wall.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/joint_wall.h
 array
 -
 memory
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/model_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/model_example_controller.h
 memory
 -
 string
@@ -336,7 +336,7 @@ franka_hw/franka_state_interface.h
 franka_hw/trigger_rate.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/pseudo_inversion.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/pseudo_inversion.h
 Eigen/Core
 -
 Eigen/LU
@@ -344,7 +344,7 @@ Eigen/LU
 Eigen/SVD
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h
 franka_example_controllers/joint_wall.h
 -
 franka_example_controllers/teleop_paramConfig.h
@@ -382,7 +382,7 @@ mutex
 vector
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_impedance_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_impedance_example_controller.cpp
 franka_example_controllers/cartesian_impedance_example_controller.h
 -
 cmath
@@ -400,7 +400,7 @@ ros/ros.h
 franka_example_controllers/pseudo_inversion.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_pose_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_pose_example_controller.cpp
 franka_example_controllers/cartesian_pose_example_controller.h
 -
 cmath
@@ -422,7 +422,7 @@ pluginlib/class_list_macros.h
 ros/ros.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_velocity_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/cartesian_velocity_example_controller.cpp
 franka_example_controllers/cartesian_velocity_example_controller.h
 -
 array
@@ -444,7 +444,7 @@ pluginlib/class_list_macros.h
 ros/ros.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/dual_arm_cartesian_impedance_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/dual_arm_cartesian_impedance_example_controller.cpp
 franka_example_controllers/dual_arm_cartesian_impedance_example_controller.h
 -
 cmath
@@ -476,7 +476,7 @@ tf/transform_listener.h
 tf_conversions/tf_eigen.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/elbow_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/elbow_example_controller.cpp
 franka_example_controllers/elbow_example_controller.h
 -
 cmath
@@ -498,7 +498,7 @@ pluginlib/class_list_macros.h
 ros/ros.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/force_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/force_example_controller.cpp
 franka_example_controllers/force_example_controller.h
 -
 cmath
@@ -514,7 +514,7 @@ ros/ros.h
 franka/robot_state.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_impedance_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_impedance_example_controller.cpp
 franka_example_controllers/joint_impedance_example_controller.h
 -
 cmath
@@ -530,7 +530,7 @@ ros/ros.h
 franka/robot_state.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_position_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_position_example_controller.cpp
 franka_example_controllers/joint_position_example_controller.h
 -
 cmath
@@ -546,7 +546,7 @@ pluginlib/class_list_macros.h
 ros/ros.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_velocity_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_velocity_example_controller.cpp
 franka_example_controllers/joint_velocity_example_controller.h
 -
 cmath
@@ -562,7 +562,7 @@ pluginlib/class_list_macros.h
 ros/ros.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_wall.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/joint_wall.cpp
 franka_example_controllers/joint_wall.h
 -
 ros/ros.h
@@ -574,7 +574,7 @@ iostream
 sstream
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/model_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/model_example_controller.cpp
 franka_example_controllers/model_example_controller.h
 -
 algorithm
@@ -600,7 +600,7 @@ franka_hw/franka_model_interface.h
 franka_hw/franka_state_interface.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp
 franka_example_controllers/joint_wall.h
 -
 franka_example_controllers/teleop_joint_pd_example_controller.h
@@ -628,7 +628,7 @@ string
 vector
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_cartesian_command_interface.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_cartesian_command_interface.h
 array
 -
 franka_hw/franka_state_interface.h
@@ -636,7 +636,7 @@ franka_hw/franka_state_interface.h
 hardware_interface/internal/hardware_resource_manager.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_model_interface.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_model_interface.h
 array
 -
 string
@@ -652,7 +652,7 @@ franka_hw/model_base.h
 hardware_interface/internal/hardware_resource_manager.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_state_interface.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/franka_state_interface.h
 string
 -
 franka/robot_state.h
@@ -660,7 +660,7 @@ franka/robot_state.h
 hardware_interface/internal/hardware_resource_manager.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/model.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/model.h
 array
 -
 franka/model.h
@@ -668,13 +668,13 @@ franka/model.h
 franka_hw/model_base.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/model_base.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/model_base.h
 franka/model.h
 -
 franka/robot_state.h
 -
 
-/home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/trigger_rate.h
+/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include/franka_hw/trigger_rate.h
 ros/time.h
 -
 

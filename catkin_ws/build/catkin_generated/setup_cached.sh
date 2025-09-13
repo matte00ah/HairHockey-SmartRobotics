@@ -7,10 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/user/Desktop/project-franka/catkin_ws/devel:$CMAKE_PREFIX_PATH"
-export LD_LIBRARY_PATH="/home/user/Desktop/project-franka/catkin_ws/devel/lib:$LD_LIBRARY_PATH"
-export PKG_CONFIG_PATH="/home/user/Desktop/project-franka/catkin_ws/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
-export PWD='/home/user/Desktop/project-franka/catkin_ws/build'
-export PYTHONPATH="/home/user/Desktop/project-franka/catkin_ws/devel/lib/python3/dist-packages:$PYTHONPATH"
-export ROSLISP_PACKAGE_DIRECTORIES='/home/user/Desktop/project-franka/catkin_ws/devel/share/common-lisp'
-export ROS_PACKAGE_PATH="/home/user/Desktop/project-franka/catkin_ws/src:$ROS_PACKAGE_PATH"
+export CMAKE_PREFIX_PATH="/home/matte/HairHockey-SmartRobotics/catkin_ws/devel:$CMAKE_PREFIX_PATH"
+export PWD='/home/matte/HairHockey-SmartRobotics/catkin_ws/build'
+export ROSLISP_PACKAGE_DIRECTORIES='/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/common-lisp'
+export ROS_PACKAGE_PATH="/home/matte/HairHockey-SmartRobotics/catkin_ws/src:$ROS_PACKAGE_PATH"

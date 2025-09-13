@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_example_controllers.pdb"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_example_controllers.so"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_example_controllers.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_example_controllers.so"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_impedance_example_controller.cpp.o"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller.cpp.o"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_velocity_example_controller.cpp.o"

@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gripper/franka_gripper_node"
-  "/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_gripper/franka_gripper_node.pdb"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gripper/franka_gripper_node"
+  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gripper/franka_gripper_node.pdb"
   "CMakeFiles/franka_gripper_node.dir/src/franka_gripper_node.cpp.o"
 )
 

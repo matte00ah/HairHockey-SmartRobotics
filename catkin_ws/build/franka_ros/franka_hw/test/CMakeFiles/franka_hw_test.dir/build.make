@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/Desktop/project-franka/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/matte/HairHockey-SmartRobotics/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/Desktop/project-franka/catkin_ws/build
+CMAKE_BINARY_DIR = /home/matte/HairHockey-SmartRobotics/catkin_ws/build
 
 # Include any dependencies generated for this target.
 include franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/depend.make
@@ -58,56 +58,56 @@ include franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/progress.make
 include franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/flags.make
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/flags.make
-franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o: /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/project-franka/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/main.cpp.o -c /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/main.cpp
+franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/matte/HairHockey-SmartRobotics/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o"
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/main.cpp.o -c /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/main.cpp
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/franka_hw_test.dir/main.cpp.i"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/main.cpp > CMakeFiles/franka_hw_test.dir/main.cpp.i
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/main.cpp > CMakeFiles/franka_hw_test.dir/main.cpp.i
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/franka_hw_test.dir/main.cpp.s"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/main.cpp -o CMakeFiles/franka_hw_test.dir/main.cpp.s
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/main.cpp -o CMakeFiles/franka_hw_test.dir/main.cpp.s
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/flags.make
-franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o: /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/project-franka/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o -c /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp
+franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/matte/HairHockey-SmartRobotics/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o"
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o -c /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.i"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp > CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.i
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp > CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.i
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.s"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.s
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_controller_switching_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.s
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/flags.make
-franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o: /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/project-franka/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o -c /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp
+franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/matte/HairHockey-SmartRobotics/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o"
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o -c /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.i"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp > CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.i
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp > CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.i
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.s"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.s
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_hw_interfaces_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.s
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/flags.make
-franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o: /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/user/Desktop/project-franka/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o -c /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp
+franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/matte/HairHockey-SmartRobotics/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o"
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o -c /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.i"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp > CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.i
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp > CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.i
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.s"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.s
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test/franka_combinable_hw_controller_switching_test.cpp -o CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.s
 
 # Object files for target franka_hw_test
 franka_hw_test_OBJECTS = \
@@ -119,97 +119,97 @@ franka_hw_test_OBJECTS = \
 # External object files for target franka_hw_test
 franka_hw_test_EXTERNAL_OBJECTS =
 
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/build.make
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: gtest/lib/libgtest.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libactionlib.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcombined_robot_hw.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/liburdf.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_sensor.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model_state.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_world.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libclass_loader.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libdl.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroslib.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librospack.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpython3.8.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_bridge.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpthread.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_log4cxx.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_backend_interface.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libxmlrpcpp.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp_serialization.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librostime.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcpp_common.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_hw.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /home/user/Desktop/project-franka/catkin_ws/devel/lib/libfranka_control_services.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libactionlib.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcombined_robot_hw.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/liburdf.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_sensor.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model_state.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_world.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libclass_loader.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libdl.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroslib.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librospack.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpython3.8.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_bridge.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpthread.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_log4cxx.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_backend_interface.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libxmlrpcpp.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp_serialization.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librostime.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcpp_common.so
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/x86_64-linux-gnu/libfranka.so.0.9.2
-/home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/user/Desktop/project-franka/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable /home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test"
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/franka_hw_test.dir/link.txt --verbose=$(VERBOSE)
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/main.cpp.o
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_controller_switching_test.cpp.o
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_hw_interfaces_test.cpp.o
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/franka_combinable_hw_controller_switching_test.cpp.o
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/build.make
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: gtest/lib/libgtest.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libactionlib.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcombined_robot_hw.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/liburdf.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_sensor.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model_state.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_world.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libclass_loader.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libdl.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroslib.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librospack.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_bridge.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpthread.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_log4cxx.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_backend_interface.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libxmlrpcpp.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp_serialization.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librostime.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcpp_common.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_control_services.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libactionlib.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcombined_robot_hw.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/liburdf.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_sensor.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model_state.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_model.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liburdfdom_world.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libclass_loader.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libPocoFoundation.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libdl.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroslib.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librospack.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libtinyxml2.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_bridge.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libpthread.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_log4cxx.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librosconsole_backend_interface.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/liblog4cxx.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libxmlrpcpp.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libroscpp_serialization.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/librostime.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/libcpp_common.so
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.71.0
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so.0.4
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: /opt/ros/noetic/lib/x86_64-linux-gnu/libfranka.so.0.9.2
+/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test: franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/matte/HairHockey-SmartRobotics/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable /home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test"
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/franka_hw_test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/build: /home/user/Desktop/project-franka/catkin_ws/devel/lib/franka_hw/franka_hw_test
+franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/build: /home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_hw/franka_hw_test
 
 .PHONY : franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/build
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/clean:
-	cd /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test && $(CMAKE_COMMAND) -P CMakeFiles/franka_hw_test.dir/cmake_clean.cmake
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test && $(CMAKE_COMMAND) -P CMakeFiles/franka_hw_test.dir/cmake_clean.cmake
 .PHONY : franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/clean
 
 franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/depend:
-	cd /home/user/Desktop/project-franka/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/Desktop/project-franka/catkin_ws/src /home/user/Desktop/project-franka/catkin_ws/src/franka_ros/franka_hw/test /home/user/Desktop/project-franka/catkin_ws/build /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test /home/user/Desktop/project-franka/catkin_ws/build/franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/matte/HairHockey-SmartRobotics/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/matte/HairHockey-SmartRobotics/catkin_ws/src /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/test /home/matte/HairHockey-SmartRobotics/catkin_ws/build /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test /home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : franka_ros/franka_hw/test/CMakeFiles/franka_hw_test.dir/depend
 

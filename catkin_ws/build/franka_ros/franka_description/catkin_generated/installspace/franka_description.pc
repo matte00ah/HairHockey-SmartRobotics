@@ -1,4 +1,4 @@
-prefix=/home/user/Desktop/project-franka/catkin_ws/install
+prefix=/home/matte/HairHockey-SmartRobotics/catkin_ws/install
 
 Name: franka_description
 Description: Description of franka_description
