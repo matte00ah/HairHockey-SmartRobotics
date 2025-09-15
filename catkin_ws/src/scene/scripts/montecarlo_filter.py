@@ -24,6 +24,9 @@ class MontecarloFilter:
 
         self.particles = None
         self.weights = None
+        self.est_positions = []
+        self.real_positions = []
+        self.prev_measurement = None
 
         self.initialize(X_MAX, Y_MAX)
 
@@ -88,52 +91,51 @@ class MontecarloFilter:
     def run(self, cx, cy):
 
         #frame_h, frame_w = frame.shape[:2]
-        est_positions = []
-        real_positions = []
-        positions = [(cx, cy)]
+        pos = (cx, cy)
+        print(cx, cy)
 
         plt.figure(figsize=(8, 6))
-        prev_measurement = None
 
-        for t, pos in enumerate(positions):
-            if pos is None:
-                prev_measurement = None
-                continue
-            
-            measurement = np.array([pos[0], pos[1]])
-
-            # Calcolo velocità reale dal video
-            if prev_measurement is not None:
-                velocity = (measurement - prev_measurement) / self.dt
-            else:
-                velocity = np.array([0.0, 0.0])
-
-            prev_measurement = measurement
-
-            self.predict()
-            self.update(measurement, velocity)
-            self.resample()
         
-            est_pos, est_vel, est_acc = self.estimate()
+        if pos is None:
+            prev_measurement = None
+        
+        measurement = np.array([pos[0], pos[1]])
 
-            est_positions.append(est_pos)
-            real_positions.append(measurement)
-            
-            print(f"Step {t:02d} | Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
-            
-            plt.cla()
-            plt.scatter(self.particles[:, 0], self.particles[:, 1], color='gray', s=2, label='Particelle')
-            plt.scatter(measurement[0], measurement[1], color='blue', s=40, label='Misura')
-            plt.scatter(est_pos[0], est_pos[1], color='green', s=50, label='Stima filtro')
-            plt.xlim(0, X_MAX)
-            plt.ylim(0, Y_MAX)
-            plt.title(f"Step {t} – Stima vel: ({est_vel[0]:.2f}, {est_vel[1]:.2f}) – "
-                      f"Stima acc: ({est_acc[0]:.2f}, {est_acc[1]:.2f})")
-            plt.legend(loc='upper right')
-            plt.pause(0.1)
+        # Calcolo velocità reale dal video
+        if self.prev_measurement is not None:
+            velocity = (measurement - self.prev_measurement) / self.dt
+        else:
+            velocity = np.array([0.0, 0.0])
+
+        self.prev_measurement = measurement
+
+        self.predict()
+        self.update(measurement, velocity)
+        self.resample()
+    
+        est_pos, est_vel, est_acc = self.estimate()
+        
+
+        self.est_positions.append(est_pos)
+        self.real_positions.append(measurement)
+        #print(measurement)
+        
+        print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
+        
+        plt.cla()
+        plt.scatter(self.particles[:, 0], self.particles[:, 1], color='gray', s=2, label='Particelle')
+        plt.scatter(measurement[0], measurement[1], color='blue', s=40, label='Misura')
+        plt.scatter(est_pos[0], est_pos[1], color='green', s=50, label='Stima filtro')
+        plt.xlim(0, X_MAX)
+        plt.ylim(0, Y_MAX)
+        plt.title(f" Stima vel: ({est_vel[0]:.2f}, {est_vel[1]:.2f}) – "
+                    f"Stima acc: ({est_acc[0]:.2f}, {est_acc[1]:.2f})")
+        plt.legend(loc='upper right')
+        plt.pause(0.1)
 
         plt.show()
 
         # Calcola e stampa la precisione finale
-        rmse = self.compute_rmse(est_positions, real_positions)
+        rmse = self.compute_rmse(self.est_positions, self.real_positions)
         print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")

@@ -163,6 +163,13 @@ def process_frame(msg):
     plt.title("Corner del tavolo (da intersezioni linee)")
     plt.axis("off")
     plt.show()
+<<<<<<< Updated upstream
+=======
+    corner1 = origin_world
+    corner2 = max(corners, key=lambda p: p[0] + p[1])  # angolo opposto
+    
+    return corner1, corner2
+>>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
