@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: franka_gazebo
+    relative_path: test/launch/panda-gazebo.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/panda.srdf
+  CONFIG:
+    author_name: edoardo
+    author_email: ddd@bbb.it
+    generated_timestamp: 1758094017
