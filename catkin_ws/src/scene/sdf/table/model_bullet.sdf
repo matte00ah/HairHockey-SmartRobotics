@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="table">
+    <link name="table_link">
+      
+      <!-- Inerzia -->
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>80.0</mass>
+        <inertia>
+          <ixx>2.5</ixx>
+          <iyy>2.5</iyy>
+          <izz>1.0</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+
+      <!-- Visual -->
+      <visual name="table_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>file:///home/edoardopottocar/Desktop/Robotics/catkin_ws/src/scene/meshes/airhockey-plane.dae</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- Collision -->
+      <collision name="table_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>file:///home/edoardopottocar/Desktop/Robotics/catkin_ws/src/scene/meshes/airhockey-plane.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <!-- Parametri fisici specifici per Gazebo -->
+      <gazebo reference="table_link">
+        <static>true</static>
+        <surface>
+          <friction>
+            <bullet>
+              <friction>0.00001</friction>       <!-- attrito molto basso per il puck -->
+              <rolling_friction>0.0</rolling_friction>
+            </bullet>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+        </surface>
+      </gazebo>
+
+    </link>
+
+    <!-- Il tavolo è statico -->
+    <static>true</static>
+    
+  </model>
+</sdf>
+

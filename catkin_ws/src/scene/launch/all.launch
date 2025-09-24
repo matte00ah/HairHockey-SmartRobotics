@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
-
 <launch>
-<!-- Lancia Gazebo con il robot Franka -->
-<include file="$(find franka_gazebo)/launch/panda.launch"/>
+ 
+  <!-- Lancia Gazebo con il robot Franka -->
+  <include file="$(find franka_gazebo)/launch/panda.launch">
 
   <!-- Spawna tavolo e puck -->
-<include file="$(find scene)/launch/env.launch" />
+  <include file="$(find scene)/launch/env_sdf.launch" />
+
 </launch>
+

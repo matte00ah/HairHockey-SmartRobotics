@@ -40,6 +40,7 @@
     <arg name="paused" value="true"/>
     <arg name="gui" value="$(eval not arg('headless'))"/>
     <arg name="use_sim_time" value="true"/>
+    <arg name="physics" value="bullet"/>
   </include>
 
   <param name="robot_description"
@@ -62,8 +63,7 @@
         pkg="gazebo_ros"
         type="spawn_model"
         args="-param robot_description -urdf -model $(arg arm_id) $(arg unpause)
-              $(arg initial_joint_positions)
-              -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708
+              $(arg initial_joint_positions) -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708
               "/>
 
   <!-- Spawn required ROS controllers -->
