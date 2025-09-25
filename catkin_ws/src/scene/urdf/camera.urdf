@@ -19,14 +19,7 @@
 	  <inertia ixx="1e-6" ixy="0.0" ixz="0.0"
 		   iyy="1e-6" iyz="0.0" izz="1e-6"/>
     </inertial>  
-  </link>
-  
-  <gazebo>
-    <static>true</static>
-  </gazebo>
-  
-  <!-- Gazebo camera plugin -->
-  <gazebo reference="camera_link">
+    
     <sensor type="camera" name="gazebo_camera">
       <pose> 0 -0.06 -0.02 0 1.57079632679 0 </pose>
       <visualize>true</visualize>
@@ -51,7 +44,8 @@
         </ros>
       </plugin>
     </sensor>
-  </gazebo>
+    
+  </link>
 
 </robot>
 
