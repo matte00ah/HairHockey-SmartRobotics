@@ -1,5 +1,0 @@
-{ 
-    "terminal.integrated.automationProfile.linux": 
-    { "path": "/home/user/Desktop/project-franka/catkin_ws/src/scene/scripts/debugros-node.sh" }
-}
- 
