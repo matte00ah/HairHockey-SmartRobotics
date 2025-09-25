@@ -1,0 +1,14 @@
+<robot name="scene" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Importa tavolo -->
+  <xacro:include filename="$(find scene)/urdf/table.urdf"/>
+  <xacro:include filename="$(find scene)/urdf/camera.urdf"/>
+
+  <!-- Joint fisso -->
+  <joint name="camera_fixed" type="fixed">
+    <parent link="table_link"/>
+    <child link="camera_link"/>
+    <origin xyz="-0.25 0 0.65" rpy="0 0 -1.5708"/>
+  </joint>
+
+</robot>

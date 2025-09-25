@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<launch>
+ 
+  <!-- Lancia Gazebo con il robot Franka -->
+  <include file="$(find franka_gazebo)/launch/panda.launch">
+  <arg name="world" value="$(find scene)/launch/my.world" doc="Filename to a SDF World for gazebo to use" /></include>
+
+</launch>
+
