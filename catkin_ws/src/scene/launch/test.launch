@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<launch>
+  
+    <env name="GAZEBO_MODEL_PATH" value="$(find scene)/urdf"/>
+    
+  <!-- Carica l'intera scena (tavolo + camera) -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/empty.world"/>
+  </include>
+  
+  
+  <param name="scene_description" command="$(find xacro)/xacro $(find scene)/urdf/table_camera.xacro"/>
+
+  <node name="scene_spawner" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param scene_description -urdf -model scene -x 0 -y 0.71 -z 0.6 -R 0 -P 0 -Y 1.5708"/>
+        
+      
+</launch>
