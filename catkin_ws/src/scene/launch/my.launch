@@ -1,0 +1,30 @@
+<launch>
+    <!-- Choose controller manager: fake, simple, or ros_control -->
+    <arg name="use_sim_time" default="true"/>
+    
+    <arg name="moveit_controller_manager" default="fake"/>
+    
+    <!-- Set execution mode for fake execution controllers -->
+    <arg name="fake_execution_type" default="interpolate" />
+
+    <!-- Robot description -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find scene)/urdf/my_panda.urdf.xacro'"/>
+
+    <param name="robot_description_semantic"
+           textfile="$(find moveit_pkg)/config/panda.srdf"/>
+
+    <rosparam file="$(find moveit_pkg)/config/ros_controllers.yaml" command="load"/>
+    <!--<node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn robot_arm_controller" respawn="false" output="screen"/>-->
+
+    <!-- MoveIt move_group -->
+    <include file="$(find moveit_pkg)/launch/move_group.launch"/>
+
+    <!-- Nodo per aggiungere oggetti nella planning scene -->
+    <!--<node pkg="scene" type="scene_manager.py" name="scene_manager" output="screen"/>-->
+
+    <!-- RViz -->
+    <include file="$(find moveit_pkg)/launch/moveit_rviz.launch">
+        <arg name="rviz_config" value="$(find moveit_pkg)/launch/moveit.rviz"/>
+    </include>
+    
+</launch>
