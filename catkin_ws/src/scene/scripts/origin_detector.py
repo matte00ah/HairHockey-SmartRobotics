@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# import rospy
+import rospy
 import cv2
 import numpy as np
 import os
 import math
-# from sensor_msgs.msg import Image
-# from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 import json
 import matplotlib.pyplot as plt
-from table_width_detector import apply_white_mask
+
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(script_dir, "config.json")
@@ -17,6 +17,8 @@ with open(config_path, "r") as f:
     config = json.load(f)
 
 camera_topic = config["camera_topic"]
+l_white = config["lower_white"]
+u_white = config["upper_white"]
 
 # Funzione per trovare intersezione di due linee (Ax+By=C forma)
 def line_intersection(l1, l2):
@@ -38,24 +40,53 @@ def line_intersection(l1, l2):
     y = (A1*C2 - A2*C1) / det
     return int(x), int(y)
 
+def apply_white_mask(frame):
+    # Converti in HSV per filtrare il bianco
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    pix = hsv.reshape(-1, 3)
+
+    pixels_tuples = [tuple(p) for p in pix]
+
+    from collections import Counter
+    counts = Counter(pixels_tuples)
+    most_common_pixel, freq = counts.most_common(1)[0]
+
+    print(f"Pixel HSV più frequente sul tavolo: {most_common_pixel} (presente {freq} volte)")
+
+    # Range del bianco (modifica se necessario)
+    lower_white = np.array(l_white)
+    upper_white = np.array(u_white)
+
+    mask = cv2.inRange(hsv, lower_white, upper_white)
+
+    # num_white_pixels = cv2.countNonZero(mask)
+    # print(f"Numero di pixel bianchi nella maschera: {num_white_pixels}")
+
+    # Applica la maschera
+    white_area = cv2.bitwise_and(frame, frame, mask=mask)
+
+    return white_area
+
 def process_frame(msg):
-    # bridge = CvBridge()
-    # frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+    bridge = CvBridge()
+    frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+    print(frame.shape)
     
     #MODIFICA PER PRENDERE FOTO INVECE CHE FRAME ROS
-    frame = cv2.imread("c:\\Users\\Matteo Bulgarelli\\Downloads\\1.jpg")
-    frame = cv2.resize(frame, (640, 480))
+    #frame = cv2.imread("c:\\Users\\Matteo Bulgarelli\\Downloads\\1.jpg")
+    #frame = cv2.resize(frame, (640, 480))
 
-    # white_area = apply_white_mask(frame)
+    white_area = apply_white_mask(frame)
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(white_area, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
     # Rilevamento bordi
     edges = cv2.Canny(blur, 50, 150)
+    print(edges)
 
     # Rilevamento linee con Hough
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=120, minLineLength=120, maxLineGap=30) #max=10
 
     best_lines = []
     for line in lines:
@@ -163,20 +194,17 @@ def process_frame(msg):
     plt.title("Corner del tavolo (da intersezioni linee)")
     plt.axis("off")
     plt.show()
-<<<<<<< Updated upstream
-=======
     corner1 = origin_world
     corner2 = max(corners, key=lambda p: p[0] + p[1])  # angolo opposto
     
     return corner1, corner2
->>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
-    # rospy.init_node("table_width_once", anonymous=True)
+    rospy.init_node("origin", anonymous=True)
 
     # Prende UN SOLO frame dal topic
-    # msg = rospy.wait_for_message(camera_topic, Image)
-    # process_frame(msg)
+    msg = rospy.wait_for_message(camera_topic, Image)
+    process_frame(msg)
     #MODIFICA per funzionare con foto
-    process_frame(None)
+    #process_frame(None)

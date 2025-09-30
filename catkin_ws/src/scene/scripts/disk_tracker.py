@@ -7,6 +7,8 @@ import numpy as np
 import json
 import os
 from montecarlo_filter import MontecarloFilter
+from origin_detector import process_frame
+
 
 script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
 config_path = os.path.join(script_dir, "config.json")
@@ -19,9 +21,7 @@ u_red1 = config["upper_red1"]
 l_red2 = config["lower_red2"]
 u_red2 = config["upper_red2"]
 Y_MAX = config["table_height_m"]
-corner1 = config["corner1"]
-corner2 = config["corner2"]
-
+camera_topic = config["camera_topic"]
 
 def pixel_to_world(pt, corner1, corner2):
     # Corner in pixel
@@ -67,6 +67,11 @@ class DiskTracker:
         # Nodo ROS
         rospy.init_node("disk_tracker")
 
+        msg = rospy.wait_for_message(camera_topic, Image)
+        corners = process_frame(msg)
+        self.corner1 = corners[0]
+        self.corner2 = corners[1]
+
         # CvBridge per convertire i messaggi ROS in immagini OpenCV
         self.bridge = CvBridge()
 
@@ -84,6 +89,7 @@ class DiskTracker:
         self.kernel = np.ones((5,5), np.uint8)
         
         self.montecarlo = MontecarloFilter()
+        self.future_predictions = []  # Array per salvare l'ultima predizione di ogni frame
 
         rospy.loginfo("Red Disk Tracker avviato su topic: %s", self.image_topic)
         rospy.spin()
@@ -122,13 +128,15 @@ class DiskTracker:
                 cv2.circle(frame, (cx, cy), 5, (0,255,0), -1)
                 cv2.drawContours(frame, [c], -1, (0,255,0), 2)
 
-                wx, wy, p0, x_axis, y_axis, y_len = pixel_to_world((cx, cy), corner1, corner2)
+                wx, wy, p0, x_axis, y_axis, y_len = pixel_to_world((cx, cy), self.corner1, self.corner2)
                 rospy.loginfo("Disco in tavolo: X=%.2f m, Y=%.2f m", wx, wy)
 
                 # Disegno assi sulla frame
                 frame = draw_axes(frame, p0, x_axis, y_axis, y_len)
 
                 self.montecarlo.run(wx, wy)
+
+                
 
         # Mostra immagine e mask
         cv2.imshow("Frame", frame)

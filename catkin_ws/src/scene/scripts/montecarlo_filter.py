@@ -2,6 +2,7 @@ import numpy as np
 import json
 import os
 import matplotlib.pyplot as plt
+from move_franka import move_to_point
 
 script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
 config_path = os.path.join(script_dir, "config.json")
@@ -57,6 +58,32 @@ class MontecarloFilter:
             if self.particles[i, 1] <= 0 or self.particles[i, 1] >= self.Y_MAX:
                 self.particles[i, 3] *= -1
                 self.particles[i, 1] = np.clip(self.particles[i, 1], 0, self.Y_MAX)
+    
+    def predict_future(self, steps=10):
+        future_particles = self.particles.copy()
+        predictions = []
+        for _ in range(steps):
+            future_particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
+            future_particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
+            future_particles[:, 2] += (future_particles[:, 4] - self.f * future_particles[:, 2]) * self.dt
+            future_particles[:, 3] += (future_particles[:, 5] - self.f * future_particles[:, 3]) * self.dt
+            future_particles[:, 0] += future_particles[:, 2] * self.dt
+            future_particles[:, 1] += future_particles[:, 3] * self.dt
+
+            for i in range(self.N):
+                if future_particles[i, 0] <= 0 or future_particles[i, 0] >= self.X_MAX:
+                    future_particles[i, 2] *= -1
+                    future_particles[i, 0] = np.clip(future_particles[i, 0], 0, self.X_MAX)
+                if future_particles[i, 1] <= 0 or future_particles[i, 1] >= self.Y_MAX:
+                    future_particles[i, 3] *= -1
+                    future_particles[i, 1] = np.clip(future_particles[i, 1], 0, self.Y_MAX)
+
+            est_pos = np.mean(future_particles[:, 0:2], axis=0)
+            est_vel = np.mean(future_particles[:, 2:4], axis=0)
+            est_acc = np.mean(future_particles[:, 4:6], axis=0)
+            predictions.append((est_pos, est_vel, est_acc))
+
+        return predictions
 
     def update(self, measurement, velocity):
         w = self.weights
@@ -88,7 +115,7 @@ class MontecarloFilter:
         rmse = np.sqrt(mse)
         return rmse  # array [rmse_x, rmse_y]
 
-    def run(self, cx, cy):
+    def run(self, cx, cy, future_steps=10):
 
         #frame_h, frame_w = frame.shape[:2]
         pos = (cx, cy)
@@ -115,26 +142,31 @@ class MontecarloFilter:
         self.resample()
     
         est_pos, est_vel, est_acc = self.estimate()
+        future_predictions = self.predict_future(steps=future_steps)
         
 
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
+        x, y = future_predictions[-1][0]
+        move_to_point(x,y,z=0.6)
         #print(measurement)
         
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
         
-        plt.cla()
-        plt.scatter(self.particles[:, 0], self.particles[:, 1], color='gray', s=2, label='Particelle')
-        plt.scatter(measurement[0], measurement[1], color='blue', s=40, label='Misura')
-        plt.scatter(est_pos[0], est_pos[1], color='green', s=50, label='Stima filtro')
-        plt.xlim(0, X_MAX)
-        plt.ylim(0, Y_MAX)
-        plt.title(f" Stima vel: ({est_vel[0]:.2f}, {est_vel[1]:.2f}) – "
-                    f"Stima acc: ({est_acc[0]:.2f}, {est_acc[1]:.2f})")
-        plt.legend(loc='upper right')
-        plt.pause(0.1)
+        #plt.cla()
+        #plt.scatter(self.particles[:, 0], self.particles[:, 1], color='gray', s=2, label='Particelle')
+        #plt.scatter(measurement[0], measurement[1], color='blue', s=40, label='Misura')
+        #plt.scatter(est_pos[0], est_pos[1], color='green', s=50, label='Stima filtro')
+        #future_positions = np.array([fp[0] for fp in future_predictions])
+        #plt.scatter(future_positions[:, 0], future_positions[:, 1], color='red', s=20, marker='x', label='Predizioni future')
+        #plt.xlim(0, X_MAX)
+        #plt.ylim(0, Y_MAX)
+        #plt.title(f" Stima vel: ({est_vel[0]:.2f}, {est_vel[1]:.2f}) – "
+        #            f"Stima acc: ({est_acc[0]:.2f}, {est_acc[1]:.2f})")
+        #plt.legend(loc='upper right')
+        #plt.pause(0.1)
 
-        plt.show()
+        #plt.show()
 
         # Calcola e stampa la precisione finale
         rmse = self.compute_rmse(self.est_positions, self.real_positions)
