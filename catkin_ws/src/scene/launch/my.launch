@@ -14,7 +14,7 @@
            textfile="$(find moveit_pkg)/config/panda.srdf"/>
 
     <rosparam file="$(find moveit_pkg)/config/ros_controllers.yaml" command="load"/>
-    <!--<node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn robot_arm_controller" respawn="false" output="screen"/>-->
+    <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn robot_arm_controller" respawn="false" output="screen"/>
 
     <!-- MoveIt move_group -->
     <include file="$(find moveit_pkg)/launch/move_group.launch"/>
