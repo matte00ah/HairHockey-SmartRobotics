@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: scene
+    relative_path: urdf/scene.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/scene.srdf
+  CONFIG:
+    author_name: mat
+    author_email: mat@mat.it
+    generated_timestamp: 1759137653
