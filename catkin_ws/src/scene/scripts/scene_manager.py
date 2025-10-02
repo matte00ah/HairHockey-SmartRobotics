@@ -25,9 +25,6 @@ class SceneManager:
         # aggiungi oggetti statici
         self.add_static_objects()
 
-        # sottoscrivi il puck dinamico
-        rospy.Subscriber("/gazebo/model_states", ModelStates, self.update_puck)
-        
         rospy.loginfo("SceneManager pronto")
         rospy.spin()
 
@@ -56,27 +53,10 @@ class SceneManager:
         borders_pose = self.create_pose(0.0, 0.0, 0.0)
         self.scene.add_mesh("table_borders", borders_pose, borders_path)
         
-        puck_pose = self.create_pose(0.0, 0.3, 0.9)
-        self.scene.add_mesh( "puck", puck_pose, puck_path, size=(0.001, 0.001, 0.001))
+        # puck_pose = self.create_pose(0.0, 0.3, 0.9)
+        # self.scene.add_mesh( "puck", puck_pose, puck_path, size=(0.001, 0.001, 0.001))
 
         rospy.loginfo("Oggetti statici aggiunti alla planning scene")
-
-    def update_puck(self, msg):
-        try:
-            idx = msg.name.index("puck")
-        except ValueError:
-            return
-
-        puck_pose_gazebo = msg.pose[idx]
-
-        puck_pose = PoseStamped()
-        puck_pose.header.frame_id = "world"
-        puck_pose.pose = puck_pose_gazebo
-
-        # rimuove e riaggiunge la mesh con scala corretta
-        self.scene.remove_world_object("puck")
-        puck_path = os.path.join(self.scene_pkg_path, "models/puck/meshes/airhockey-puck.stl")
-        self.scene.add_mesh("puck", puck_pose, puck_path, size=(0.001, 0.001, 0.001))
 
 
 if __name__ == "__main__":
