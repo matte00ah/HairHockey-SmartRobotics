@@ -7,7 +7,7 @@ import numpy as np
 import json
 import os
 from montecarlo_filter import MontecarloFilter
-from origin_detector import process_frame
+from origin_detector_new import process_frame
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
@@ -23,25 +23,33 @@ u_red2 = config["upper_red2"]
 Y_MAX = config["table_height_m"]
 camera_topic = config["camera_topic"]
 
-def pixel_to_world(pt, corner1, corner2):
-    # Corner in pixel
-    p0 = np.array(corner1, dtype=np.float32)  # es. angolo in alto a sinistra
-    p1 = np.array(corner2, dtype=np.float32)  # es. angolo in basso a sinistra
+def pixel_to_world(pt, ordered_corners):
+    """
+    Converte un punto dalle coordinate pixel (pt) a coordinate reali (in metri),
+    usando i 4 angoli del tavolo.
+    """
+    Y_MAX = config["table_height_m"]
+    X_MAX = config["table_width_m"]
+    # Coordinate reali corrispondenti agli angoli (in metri)
+    real_corners = np.array([
+        [0, 0],
+        [X_MAX, 0],
+        [X_MAX, Y_MAX],
+        [0, Y_MAX]
+    ], dtype=np.float32)
 
-    # Assi del tavolo
-    y_axis = p1 - p0
-    y_len = np.linalg.norm(y_axis)
-    y_axis /= y_len  # normalizza
+    # Conversione corner pixel in float32
+    pixel_corners = np.array(ordered_corners, dtype=np.float32)
 
-    # Asse x = perpendicolare
-    x_axis = np.array([y_axis[1], -y_axis[0]])
+    # Calcolo matrice di omografia pixel->mondo
+    H, _ = cv2.findHomography(pixel_corners, real_corners)
 
-    # Trasforma punto pixel -> coord tavolo
-    pt_vec = np.array(pt, dtype=np.float32) - p0
-    wx = np.dot(pt_vec, x_axis) / np.linalg.norm(x_axis) / y_len * Y_MAX  # scala rispetto a Y_MAX
-    wy = np.dot(pt_vec, y_axis) / y_len * Y_MAX
+    # Trasforma il punto
+    px = np.array([[pt]], dtype=np.float32)  # shape (1,1,2)
+    world_pt = cv2.perspectiveTransform(px, H)
 
-    return wx, wy, p0, x_axis, y_axis, y_len
+    wx, wy = world_pt[0][0]
+    return wx, wy
 
 def draw_axes(frame, p0, x_axis, y_axis, y_len, scale=0.5):
     """Disegna assi locali del tavolo su immagine"""
@@ -68,10 +76,8 @@ class DiskTracker:
         rospy.init_node("disk_tracker")
 
         msg = rospy.wait_for_message(camera_topic, Image)
-        corners = process_frame(msg)
-        self.corner1 = corners[0]
-        self.corner2 = corners[1]
-
+        self.corners= process_frame(msg)
+        
         # CvBridge per convertire i messaggi ROS in immagini OpenCV
         self.bridge = CvBridge()
 
@@ -128,20 +134,20 @@ class DiskTracker:
                 cv2.circle(frame, (cx, cy), 5, (0,255,0), -1)
                 cv2.drawContours(frame, [c], -1, (0,255,0), 2)
 
-                wx, wy, p0, x_axis, y_axis, y_len = pixel_to_world((cx, cy), self.corner1, self.corner2)
+                wx, wy = pixel_to_world((cx, cy), self.corners)
                 rospy.loginfo("Disco in tavolo: X=%.2f m, Y=%.2f m", wx, wy)
 
                 # Disegno assi sulla frame
-                frame = draw_axes(frame, p0, x_axis, y_axis, y_len)
+                #frame = draw_axes(frame, p0, x_axis, y_axis, y_len)
 
                 self.montecarlo.run(wx, wy)
 
                 
 
         # Mostra immagine e mask
-        cv2.imshow("Frame", frame)
-        cv2.imshow("Mask", mask)
-        cv2.waitKey(1)
+        #cv2.imshow("Frame", frame)
+        #cv2.imshow("Mask", mask)
+        #cv2.waitKey(1)
 
 if __name__ == "__main__":
     try:

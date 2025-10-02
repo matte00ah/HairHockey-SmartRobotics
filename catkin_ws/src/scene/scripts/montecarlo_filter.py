@@ -30,6 +30,8 @@ class MontecarloFilter:
         self.prev_measurement = None
 
         self.initialize(X_MAX, Y_MAX)
+        self.robot_reach = config["robot-reach_m"]
+        self.robot_base = [1.2 + 0.97, 0 + 0.425]  # ("0 + 0.425, 1.2 + 0.97")
 
     def initialize(self, X_MAX, Y_MAX):
         self.X_MAX, self.Y_MAX = X_MAX, Y_MAX
@@ -59,10 +61,20 @@ class MontecarloFilter:
                 self.particles[i, 3] *= -1
                 self.particles[i, 1] = np.clip(self.particles[i, 1], 0, self.Y_MAX)
     
+    def is_reachable(self, pos):
+        """
+        Controlla se una posizione è raggiungibile dal robot (circonferenza centrata sulla base).
+    
+        """
+        # Calcola distanza dalla base del robot
+        dist = np.linalg.norm(pos - self.robot_base)
+        return dist <= self.robot_reach  # self.robot_reach = raggio massimo
+
+    
     def predict_future(self, steps=10):
         future_particles = self.particles.copy()
         predictions = []
-        for _ in range(steps):
+        for step in range(1, steps + 1):
             future_particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
             future_particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
             future_particles[:, 2] += (future_particles[:, 4] - self.f * future_particles[:, 2]) * self.dt
@@ -82,6 +94,10 @@ class MontecarloFilter:
             est_vel = np.mean(future_particles[:, 2:4], axis=0)
             est_acc = np.mean(future_particles[:, 4:6], axis=0)
             predictions.append((est_pos, est_vel, est_acc))
+
+            if self.is_reachable(est_pos):  # assumendo che self.true_reach abbia un metodo 'contains'
+                print(f"Prima posizione raggiungibile al passo {step}")
+                break
 
         return predictions
 
@@ -121,7 +137,7 @@ class MontecarloFilter:
         pos = (cx, cy)
         print(cx, cy)
 
-        plt.figure(figsize=(8, 6))
+        #plt.figure(figsize=(8, 6))
 
         
         if pos is None:
@@ -148,7 +164,7 @@ class MontecarloFilter:
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
         x, y = future_predictions[-1][0]
-        move_to_point(x,y,z=0.6)
+        move_to_point(x,y,z=1.0)
         #print(measurement)
         
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
