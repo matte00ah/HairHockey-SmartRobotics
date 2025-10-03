@@ -2,7 +2,7 @@ import numpy as np
 import json
 import os
 import matplotlib.pyplot as plt
-from move_franka import move_to_point
+from move_franka import PandaArm
 
 script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
 config_path = os.path.join(script_dir, "config.json")
@@ -28,6 +28,9 @@ class MontecarloFilter:
         self.est_positions = []
         self.real_positions = []
         self.prev_measurement = None
+        self.prev_robot_target = None   # <- nuova variabile
+
+        self.robot = PandaArm()
 
         self.initialize(X_MAX, Y_MAX)
         self.robot_reach = config["robot-reach_m"]
@@ -164,26 +167,15 @@ class MontecarloFilter:
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
         x, y = future_predictions[-1][0]
-        move_to_point(x,y,z=1.0)
-        #print(measurement)
+        new_target = np.array([x, y])
+
+         # Chiama il robot solo se la posizione è diversa dalla precedente
+        if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=1e-2):
+            self.robot.move_to_point(x, y, z=1.0)
+            self.prev_robot_target = new_target
         
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
         
-        #plt.cla()
-        #plt.scatter(self.particles[:, 0], self.particles[:, 1], color='gray', s=2, label='Particelle')
-        #plt.scatter(measurement[0], measurement[1], color='blue', s=40, label='Misura')
-        #plt.scatter(est_pos[0], est_pos[1], color='green', s=50, label='Stima filtro')
-        #future_positions = np.array([fp[0] for fp in future_predictions])
-        #plt.scatter(future_positions[:, 0], future_positions[:, 1], color='red', s=20, marker='x', label='Predizioni future')
-        #plt.xlim(0, X_MAX)
-        #plt.ylim(0, Y_MAX)
-        #plt.title(f" Stima vel: ({est_vel[0]:.2f}, {est_vel[1]:.2f}) – "
-        #            f"Stima acc: ({est_acc[0]:.2f}, {est_acc[1]:.2f})")
-        #plt.legend(loc='upper right')
-        #plt.pause(0.1)
-
-        #plt.show()
-
         # Calcola e stampa la precisione finale
         rmse = self.compute_rmse(self.est_positions, self.real_positions)
         print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")
