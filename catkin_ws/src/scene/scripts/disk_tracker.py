@@ -87,7 +87,7 @@ class DiskTracker:
             except Empty:
                 continue  # nessun frame disponibile
 
-            print(time.perf_counter())
+            #print(time.perf_counter())
             
             frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
             #print frame
@@ -104,15 +104,16 @@ class DiskTracker:
 
             # Connected components per centri
             num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask)
+            
             if num_labels > 1:
                 largest_idx = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
                 cx, cy = centroids[largest_idx]
                 wx, wy = pixel_to_world_fast((cx, cy), self.H)
                 rospy.loginfo("Disco: pixel=(%.0f,%.0f), world=(%.2f, %.2f m)", cx, cy, wx, wy)
-
-                # Montecarlo elaborazione
                 self.montecarlo.run(wx, wy)
-                print(time.perf_counter())
+            else:
+                # disco non trovato → None
+                self.montecarlo.run(None, None)
 
 
 if __name__ == "__main__":

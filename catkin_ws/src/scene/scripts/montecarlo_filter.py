@@ -136,29 +136,31 @@ class MontecarloFilter:
 
     def run(self, cx, cy, future_steps=10):
 
-        #frame_h, frame_w = frame.shape[:2]
-        pos = (cx, cy)
-        print(cx, cy)
-
-        #plt.figure(figsize=(8, 6))
-
-        
-        if pos is None:
-            prev_measurement = None
-        
-        measurement = np.array([pos[0], pos[1]])
-
-        # Calcolo velocità reale dal video
-        if self.prev_measurement is not None:
-            velocity = (measurement - self.prev_measurement) / self.dt
+        if cx is None or cy is None:
+            measurement = None
         else:
-            velocity = np.array([0.0, 0.0])
+            measurement = np.array([cx, cy])
 
-        self.prev_measurement = measurement
-
+        # Predizione step
         self.predict()
-        self.update(measurement, velocity)
-        self.resample()
+
+        if measurement is not None:
+            # Se abbiamo una misura valida, calcoliamo velocità
+            if self.prev_measurement is not None:
+                velocity = (measurement - self.prev_measurement) / self.dt
+            else:
+                velocity = np.array([0.0, 0.0])
+
+            # Aggiorniamo il filtro con misura e velocità
+            self.update(measurement, velocity)
+            self.resample()
+
+        # Salviamo l'ultima misura reale
+            self.prev_measurement = measurement
+        else:
+            # Nessuna misura → solo predizione
+            velocity = np.array([0.0, 0.0])
+            # prev_measurement non viene aggiornato
     
         est_pos, est_vel, est_acc = self.estimate()
         future_predictions = self.predict_future(steps=future_steps)
@@ -177,5 +179,5 @@ class MontecarloFilter:
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
         
         # Calcola e stampa la precisione finale
-        rmse = self.compute_rmse(self.est_positions, self.real_positions)
-        print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")
+        #rmse = self.compute_rmse(self.est_positions, self.real_positions)
+        #print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")
