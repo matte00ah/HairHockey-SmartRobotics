@@ -17,7 +17,9 @@ class PandaArm:
 
     def move_to_point(self, x, y, z=1.0):
         target_pose = Pose()
-        # Trasformazione da tavolo a robot
+        # Trasformazione da tavolo a robot(l'origine delle coordinate che escono da montecarlo è 
+        # l'angolo del tavolo opposto al robot in alto, dobbiamo quindi riportarle al centro del 
+        # tavolo per renderle compresibili dal robot)
         target_pose.position.x = y - 0.425
         target_pose.position.y = x - 0.97
         target_pose.position.z = z
@@ -36,7 +38,6 @@ class PandaArm:
         self.arm.clear_pose_targets()
         #print(time.perf_counter())
         return success
-
 
 
 if __name__ == "__main__":

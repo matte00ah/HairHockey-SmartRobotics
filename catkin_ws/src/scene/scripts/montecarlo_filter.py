@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import os
+import time
 import matplotlib.pyplot as plt
 from move_franka import PandaArm
 
@@ -15,7 +16,7 @@ X_MAX = config["table_width_m"]
 Y_MAX = config["table_height_m"]
 
 class MontecarloFilter:
-    def __init__(self, N=10000, dt=0.1, f=0.05, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
+    def __init__(self,robot, N=2000, dt=0.1, f=0.05, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
         self.N = N
         self.dt = dt
         self.f = f
@@ -30,7 +31,7 @@ class MontecarloFilter:
         self.prev_measurement = None
         self.prev_robot_target = None   # <- nuova variabile
 
-        self.robot = PandaArm()
+        self.robot = robot
 
         self.initialize(X_MAX, Y_MAX)
         self.robot_reach = config["robot-reach_m"]
@@ -48,21 +49,17 @@ class MontecarloFilter:
         self.weights = np.ones(self.N) / self.N
 
     def predict(self):
-        self.particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
-        self.particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
-        self.particles[:, 2] += (self.particles[:, 4] - self.f * self.particles[:, 2]) * self.dt
-        self.particles[:, 3] += (self.particles[:, 5] - self.f * self.particles[:, 3]) * self.dt
-        self.particles[:, 0] += self.particles[:, 2] * self.dt
-        self.particles[:, 1] += self.particles[:, 3] * self.dt
+        process_noise = np.random.normal(0, self.process_noise_std, size=(self.N, 2))
+        self.particles[:, 4:6] += process_noise
+        self.particles[:, 2:4] += (self.particles[:, 4:6] - self.f * self.particles[:, 2:4]) * self.dt
+        self.particles[:, 0:2] += self.particles[:, 2:4] * self.dt
         
         # Gestione rimbalzi ai bordi
-        for i in range(self.N):
-            if self.particles[i, 0] <= 0 or self.particles[i, 0] >= self.X_MAX:
-                self.particles[i, 2] *= -1
-                self.particles[i, 0] = np.clip(self.particles[i, 0], 0, self.X_MAX)
-            if self.particles[i, 1] <= 0 or self.particles[i, 1] >= self.Y_MAX:
-                self.particles[i, 3] *= -1
-                self.particles[i, 1] = np.clip(self.particles[i, 1], 0, self.Y_MAX)
+        for dim, max_val in zip([0,1], [self.X_MAX, self.Y_MAX]):
+            mask_low = self.particles[:, dim] <= 0
+            mask_high = self.particles[:, dim] >= max_val
+            self.particles[mask_low | mask_high, dim+2] *= -1  # inverte velocità
+            self.particles[:, dim] = np.clip(self.particles[:, dim], 0, max_val)
     
     def is_reachable(self, pos):
         """
@@ -76,45 +73,32 @@ class MontecarloFilter:
     
     def predict_future(self, steps=10):
         future_particles = self.particles.copy()
-        predictions = []
-        for step in range(1, steps + 1):
-            future_particles[:, 4] += np.random.normal(0, self.process_noise_std, size=self.N)
-            future_particles[:, 5] += np.random.normal(0, self.process_noise_std, size=self.N)
-            future_particles[:, 2] += (future_particles[:, 4] - self.f * future_particles[:, 2]) * self.dt
-            future_particles[:, 3] += (future_particles[:, 5] - self.f * future_particles[:, 3]) * self.dt
-            future_particles[:, 0] += future_particles[:, 2] * self.dt
-            future_particles[:, 1] += future_particles[:, 3] * self.dt
+        for step in range(steps):
+            process_noise = np.random.normal(0, self.process_noise_std, size=(self.N,2))
+            future_particles[:,4:6] += process_noise
+            future_particles[:,2:4] += (future_particles[:,4:6] - self.f * future_particles[:,2:4]) * self.dt
+            future_particles[:,0:2] += future_particles[:,2:4] * self.dt
 
-            for i in range(self.N):
-                if future_particles[i, 0] <= 0 or future_particles[i, 0] >= self.X_MAX:
-                    future_particles[i, 2] *= -1
-                    future_particles[i, 0] = np.clip(future_particles[i, 0], 0, self.X_MAX)
-                if future_particles[i, 1] <= 0 or future_particles[i, 1] >= self.Y_MAX:
-                    future_particles[i, 3] *= -1
-                    future_particles[i, 1] = np.clip(future_particles[i, 1], 0, self.Y_MAX)
+            for dim, max_val in zip([0,1], [self.X_MAX, self.Y_MAX]):
+                mask_low = future_particles[:,dim] <= 0
+                mask_high = future_particles[:,dim] >= max_val
+                future_particles[mask_low | mask_high, dim+2] *= -1
+                future_particles[:, dim] = np.clip(future_particles[:, dim], 0, max_val)
 
             est_pos = np.mean(future_particles[:, 0:2], axis=0)
-            est_vel = np.mean(future_particles[:, 2:4], axis=0)
-            est_acc = np.mean(future_particles[:, 4:6], axis=0)
-            predictions.append((est_pos, est_vel, est_acc))
 
             if self.is_reachable(est_pos):  # assumendo che self.true_reach abbia un metodo 'contains'
-                print(f"Prima posizione raggiungibile al passo {step}")
-                break
+                print(f"Prima posizione raggiungibile al passo {step+1}")
+                return est_pos
 
-        return predictions
+        return None
 
     def update(self, measurement, velocity):
-        w = self.weights
-
-        dists = np.linalg.norm(self.particles[:, 0:2] - measurement, axis=1)
-        v_dists = np.linalg.norm(self.particles[:, 2:4] - velocity, axis=1)
-
-        w *= np.exp(-0.5 * (dists / self.measurement_noise_std) ** 2)
-        w *= np.exp(-0.5 * (v_dists / self.velocity_noise_std) ** 2)
+        dists = np.linalg.norm(self.particles[:,0:2] - measurement, axis=1)
+        v_dists = np.linalg.norm(self.particles[:,2:4] - velocity, axis=1)
+        w = self.weights * np.exp(-0.5*(dists/self.measurement_noise_std)**2) * np.exp(-0.5*(v_dists/self.velocity_noise_std)**2)
         w += 1.e-300
-        w /= np.sum(w)
-        self.weights = w
+        self.weights = w / np.sum(w)        
 
     def resample(self):
         indices = np.random.choice(self.N, self.N, p=self.weights)
@@ -136,48 +120,46 @@ class MontecarloFilter:
 
     def run(self, cx, cy, future_steps=10):
 
-        if cx is None or cy is None:
-            measurement = None
-        else:
-            measurement = np.array([cx, cy])
+        measurement = None if cx is None or cy is None else np.array([cx, cy])
 
         # Predizione step
         self.predict()
 
         if measurement is not None:
-            # Se abbiamo una misura valida, calcoliamo velocità
-            if self.prev_measurement is not None:
-                velocity = (measurement - self.prev_measurement) / self.dt
-            else:
-                velocity = np.array([0.0, 0.0])
+            velocity = (measurement - self.prev_measurement)/self.dt if self.prev_measurement is not None else np.zeros(2)
 
             # Aggiorniamo il filtro con misura e velocità
             self.update(measurement, velocity)
             self.resample()
 
-        # Salviamo l'ultima misura reale
+            # Salviamo l'ultima misura reale
             self.prev_measurement = measurement
         else:
             # Nessuna misura → solo predizione
-            velocity = np.array([0.0, 0.0])
+            velocity = np.zeros(2)
             # prev_measurement non viene aggiornato
     
         est_pos, est_vel, est_acc = self.estimate()
-        future_predictions = self.predict_future(steps=future_steps)
-        
 
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
-        x, y = future_predictions[-1][0]
-        new_target = np.array([x, y])
 
-         # Chiama il robot solo se la posizione è diversa dalla precedente
-        if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=1e-2):
-            self.robot.move_to_point(x, y, z=1.0)
-            self.prev_robot_target = new_target
-        
+        new_target = self.predict_future(steps=future_steps)
+        if new_target is not None:
+            if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=1e-2):
+                print("Chiamata panda_move", time.perf_counter())
+                self.robot.move_to_point(new_target[0], new_target[1], z=1.0)
+                self.prev_robot_target = new_target
+        else:
+            print("Posizione non raggiungibile dal robot, nessun movimento effettuato.")
+                       
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
         
         # Calcola e stampa la precisione finale
-        #rmse = self.compute_rmse(self.est_positions, self.real_positions)
-        #print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")
+        # Filtra solo le posizioni reali disponibili
+        valid_real_positions = [p for p in self.real_positions if p is not None]
+        valid_est_positions = self.est_positions[-len(valid_real_positions):]  # allinea lunghezze
+
+        if valid_real_positions:
+            rmse = self.compute_rmse(valid_est_positions, valid_real_positions)
+            print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")

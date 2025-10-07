@@ -12,6 +12,7 @@ import time
 import matplotlib.pyplot as plt
 from montecarlo_filter import MontecarloFilter
 from origin_detector import process_frame
+from move_franka import PandaArm
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(script_dir, "config.json")
@@ -53,11 +54,16 @@ class DiskTracker:
         # Calcolo corner e omografia una sola volta
         msg = rospy.wait_for_message(camera_topic, Image)
         self.corners = process_frame(msg)
+
+        #robot in posizione vicina al tavolo
+        robot = PandaArm()
+        robot.move_to_point(0.8 + 0.97, 0 + 0.425, 1.0)  #guarda move_franka.py
+
         self.H = compute_homography(self.corners)
 
         self.bridge = CvBridge()
         self.kernel = np.ones((3, 3), np.uint8)
-        self.montecarlo = MontecarloFilter()
+        self.montecarlo = MontecarloFilter(robot=robot)
 
         # Coda con un solo slot per frame più recente
         self.frame_queue = Queue(maxsize=1)
@@ -74,6 +80,7 @@ class DiskTracker:
         rospy.spin()
 
     def camera_callback(self, msg):
+        print("Chiamata camera_callback", time.perf_counter())
         if not self.frame_queue.empty():
             _ = self.frame_queue.get_nowait()  # rimuove frame vecchio
         self.frame_queue.put_nowait(msg)
@@ -110,6 +117,7 @@ class DiskTracker:
                 cx, cy = centroids[largest_idx]
                 wx, wy = pixel_to_world_fast((cx, cy), self.H)
                 rospy.loginfo("Disco: pixel=(%.0f,%.0f), world=(%.2f, %.2f m)", cx, cy, wx, wy)
+                print("Chiamata montecarlo", time.perf_counter())
                 self.montecarlo.run(wx, wy)
             else:
                 # disco non trovato → None
