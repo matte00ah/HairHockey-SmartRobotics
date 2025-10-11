@@ -6,23 +6,20 @@ import os
 import math
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
-import json
+import yaml
 import matplotlib.pyplot as plt
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-config_path = os.path.join(script_dir, "config.json")
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
-camera_topic = config["camera_topic"]
-l_white = config["lower_white"]
-u_white = config["upper_white"]
+CAMERA_TOPIC = config["camera_topic"]
 
-# === Dimensioni reali tavolo (in cm, da modificare!) ===
-TABLE_WIDTH_CM = 184  
-TABLE_HEIGHT_CM = 75  
+LOWER_WHITE = np.array(config["lower_white"], dtype=np.uint8)
+UPPER_WHITE = np.array(config["upper_white"], dtype=np.uint8)
 
 # Funzione per trovare intersezione di due linee (Ax+By=C forma)
 def line_intersection(l1, l2):
@@ -47,11 +44,7 @@ def line_intersection(l1, l2):
 def apply_white_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    # Range del bianco dal file di config
-    lower_white = np.array(l_white)
-    upper_white = np.array(u_white)
-
-    mask = cv2.inRange(hsv, lower_white, upper_white)
+    mask = cv2.inRange(hsv, LOWER_WHITE, UPPER_WHITE)
     white_area = cv2.bitwise_and(frame, frame, mask=mask)
     return white_area
 
@@ -184,7 +177,7 @@ if __name__ == "__main__":
     rospy.init_node("origin", anonymous=True)
 
     # Prende UN SOLO frame dal topic
-    msg = rospy.wait_for_message(camera_topic, Image)
+    msg = rospy.wait_for_message(CAMERA_TOPIC, Image)
     corners, center_px, center_cm = process_frame(msg)
 
     # Debug finale

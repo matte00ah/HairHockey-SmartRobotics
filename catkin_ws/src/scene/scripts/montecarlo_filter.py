@@ -1,21 +1,23 @@
 import numpy as np
-import json
+import yaml
 import os
 import time
 import matplotlib.pyplot as plt
-#from move_franka import PandaArm
 
-script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
-config_path = os.path.join(script_dir, "config.json")
+script_dir = os.path.dirname(os.path.realpath(__file__))
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
-# TODO controllare se ho invertito w con h
 X_MAX = config["table_width_m"]
 Y_MAX = config["table_height_m"]
 
-puck_diameter = config["puck_diameter_m"]
+PUCK_DIAMETER = config["puck_diameter_m"]
+ROBOT_REACH = config["robot_reach_m"]
+
+GAME_POSE = config["game_pose"]
+RETURN_VELOCITY = config["return_vel"]
 
 class MontecarloFilter:
     def __init__(self,robot, N=4000, dt=0.1, f=0.01, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
@@ -31,16 +33,14 @@ class MontecarloFilter:
         self.est_positions = []
         self.real_positions = []
         self.prev_measurement = None
-        self.prev_robot_target = None   # <- nuova variabile
+        self.prev_robot_target = None
 
         self.robot = robot
 
-        self.initialize(X_MAX, Y_MAX)
-        self.robot_reach = config["robot-reach_m"]
+        self.initialize()
         self.robot_base = [1.2 + 0.97, 0 + 0.425]  # ("0 + 0.425, 1.2 + 0.97")
 
-    def initialize(self, X_MAX, Y_MAX):
-        self.X_MAX, self.Y_MAX = X_MAX, Y_MAX
+    def initialize(self):
         self.particles = np.zeros((self.N, 6))
         self.particles[:, 0] = np.random.uniform(0, X_MAX, self.N) # x
         self.particles[:, 1] = np.random.uniform(0, Y_MAX, self.N) # y
@@ -57,7 +57,7 @@ class MontecarloFilter:
         self.particles[:, 0:2] += self.particles[:, 2:4] * self.dt
         
         # Gestione rimbalzi ai bordi
-        for dim, max_val in zip([0,1], [self.X_MAX, self.Y_MAX]):
+        for dim, max_val in zip([0,1], [X_MAX, Y_MAX]):
             mask_low = self.particles[:, dim] <= 0
             mask_high = self.particles[:, dim] >= max_val
             self.particles[mask_low | mask_high, dim+2] *= -1  # inverte velocità
@@ -70,7 +70,7 @@ class MontecarloFilter:
         """
         # Calcola distanza dalla base del robot
         dist = np.linalg.norm(pos - self.robot_base)
-        return dist <= self.robot_reach  # self.robot_reach = raggio massimo
+        return dist <= ROBOT_REACH
 
     
     def predict_future(self, steps=10):
@@ -81,7 +81,7 @@ class MontecarloFilter:
             future_particles[:,2:4] += (future_particles[:,4:6] - self.f * future_particles[:,2:4]) * self.dt
             future_particles[:,0:2] += future_particles[:,2:4] * self.dt
 
-            for dim, max_val in zip([0,1], [self.X_MAX, self.Y_MAX]):
+            for dim, max_val in zip([0,1], [X_MAX, Y_MAX]):
                 mask_low = future_particles[:,dim] <= 0
                 mask_high = future_particles[:,dim] >= max_val
                 future_particles[mask_low | mask_high, dim+2] *= -1
@@ -134,12 +134,16 @@ class MontecarloFilter:
             self.update(measurement, velocity)
             self.resample()
 
-            # Salviamo l'ultima misura reale
             self.prev_measurement = measurement
         else:
             # Nessuna misura → solo predizione
             velocity = np.zeros(2)
             # prev_measurement non viene aggiornato
+
+        # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa)
+        if velocity[0] < RETURN_VELOCITY:
+            print("Torna a BASE")
+            self.robot.move_to_point(GAME_POSE[0], GAME_POSE[1])
     
         est_pos, est_vel, est_acc = self.estimate()
 
@@ -157,7 +161,7 @@ class MontecarloFilter:
                 # Strategia di attacco avanzata: colpo diretto verso la porta
                 if np.linalg.norm(velocity) < 0.05:
                     # Definisci la porta come il centro del bordo opposto
-                    goal = np.array([0, self.Y_MAX/2])
+                    goal = np.array([0, Y_MAX/2])
                     # Calcola la direzione dal disco verso la porta
                     direction = goal - self.prev_measurement
                     direction = direction / np.linalg.norm(direction)
@@ -169,11 +173,11 @@ class MontecarloFilter:
                     if self.is_reachable(start_pos):
                         print("Attacco: colpisco il disco verso la porta con movimento unico!")
                         # Muovi il robot dietro al disco
-                        self.robot.move_to_point(start_pos[0], start_pos[1])
+                        self.robot.move_to_point(start_pos[0], start_pos[1], wait_robot=True)
                         print("Posizione di attacco raggiunta dal robot.")
                         print(self.prev_measurement)
                         # Poi muovi il robot verso il disco (in direzione della porta)
-                        self.robot.move_to_point(self.prev_measurement[0], self.prev_measurement[1])
+                        self.robot.move_to_point(self.prev_measurement[0], self.prev_measurement[1], wait_robot=True)
                         print("Colpo eseguito.")
                     else:
                         #siamo nel caso in cui il disco è vicino al bordo lungo del tavolo
@@ -184,18 +188,18 @@ class MontecarloFilter:
                         start_pos = est_pos - direction_reflected * hit_distance
                         if self.is_reachable(start_pos):
                             print("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
-                            self.robot.move_to_point(start_pos[0], start_pos[1])
-                            self.robot.move_to_point(est_pos[0], est_pos[1])
+                            self.robot.move_to_point(start_pos[0], start_pos[1], wait_robot=True)
+                            self.robot.move_to_point(est_pos[0], est_pos[1], wait_robot=True)
                         else:
                             #siamo nel caso in cui il disco è vicino al bordo corto del tavolo
-                            if (est_pos[1] < self.Y_MAX / 2 ):
-                                self.robot.move_to_point(X_MAX - puck_diameter - 0.02, est_pos[1] + 0.15)
+                            if (est_pos[1] < Y_MAX / 2 ):
+                                self.robot.move_to_point(X_MAX - PUCK_DIAMETER - 0.02, est_pos[1] + 0.15)
                             else:
-                                self.robot.move_to_point(X_MAX - puck_diameter - 0.02, est_pos[1] - 0.15)
+                                self.robot.move_to_point(X_MAX - PUCK_DIAMETER - 0.02, est_pos[1] - 0.15)
         
         elif(measurement is None):
             print("Occlusione del puck")
-            if (est_pos[1] < self.Y_MAX / 2 ):
+            if (est_pos[1] < Y_MAX / 2 ):
                 self.robot.move_to_point(est_pos[0], est_pos[1] + 0.15)
             else:
                 self.robot.move_to_point(est_pos[0], est_pos[1] - 0.15)

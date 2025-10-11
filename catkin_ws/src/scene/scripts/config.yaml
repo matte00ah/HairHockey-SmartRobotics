@@ -1,0 +1,31 @@
+table_width_m: 1.84
+table_height_m: 0.75
+robot_reach_m: 0.85  # raggio massimo
+
+puck_diameter_m: 0.07
+
+find_corners: false  # true, if you want find the game table corners. false, if you use the config params corner_[1:5]
+
+corner_1: [25, 130]
+corner_2: [613, 130]
+corner_3: [613, 348]
+corner_4: [25, 348]
+
+camera_topic: "/image_raw"
+
+lower_white: [0, 0, 82]
+upper_white: [180, 50, 255]
+canny_threshold_min: 50
+canny_threshold_max: 150
+hough_threshold: 120
+hough_min_length: 120
+hough_max_gap: 30
+
+lower_red1: [0, 100, 100]
+upper_red1: [10, 255, 255]
+lower_red2: [160, 100, 100]
+upper_red2: [179, 255, 255]
+
+game_pose: [1.77, 0.425, 1.0]  # 0.8 + 0.97, 0 + 0.425, 1.0
+
+return_vel: -0.3  # velocity con cui il disco torna verso avversario. Se bassa allora il robot cerca di colpirla per renderla forte

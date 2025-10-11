@@ -4,22 +4,21 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-import json
+import yaml
 import os
 from queue import Queue, Empty
 import threading
 import time
 import matplotlib.pyplot as plt
-#from montecarlo_new import MontecarloFilter
 from montecarlo_filter import MontecarloFilter
 from origin_detector import process_frame
 from move_franka import PandaArm
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-config_path = os.path.join(script_dir, "config.json")
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
 LOWER_RED1 = np.array(config["lower_red1"], dtype=np.uint8)
 UPPER_RED1 = np.array(config["upper_red1"], dtype=np.uint8)
@@ -28,7 +27,15 @@ UPPER_RED2 = np.array(config["upper_red2"], dtype=np.uint8)
 
 Y_MAX = config["table_height_m"]
 X_MAX = config["table_width_m"]
-camera_topic = config["camera_topic"]
+
+CAMERA_TOPIC = config["camera_topic"]
+FIND_CORNERS = config["find_corners"]
+GAME_POSE = config["game_pose"]
+
+CORNER_1 = config["corner_1"]
+CORNER_2 = config["corner_2"]
+CORNER_3 = config["corner_3"]
+CORNER_4 = config["corner_4"]
 
 def compute_homography(ordered_corners):
     real_corners = np.array([
@@ -52,13 +59,15 @@ class DiskTracker:
     def __init__(self):
         rospy.init_node("disk_tracker_threads")
 
-        # Calcolo corner e omografia una sola volta
-        msg = rospy.wait_for_message(camera_topic, Image)
-        self.corners = process_frame(msg)
+        if FIND_CORNERS:
+            # Extract game table corners
+            msg = rospy.wait_for_message(CAMERA_TOPIC, Image)
+            self.corners = process_frame(msg)
+        else:
+            self.corners = [CORNER_1, CORNER_2, CORNER_3, CORNER_4]
 
-        #robot in posizione vicina al tavolo
         robot = PandaArm()
-        robot.move_to_point(0.8 + 0.97, 0 + 0.425, 1.0)  #guarda move_franka.py
+        robot.move_to_point(GAME_POSE[0], GAME_POSE[1], GAME_POSE[2])
 
         self.H = compute_homography(self.corners)
 
@@ -70,7 +79,7 @@ class DiskTracker:
         self.frame_queue = Queue(maxsize=1)
 
         # Subscriber ROS veloce
-        rospy.Subscriber(camera_topic, Image, self.camera_callback, queue_size=1)
+        rospy.Subscriber(CAMERA_TOPIC, Image, self.camera_callback, queue_size=1)
 
         # Thread di elaborazione
         self.processing_thread = threading.Thread(target=self.processing_loop)
