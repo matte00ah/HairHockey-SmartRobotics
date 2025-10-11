@@ -10,6 +10,7 @@ from queue import Queue, Empty
 import threading
 import time
 import matplotlib.pyplot as plt
+#from montecarlo_new import MontecarloFilter
 from montecarlo_filter import MontecarloFilter
 from origin_detector import process_frame
 from move_franka import PandaArm
@@ -80,7 +81,7 @@ class DiskTracker:
         rospy.spin()
 
     def camera_callback(self, msg):
-        print("Chiamata camera_callback", time.perf_counter())
+        #print("Chiamata camera_callback", time.perf_counter())
         if not self.frame_queue.empty():
             _ = self.frame_queue.get_nowait()  # rimuove frame vecchio
         self.frame_queue.put_nowait(msg)
@@ -94,7 +95,7 @@ class DiskTracker:
             except Empty:
                 continue  # nessun frame disponibile
 
-            #print(time.perf_counter())
+            print("Chiamata processing_loop",time.perf_counter())
             
             frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
             #print frame

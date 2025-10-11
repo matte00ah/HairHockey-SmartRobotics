@@ -3,7 +3,7 @@ import json
 import os
 import time
 import matplotlib.pyplot as plt
-from move_franka import PandaArm
+#from move_franka import PandaArm
 
 script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
 config_path = os.path.join(script_dir, "config.json")
@@ -15,8 +15,10 @@ with open(config_path, "r") as f:
 X_MAX = config["table_width_m"]
 Y_MAX = config["table_height_m"]
 
+puck_diameter = config["puck_diameter_m"]
+
 class MontecarloFilter:
-    def __init__(self,robot, N=2000, dt=0.1, f=0.05, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
+    def __init__(self,robot, N=4000, dt=0.1, f=0.01, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
         self.N = N
         self.dt = dt
         self.f = f
@@ -118,9 +120,9 @@ class MontecarloFilter:
         rmse = np.sqrt(mse)
         return rmse  # array [rmse_x, rmse_y]
 
-    def run(self, cx, cy, future_steps=10):
+    def run(self, wx, wy, future_steps=10):
 
-        measurement = None if cx is None or cy is None else np.array([cx, cy])
+        measurement = None if wx is None or wy is None else np.array([wx, wy])
 
         # Predizione step
         self.predict()
@@ -146,20 +148,69 @@ class MontecarloFilter:
 
         new_target = self.predict_future(steps=future_steps)
         if new_target is not None:
-            if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=1e-2):
+            if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2):
                 print("Chiamata panda_move", time.perf_counter())
-                self.robot.move_to_point(new_target[0], new_target[1], z=1.0)
+                self.robot.move_to_point(new_target[0], new_target[1])
                 self.prev_robot_target = new_target
+            else:
+                print("Nuova posizione simile alla precedente, nessun movimento effettuato.")
+                # Strategia di attacco avanzata: colpo diretto verso la porta
+                if np.linalg.norm(velocity) < 0.05:
+                    # Definisci la porta come il centro del bordo opposto
+                    goal = np.array([0, self.Y_MAX/2])
+                    # Calcola la direzione dal disco verso la porta
+                    direction = goal - self.prev_measurement
+                    direction = direction / np.linalg.norm(direction)
+                    # Posizione di partenza del robot: dietro al disco rispetto alla porta
+                    hit_distance = 0.30  # distanza di sicurezza dietro il disco (modifica se necessario)
+                    start_pos = self.prev_measurement - direction * hit_distance
+                    print(start_pos)
+                    # Verifica che la posizione di partenza sia raggiungibile
+                    if self.is_reachable(start_pos):
+                        print("Attacco: colpisco il disco verso la porta con movimento unico!")
+                        # Muovi il robot dietro al disco
+                        self.robot.move_to_point(start_pos[0], start_pos[1])
+                        print("Posizione di attacco raggiunta dal robot.")
+                        print(self.prev_measurement)
+                        # Poi muovi il robot verso il disco (in direzione della porta)
+                        self.robot.move_to_point(self.prev_measurement[0], self.prev_measurement[1])
+                        print("Colpo eseguito.")
+                    else:
+                        #siamo nel caso in cui il disco è vicino al bordo lungo del tavolo
+                        print("Posizione di attacco non raggiungibile dal robot. Provo colpo con rimbalzo!")
+                        # Calcola quale bordo è più vicino al disco
+                        direction_reflected = np.array([direction[0], -direction[1]])
+                        # Posizione di partenza laterale rispetto al disco
+                        start_pos = est_pos - direction_reflected * hit_distance
+                        if self.is_reachable(start_pos):
+                            print("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
+                            self.robot.move_to_point(start_pos[0], start_pos[1])
+                            self.robot.move_to_point(est_pos[0], est_pos[1])
+                        else:
+                            #siamo nel caso in cui il disco è vicino al bordo corto del tavolo
+                            if (est_pos[1] < self.Y_MAX / 2 ):
+                                self.robot.move_to_point(X_MAX - puck_diameter - 0.02, est_pos[1] + 0.15)
+                            else:
+                                self.robot.move_to_point(X_MAX - puck_diameter - 0.02, est_pos[1] - 0.15)
+        
+        elif(measurement is None):
+            print("Occlusione del puck")
+            if (est_pos[1] < self.Y_MAX / 2 ):
+                self.robot.move_to_point(est_pos[0], est_pos[1] + 0.15)
+            else:
+                self.robot.move_to_point(est_pos[0], est_pos[1] - 0.15)
+        
         else:
-            print("Posizione non raggiungibile dal robot, nessun movimento effettuato.")
+            print("Nessuna posizione futura raggiungibile prevista.")
+
                        
         print(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
         
-        # Calcola e stampa la precisione finale
-        # Filtra solo le posizioni reali disponibili
-        valid_real_positions = [p for p in self.real_positions if p is not None]
-        valid_est_positions = self.est_positions[-len(valid_real_positions):]  # allinea lunghezze
+         #Calcola e stampa la precisione finale
+         #Filtra solo le posizioni reali disponibili
+        #valid_real_positions = [p for p in self.real_positions if p is not None]
+        #valid_est_positions = self.est_positions[-len(valid_real_positions):]  # allinea lunghezze
 
-        if valid_real_positions:
-            rmse = self.compute_rmse(valid_est_positions, valid_real_positions)
-            print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")
+        #if valid_real_positions:
+            #rmse = self.compute_rmse(valid_est_positions, valid_real_positions)
+            #print(f"RMSE X: {rmse[0]:.4f} m, RMSE Y: {rmse[1]:.4f} m")

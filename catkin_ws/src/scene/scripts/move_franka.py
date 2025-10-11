@@ -16,10 +16,13 @@ class PandaArm:
         self.arm.set_max_acceleration_scaling_factor(1.0)
 
     def move_to_point(self, x, y, z=1.0):
+        self.arm.stop()
+        self.arm.clear_pose_targets()
         target_pose = Pose()
         # Trasformazione da tavolo a robot(l'origine delle coordinate che escono da montecarlo è 
         # l'angolo del tavolo opposto al robot in alto, dobbiamo quindi riportarle al centro del 
-        # tavolo per renderle compresibili dal robot)
+        # tavolo per renderle compresibili dal robot. In più la x e la y sono invertite tra
+        # tavolo(visto dalla telecamera) e robot)
         target_pose.position.x = y - 0.425
         target_pose.position.y = x - 0.97
         target_pose.position.z = z
@@ -34,8 +37,8 @@ class PandaArm:
         #print(time.perf_counter())
         self.arm.set_pose_target(target_pose)
         success = self.arm.go(wait=True)
-        self.arm.stop()
-        self.arm.clear_pose_targets()
+        #self.arm.stop()
+        #self.arm.clear_pose_targets()
         #print(time.perf_counter())
         return success
 
@@ -43,4 +46,4 @@ class PandaArm:
 if __name__ == "__main__":
     # Esempio: chiama la funzione con valori di test
     robot = PandaArm()
-    robot.move_to_point(0.2, 0.5, 1.0)  #coordinate robot ("0 1.2 0.7")
+    robot.move_to_point(0.8 + 0.97, 0 + 0.425, 1.0)  #coordinate robot ("0 1.2 0.7")
