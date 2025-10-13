@@ -57,7 +57,8 @@ def pixel_to_world_fast(pt, H):
 
 class DiskTracker:
     def __init__(self):
-        rospy.init_node("disk_tracker_threads")
+        rospy.init_node("disk_tracker_threads", log_level=rospy.INFO)
+        rospy.logdebug("Start debug")
 
         if FIND_CORNERS:
             # Extract game table corners
@@ -67,7 +68,8 @@ class DiskTracker:
             self.corners = [CORNER_1, CORNER_2, CORNER_3, CORNER_4]
 
         robot = PandaArm()
-        robot.move_to_point(GAME_POSE[0], GAME_POSE[1], GAME_POSE[2])
+        #robot.move_to_point(GAME_POSE[0], GAME_POSE[1], GAME_POSE[2])
+        robot.move_to_point(*GAME_POSE)
 
         self.H = compute_homography(self.corners)
 

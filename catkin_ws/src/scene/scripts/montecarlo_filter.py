@@ -17,7 +17,12 @@ PUCK_DIAMETER = config["puck_diameter_m"]
 ROBOT_REACH = config["robot_reach_m"]
 
 GAME_POSE = config["game_pose"]
+
 RETURN_VELOCITY = config["return_vel"]
+HIT_DISTANCE = config["hit_distance"]
+BORDER_DISTANCE = config["border_distance"]
+OCCLUSION_MOVE_Y = config["occlusion_move_y"]
+
 
 class MontecarloFilter:
     def __init__(self,robot, N=4000, dt=0.1, f=0.01, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
@@ -119,6 +124,12 @@ class MontecarloFilter:
         mse = np.mean((est_positions - real_positions) ** 2, axis=0)
         rmse = np.sqrt(mse)
         return rmse  # array [rmse_x, rmse_y]
+    
+    def _compute_velocity(self, measurement):
+        if measurement is None or self.prev_measurement is None:
+            return np.zeros(2)
+        return (measurement - self.prev_measurement) / self.dt
+    
 
     def run(self, wx, wy, future_steps=10):
 
@@ -127,26 +138,19 @@ class MontecarloFilter:
         # Predizione step
         self.predict()
 
+        # Update step
+        velocity = self._compute_velocity(measurement)
         if measurement is not None:
-            velocity = (measurement - self.prev_measurement)/self.dt if self.prev_measurement is not None else np.zeros(2)
-
-            # Aggiorniamo il filtro con misura e velocità
             self.update(measurement, velocity)
             self.resample()
-
             self.prev_measurement = measurement
-        else:
-            # Nessuna misura → solo predizione
-            velocity = np.zeros(2)
-            # prev_measurement non viene aggiornato
 
         # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa)
         if velocity[0] < RETURN_VELOCITY:
             print("Torna a BASE")
-            self.robot.move_to_point(GAME_POSE[0], GAME_POSE[1])
+            self.robot.move_to_point(*GAME_POSE)
     
         est_pos, est_vel, est_acc = self.estimate()
-
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
 
@@ -154,7 +158,7 @@ class MontecarloFilter:
         if new_target is not None:
             if self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2):
                 print("Chiamata panda_move", time.perf_counter())
-                self.robot.move_to_point(new_target[0], new_target[1])
+                self.robot.move_to_point(*new_target)
                 self.prev_robot_target = new_target
             else:
                 print("Nuova posizione simile alla precedente, nessun movimento effettuato.")
@@ -166,43 +170,38 @@ class MontecarloFilter:
                     direction = goal - self.prev_measurement
                     direction = direction / np.linalg.norm(direction)
                     # Posizione di partenza del robot: dietro al disco rispetto alla porta
-                    hit_distance = 0.30  # distanza di sicurezza dietro il disco (modifica se necessario)
-                    start_pos = self.prev_measurement - direction * hit_distance
+                    start_pos = self.prev_measurement - direction * HIT_DISTANCE
                     print(start_pos)
-                    # Verifica che la posizione di partenza sia raggiungibile
+                    
                     if self.is_reachable(start_pos):
                         print("Attacco: colpisco il disco verso la porta con movimento unico!")
                         # Muovi il robot dietro al disco
-                        self.robot.move_to_point(start_pos[0], start_pos[1], wait_robot=True)
+                        self.robot.move_to_point(*start_pos, wait_robot=True)
                         print("Posizione di attacco raggiunta dal robot.")
                         print(self.prev_measurement)
                         # Poi muovi il robot verso il disco (in direzione della porta)
-                        self.robot.move_to_point(self.prev_measurement[0], self.prev_measurement[1], wait_robot=True)
+                        self.robot.move_to_point(*self.prev_measurement, wait_robot=True)
                         print("Colpo eseguito.")
                     else:
                         #siamo nel caso in cui il disco è vicino al bordo lungo del tavolo
                         print("Posizione di attacco non raggiungibile dal robot. Provo colpo con rimbalzo!")
-                        # Calcola quale bordo è più vicino al disco
+                        
                         direction_reflected = np.array([direction[0], -direction[1]])
-                        # Posizione di partenza laterale rispetto al disco
-                        start_pos = est_pos - direction_reflected * hit_distance
+                        start_pos = est_pos - direction_reflected * HIT_DISTANCE
+
                         if self.is_reachable(start_pos):
                             print("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
-                            self.robot.move_to_point(start_pos[0], start_pos[1], wait_robot=True)
-                            self.robot.move_to_point(est_pos[0], est_pos[1], wait_robot=True)
+                            self.robot.move_to_point(*start_pos, wait_robot=True)
+                            self.robot.move_to_point(*self.prev_measurement, wait_robot=True)
                         else:
                             #siamo nel caso in cui il disco è vicino al bordo corto del tavolo
-                            if (est_pos[1] < Y_MAX / 2 ):
-                                self.robot.move_to_point(X_MAX - PUCK_DIAMETER - 0.02, est_pos[1] + 0.15)
-                            else:
-                                self.robot.move_to_point(X_MAX - PUCK_DIAMETER - 0.02, est_pos[1] - 0.15)
+                            y_offset = BORDER_DISTANCE if est_pos[1] < Y_MAX / 2 else -BORDER_DISTANCE
+                            self.robot.move_to_point(X_MAX - PUCK_DIAMETER - 0.02, est_pos[1] + y_offset)
         
-        elif(measurement is None):
-            print("Occlusione del puck")
-            if (est_pos[1] < Y_MAX / 2 ):
-                self.robot.move_to_point(est_pos[0], est_pos[1] + 0.15)
-            else:
-                self.robot.move_to_point(est_pos[0], est_pos[1] - 0.15)
+        elif measurement is None:
+            print("Occlusione del puck")            
+            offset = OCCLUSION_MOVE_Y if est_pos[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
+            self.robot.move_to_point(est_pos[0], est_pos[1] + offset)
         
         else:
             print("Nessuna posizione futura raggiungibile prevista.")

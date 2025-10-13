@@ -29,3 +29,8 @@ upper_red2: [179, 255, 255]
 game_pose: [1.77, 0.425, 1.0]  # 0.8 + 0.97, 0 + 0.425, 1.0
 
 return_vel: -0.3  # velocity con cui il disco torna verso avversario. Se bassa allora il robot cerca di colpirla per renderla forte
+hit_distance: 0.3 # distancee by puck to make the attack
+border_distance: 0.15
+occlusion_move_y: 0.15
+
+
