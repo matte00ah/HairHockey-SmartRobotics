@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<robot name="full_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find end_effector)/urdfs/ef.urdf"/>
+    <xacro:include filename="$(find franka_description)/robots/panda/panda.urdf.xacro"/>
+
+    <joint name="rbt_ef_joint" type="fixed">
+        <parent link="panda_link8"/>
+        <child link="stick_link"/>
+        <origin xyz="0 0 0" rpy="0 3.9268 0"/>
+    </joint>
+
+</robot>

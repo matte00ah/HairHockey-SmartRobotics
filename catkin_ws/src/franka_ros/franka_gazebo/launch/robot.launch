@@ -44,8 +44,9 @@
     <arg name="physics" value="bullet"/>
   </include>
 
+	<!-- xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro -->
   <param name="robot_description"
-         command="xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro
+         command="xacro $(find end_effector)/urdfs/robot_compose.urdf.xacro
                   gazebo:=true
                   hand:=$(arg use_gripper)
                   arm_id:=$(arg arm_id)

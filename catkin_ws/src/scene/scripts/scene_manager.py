@@ -47,10 +47,10 @@ class SceneManager:
 
 
         # Tavolo
-        table_pose = self.create_pose(0.0, 0.0, 0.0)
+        table_pose = self.create_pose(1.2, 0.0, -0.7, qz=0.7071068, qw=0.7071068)
         self.scene.add_mesh("table", table_pose, table_path)
         
-        borders_pose = self.create_pose(0.0, 0.0, 0.0)
+        borders_pose = self.create_pose(1.2, 0.0, -0.7, qz=0.7071068, qw=0.7071068)
         self.scene.add_mesh("table_borders", borders_pose, borders_path)
         
         # puck_pose = self.create_pose(0.0, 0.3, 0.9)

@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: end_effector
+    relative_path: urdfs/robot_compose.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/full_robot.srdf
+  CONFIG:
+    author_name: mat
+    author_email: mat@mat.it
+    generated_timestamp: 1760081734
