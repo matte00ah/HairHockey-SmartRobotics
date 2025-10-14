@@ -4,7 +4,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-import json
+import yaml
 import os
 from queue import Queue, Empty
 import threading
@@ -12,12 +12,13 @@ import time
 import matplotlib.pyplot as plt
 from montecarlo_filter import MontecarloFilter
 from origin_detector import process_frame
+from move_franka import PandaArm
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-config_path = os.path.join(script_dir, "config.json")
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
 LOWER_RED1 = np.array(config["lower_red1"], dtype=np.uint8)
 UPPER_RED1 = np.array(config["upper_red1"], dtype=np.uint8)
@@ -26,7 +27,15 @@ UPPER_RED2 = np.array(config["upper_red2"], dtype=np.uint8)
 
 Y_MAX = config["table_height_m"]
 X_MAX = config["table_width_m"]
-camera_topic = config["camera_topic"]
+
+CAMERA_TOPIC = config["camera_topic"]
+FIND_CORNERS = config["find_corners"]
+GAME_POSE = config["game_pose"]
+
+CORNER_1 = config["corner_1"]
+CORNER_2 = config["corner_2"]
+CORNER_3 = config["corner_3"]
+CORNER_4 = config["corner_4"]
 
 def compute_homography(ordered_corners):
     real_corners = np.array([
@@ -48,32 +57,42 @@ def pixel_to_world_fast(pt, H):
 
 class DiskTracker:
     def __init__(self):
-        rospy.init_node("disk_tracker_threads")
+        rospy.init_node("disk_tracker_threads", log_level=rospy.DEBUG)
 
-        # Calcolo corner e omografia una sola volta
-        msg = rospy.wait_for_message(camera_topic, Image)
-        self.corners = process_frame(msg)
+        if FIND_CORNERS:
+            # Extract game table corners
+            msg = rospy.wait_for_message(CAMERA_TOPIC, Image)
+            self.corners = process_frame(msg)
+        else:
+            self.corners = [CORNER_1, CORNER_2, CORNER_3, CORNER_4]
+
+        robot = PandaArm()
+        #robot.move_to_point(GAME_POSE[0], GAME_POSE[1], GAME_POSE[2])
+        rospy.logdebug("Move robot to game base pose")
+        robot.move_to_point(*GAME_POSE, wait_robot=True)
+
         self.H = compute_homography(self.corners)
 
         self.bridge = CvBridge()
         self.kernel = np.ones((3, 3), np.uint8)
-        self.montecarlo = MontecarloFilter()
+        self.montecarlo = MontecarloFilter(robot=robot)
 
         # Coda con un solo slot per frame più recente
         self.frame_queue = Queue(maxsize=1)
 
         # Subscriber ROS veloce
-        rospy.Subscriber(camera_topic, Image, self.camera_callback, queue_size=1)
+        rospy.Subscriber(CAMERA_TOPIC, Image, self.camera_callback, queue_size=1)
 
         # Thread di elaborazione
         self.processing_thread = threading.Thread(target=self.processing_loop)
         self.processing_thread.daemon = True
         self.processing_thread.start()
 
-        rospy.loginfo("Disk Tracker avviato con thread e coda singolo slot")
+        rospy.loginfo("Disk Tracker avviato")
         rospy.spin()
 
     def camera_callback(self, msg):
+        #print("Chiamata camera_callback", time.perf_counter())
         if not self.frame_queue.empty():
             _ = self.frame_queue.get_nowait()  # rimuove frame vecchio
         self.frame_queue.put_nowait(msg)
@@ -87,7 +106,7 @@ class DiskTracker:
             except Empty:
                 continue  # nessun frame disponibile
 
-            #print(time.perf_counter())
+            rospy.logdebug(f"Chiamata processing_loop {time.perf_counter()}")
             
             frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
             #print frame
@@ -110,6 +129,7 @@ class DiskTracker:
                 cx, cy = centroids[largest_idx]
                 wx, wy = pixel_to_world_fast((cx, cy), self.H)
                 rospy.loginfo("Disco: pixel=(%.0f,%.0f), world=(%.2f, %.2f m)", cx, cy, wx, wy)
+                rospy.logdebug(f"Chiamata montecarlo {time.perf_counter()}")
                 self.montecarlo.run(wx, wy)
             else:
                 # disco non trovato → None
