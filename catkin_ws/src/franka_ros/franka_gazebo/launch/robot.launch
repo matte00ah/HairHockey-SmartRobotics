@@ -45,14 +45,17 @@
   </include>
 
 	<!-- xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro -->
+	<!-- xyz:='$(arg x) $(arg y) $(arg z)' -->
+	<!-- rpy:='$(arg roll) $(arg pitch) $(arg yaw)' -->
   <param name="robot_description"
          command="xacro $(find end_effector)/urdfs/robot_compose.urdf.xacro
                   gazebo:=true
                   hand:=$(arg use_gripper)
                   arm_id:=$(arg arm_id)
-                  xyz:='$(arg x) $(arg y) $(arg z)'
-                  rpy:='$(arg roll) $(arg pitch) $(arg yaw)'
-                  $(arg xacro_args)">
+                  xyz:='0 1.2 0.7'
+                  rpy:='0 0 -1.5708'
+                  $(arg xacro_args)
+                  ">
   </param>
 
   <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
@@ -65,8 +68,8 @@
         pkg="gazebo_ros"
         type="spawn_model"
         args="-param robot_description -urdf -model $(arg arm_id) $(arg unpause)
-              $(arg initial_joint_positions) -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708
-              "/>
+              $(arg initial_joint_positions) 
+              "/> <!-- -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708 -->
 
   <!-- Spawn required ROS controllers -->
   <node pkg="controller_manager"
