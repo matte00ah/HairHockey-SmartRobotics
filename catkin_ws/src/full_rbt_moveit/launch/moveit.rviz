@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /TF1
         - /TF1/Frames1
         - /Marker1
@@ -476,7 +477,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: panda_link0
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -488,7 +489,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.5650815963745117
+      Distance: 4.013291358947754
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -496,17 +497,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.75
       Focal Point:
-        X: 0.021657753735780716
-        Y: -0.32043153047561646
-        Z: 0.22249305248260498
+        X: -0.09950751811265945
+        Y: 0.6765644550323486
+        Z: 0.8457286953926086
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.06500008702278137
-      Target Frame: panda_link0
-      Yaw: 3.5267651081085205
+      Pitch: 0.3199998438358307
+      Target Frame: world
+      Yaw: 5.836761474609375
     Saved: ~
 Window Geometry:
   Displays:

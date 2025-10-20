@@ -29,5 +29,8 @@
     <include file="$(find full_rbt_moveit)/launch/moveit_rviz.launch">
         <arg name="rviz_config" value="$(find full_rbt_moveit)/launch/moveit.rviz"/>
     </include>
+
+    <node pkg="tf" type="static_transform_publisher" name="world_to_panda_tf"
+        args="0 1.2 0.7 -1.571 0 0 world panda_link0 100" />
     
 </launch>

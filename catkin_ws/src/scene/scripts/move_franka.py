@@ -6,6 +6,9 @@ import time
 from geometry_msgs.msg import Pose, PoseStamped
 from visualization_msgs.msg import Marker
 import argparse
+from moveit_msgs.msg import OrientationConstraint, Constraints
+from geometry_msgs.msg import Quaternion
+from tf.transformations import quaternion_from_euler, quaternion_from_matrix
 
 def parse_arguments():
     """Parses command line arguments for the robot's target position."""
@@ -18,7 +21,7 @@ def parse_arguments():
         "-x",
         "--pos_x",
         type=float,
-        default=1.5,
+        default=1.7,
         help="Target X coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -32,7 +35,7 @@ def parse_arguments():
         "-z",
         "--pos_z",
         type=float,
-        default=0.2,
+        default=0.0,
         help="Target Z coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -58,22 +61,45 @@ class PandaArm:
         self.arm = moveit_commander.MoveGroupCommander("arm_group")
         self.arm.set_max_velocity_scaling_factor(1.0)
         self.arm.set_max_acceleration_scaling_factor(1.0)
+        self.arm.set_pose_reference_frame('world')
         self.frame_id = frame_id
         print(f"Robot reference frame: {self.arm.get_planning_frame()}")
+
+    def robot_alignment(self):
+        """
+        Impone che l'asse x dell'end-effector sia allineato con l'asse -y del frame world.
+        Permette rotazione libera attorno a x, vincola y e z.
+        """
+        rot = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ]
+        q = quaternion_from_matrix(rot)
+
+        oc = OrientationConstraint()
+        oc.header.frame_id = self.arm.get_planning_frame()
+        oc.link_name = self.arm.get_end_effector_link()
+        oc.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
+        # Vincoli stretti su tutti gli assi: orientazione fissa
+        oc.absolute_x_axis_tolerance = 0.05
+        oc.absolute_y_axis_tolerance = 0.05
+        oc.absolute_z_axis_tolerance = 0.05
+        oc.weight = 1.0
+        constraints = Constraints()
+        constraints.orientation_constraints = [oc]
+        self.arm.set_path_constraints(constraints)
+
+    def clear_constraints(self):
+        self.arm.clear_path_constraints()
 
     @staticmethod
     def table_to_world_transform(x, y, z):
         """Applies the same transformation used for motion to map table coords to robot coords."""
         rx = y - 0.425
         ry = x - 0.97
-        rz = z + 0.82
-        return rx, ry, rz
-    
-    @staticmethod
-    def table_to_robot_transform(x, y, z):
-        rx = -x + (0.97*2)+(1.2-0.97)
-        ry = y - 0.425
-        rz = z + (0.88-0.7)
+        rz = z + 0.82 + 0.15 #z + <altezza_tavolo> + <distanza punta stick e base paddle>
         return rx, ry, rz
     
     def move_to_point(self, x, y, z=1.0):
@@ -81,7 +107,6 @@ class PandaArm:
         
         target_pose = Pose()
 
-        x, y, z = self.table_to_robot_transform(x, y, z)
         # Trasformazione da tavolo a robot
         target_pose.position.x = x
         target_pose.position.y = y
@@ -156,14 +181,15 @@ if __name__ == "__main__":
     visualizer = TargetVisualizer()
 
     vx, vy, vz = robot.table_to_world_transform(args.pos_x, args.pos_y, args.pos_z)
-    rx, ry, rz = robot.table_to_robot_transform(args.pos_x, args.pos_y, args.pos_z)
 
-    print(f"X:{rx} - Y:{ry} - Z:{rz}")
+    print(f"X:{vx} - Y:{vy} - Z:{vz}")
 
     visualizer.publish_sphere(vx, vy, vz, diameter=args.sphere_diameter)
-    visualizer.publish_sphere(rx, ry, rz, diameter=args.sphere_diameter, frame_id="panda_link0")
 
-    success = robot.move_to_point(rx, ry, rz)  #coordinate robot ("0 1.2 0.7")
 
+    # Imposta il vincolo di orientazione: x_ee allineato con -y_world
+    robot.robot_alignment()
+    success = robot.move_to_point(vx, vy, vz)
+    robot.clear_constraints()
 
     moveit_commander.roscpp_shutdown()
