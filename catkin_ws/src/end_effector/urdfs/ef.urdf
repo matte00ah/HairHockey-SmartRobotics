@@ -3,6 +3,10 @@
 <robot name="end_effector">
 
   <!-- <link name="world" /> -->
+  
+  <link name="ef_start">
+  
+  </link>
 
   <link name="stick_link">
     <!-- Visualizzazione -->
@@ -150,11 +154,16 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
   -->
-
+  <joint name="start_stick_joint" type="fixed">
+     <parent link="ef_start"/>
+     <child link="stick_link"/>
+     <origin xyz="0 0 0" rpy="0 3.9268 0"/>
+  </joint>
+  
   <joint name="stick_tmp0_joint" type="fixed">
     <parent link="stick_link"/>
     <child link="tmp0"/>
-    <origin xyz="0 0 -0.21" rpy="0 -0.7853 0"/>
+    <origin xyz="0 0 -0.21" rpy="0 0.7853 3.1415"/> <!--p=2.3560-->
   </joint>
 
   <joint name="tmp0_tmp1_joint" type="revolute">

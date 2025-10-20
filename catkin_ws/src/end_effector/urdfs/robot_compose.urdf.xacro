@@ -6,8 +6,8 @@
 
     <joint name="rbt_ef_joint" type="fixed">
         <parent link="panda_link8"/>
-        <child link="stick_link"/>
-        <origin xyz="0 0 0" rpy="0 3.9268 0"/>
+        <child link="ef_start"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
 </robot>
