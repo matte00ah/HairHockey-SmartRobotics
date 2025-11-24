@@ -41,7 +41,7 @@
     <arg name="paused" value="true"/>
     <arg name="gui" value="$(eval not arg('headless'))"/>
     <arg name="use_sim_time" value="true"/>
-    <arg name="physics" value="bullet"/>
+    <arg name="physics" value="ode"/>
   </include>
 
 	<!-- xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro -->

@@ -3,17 +3,13 @@
 <robot name="end_effector">
 
   <!-- <link name="world" /> -->
-  
-  <link name="ef_start">
-  
-  </link>
 
   <link name="stick_link">
     <!-- Visualizzazione -->
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 3.1415 0"/>
       <geometry>
-        <mesh filename="package://end_effector/models/airhockey_ef_stick.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://end_effector/models/AD_Flangia-Asta_Assieme.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1.0"/>
@@ -43,6 +39,7 @@
   
   <link name="spring_link">
   	<!-- Visualizzazione -->
+    <!--
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -52,6 +49,7 @@
         <color rgba="1 0 0 1.0"/>
       </material>
     </visual>
+    -->
 
     <!-- Collisione -->
     <!--
@@ -76,9 +74,9 @@
   <link name="paddle_link"> 
   <!-- Visualizzazione -->
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 -2.3561 0"/>
       <geometry>
-        <mesh filename="package://end_effector/models/airhockey_ef_padel.dae" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://end_effector/models/AD_Piattello-Snodo_Assieme.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1.0"/>
@@ -86,12 +84,14 @@
     </visual>
 
     <!-- Collisione -->
+    <!--
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 -2.3561 0"/>
       <geometry>
-        <mesh filename="package://end_effector/models/airhockey_ef_padel.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://end_effector/models/AD_Piattello-Snodo_Assieme.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
+    -->
 
     <!-- Inerzia base -->
     <inertial>
@@ -154,16 +154,11 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
   -->
-  <joint name="start_stick_joint" type="fixed">
-     <parent link="ef_start"/>
-     <child link="stick_link"/>
-     <origin xyz="0 0 0" rpy="0 3.9268 0"/>
-  </joint>
-  
+
   <joint name="stick_tmp0_joint" type="fixed">
     <parent link="stick_link"/>
     <child link="tmp0"/>
-    <origin xyz="0 0 -0.21" rpy="0 0.7853 3.1415"/> <!--p=2.3560-->
+    <origin xyz="0 0 0" rpy="0 0 0"/> <!-- -0.7853 -->
   </joint>
 
   <joint name="tmp0_tmp1_joint" type="revolute">
@@ -185,7 +180,7 @@
   <joint name="tmp2_tmp3_joint" type="revolute">
     <parent link="tmp2"/>
     <child link="tmp3"/>
-    <origin xyz="0 0 0" rpy="0 -0.7853 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="100" velocity="10" lower="-1.57" upper="1.57"/>
   </joint>
@@ -199,7 +194,7 @@
   <joint name="spring_paddle_joint" type="prismatic">
     <parent link="spring_link"/>
     <child link="paddle_link"/>
-    <origin xyz="0.0 0.0 -0.06"  rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 0"  rpy="0 -0.7853 0"/>
     <axis xyz="0.0 0.0 1.0"/>
     <limit effort="100" lower="0" upper="0.05" velocity="0.1"/>
     <dynamics spring_stiffness="2500" spring_reference="-0.06" damping="20.0" friction="0.75"/>
