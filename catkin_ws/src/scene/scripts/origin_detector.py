@@ -1,75 +1,233 @@
 #!/usr/bin/env python3
-import rospy
 import cv2
 import numpy as np
 import os
 import math
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
-import json
+import yaml
 import matplotlib.pyplot as plt
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-config_path = os.path.join(script_dir, "config.json")
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
-camera_topic = config["camera_topic"]
-l_white = config["lower_white"]
-u_white = config["upper_white"]
+#camera_topic = config["camera_topic"]
+l_white = np.array(config["lower_white"], dtype=np.uint8)
+u_white = np.array(config["upper_white"], dtype=np.uint8)
 
-# === Dimensioni reali tavolo (in cm, da modificare!) ===
-TABLE_WIDTH_CM = 184  
-TABLE_HEIGHT_CM = 75  
+l_white_right = np.array(config["lower_white_right"], dtype=np.uint8)
+u_white_right = np.array(config["upper_white_right"], dtype=np.uint8)
+
+
+TABLE_WIDTH_CM = config["table_width_m"] * 100
+TABLE_HEIGHT_CM = config["table_height_m"] * 100
+
+LOWER_RED1 = np.array(config["lower_red1"], dtype=np.uint8)
+UPPER_RED1 = np.array(config["upper_red1"], dtype=np.uint8)
+LOWER_RED2 = np.array(config["lower_red2"], dtype=np.uint8)
+UPPER_RED2 = np.array(config["upper_red2"], dtype=np.uint8)
 
 # Funzione per trovare intersezione di due linee (Ax+By=C forma)
 def line_intersection(l1, l2):
-    x1, y1, x2, y2 = l1
-    x3, y3, x4, y4 = l2
+    # Appiattisci eventuali array annidati come [[x1, y1, x2, y2]]
+    l1 = np.array(l1).flatten()
+    l2 = np.array(l2).flatten()
+
+    print(f"Calcolo intersezione tra linee: {l1} e {l2}")
+    
+    x1, y1, x2, y2 = map(float, l1)
+    x3, y3, x4, y4 = map(float, l2)
     
     A1 = y2 - y1
     B1 = x1 - x2
-    C1 = A1*x1 + B1*y1
+    C1 = A1 * x1 + B1 * y1
     
     A2 = y4 - y3
     B2 = x3 - x4
-    C2 = A2*x3 + B2*y3
+    C2 = A2 * x3 + B2 * y3
     
-    det = A1*B2 - A2*B1
-    if det == 0:
+    det = A1 * B2 - A2 * B1
+    if abs(det) < 1e-6:
         return None
-    x = (B2*C1 - B1*C2) / det
-    y = (A1*C2 - A2*C1) / det
+    
+    x = (B2 * C1 - B1 * C2) / det
+    y = (A1 * C2 - A2 * C1) / det
     return int(x), int(y)
 
-def apply_white_mask(frame):
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+import cv2
+import numpy as np
 
-    # Range del bianco dal file di config
-    lower_white = np.array(l_white)
-    upper_white = np.array(u_white)
+def single_mask(p_frame, low_w, upper_w):
+        # --- Converti l'immagine in HSV ---
+        hsv = cv2.cvtColor(p_frame, cv2.COLOR_BGR2HSV)
 
-    mask = cv2.inRange(hsv, lower_white, upper_white)
-    white_area = cv2.bitwise_and(frame, frame, mask=mask)
-    return white_area
+        #h, s, v = cv2.split(hsv)
+        #v_new = shadow_removed
+        #hsv_fixed = cv2.merge([h, s, v_new])
+
+        # --- Maschera bianca in HSV ---
+        #mask_white = cv2.inRange(hsv_fixed, l_white, u_white)
+        mask_white = cv2.inRange(hsv, low_w, upper_w)
+
+        mask_red1 = cv2.inRange(hsv, LOWER_RED1, UPPER_RED1)
+        mask_red2 = cv2.inRange(hsv, LOWER_RED2, UPPER_RED2)
+        mask_red = cv2.bitwise_or(mask_red1, mask_red2)
+
+        # --- Combina bianco + rosso ---
+        combined_mask = cv2.bitwise_or(mask_white, mask_red)
+
+        cv2.imshow("Maschera bianca + rossa", combined_mask)
+        cv2.imwrite("mask_white_red.png", combined_mask)
+        cv2.waitKey(0)
+
+        print(f"shape mask: {combined_mask.shape}")
+
+        return combined_mask  
+
+
+def apply_white_red_mask(frame):
+    """
+    Applica una maschera che isola aree bianche e rosse nell'immagine.
+    Mostra e salva la maschera risultante.
+    """
+
+    # --- Maschera bianca ---
+    """lower_white = np.array([150, 150, 150])
+    upper_white = np.array([255, 255, 255])
+    mask_white = cv2.inRange(frame, lower_white, upper_white)"""
+
+    print("Apply white red mask")
+
+    """gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25,25))
+    background = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
+    shadow_removed = cv2.divide(gray, background, scale=255)
+    """
+
+    """blurred = cv2.GaussianBlur(frame, (0,0), sigmaX=5)
+    sharpened = cv2.addWeighted(frame, 2, blurred, -1, 0)
+    """
+
+    h, w, _ = frame.shape
+    left_table = frame[:, :w//2]
+    right_table = frame[:, w//2:]     
+    
+    mask = np.zeros(frame.shape[:2], dtype=np.uint8)
+    print("left")
+    mask[:, :w//2] = single_mask(left_table, l_white, u_white)
+    print("right")
+    mask[:, w//2:] = single_mask(right_table, l_white_right, u_white_right)
+
+    # --- Applica la maschera all'immagine originale ---
+    result = cv2.bitwise_and(frame, frame, mask=mask)
+
+    # --- Mostra e salva ---
+    cv2.imshow("Maschera bianca + rossa", mask)
+    cv2.imwrite("mask_white_red.png", mask)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return result
+
+
+def filter_lines_by_red_hsv(lines, frame_bgr, red_ratio_threshold=0.3):
+    """
+    Elimina le linee che passano per aree rosse nel frame.
+    
+    lines: lista di linee (output di cv2.HoughLinesP)
+    frame_bgr: immagine originale in formato BGR
+    red_ratio_threshold: percentuale massima di pixel rossi ammessa
+                         (0.3 = 30% di pixel rossi lungo la linea)
+    """
+    # Conversione in HSV per rilevare meglio il rosso
+    hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
+
+    print("\n=== HSV medi per ogni linea trovata ===")
+    for i, line in enumerate(lines):
+        x1, y1, x2, y2 = line[0]
+        
+        # Maschera per la linea
+        mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
+        cv2.line(mask, (x1, y1), (x2, y2), 255, 3)
+        
+        # Calcolo media HSV usando solo i pixel della linea
+        mean_hsv = cv2.mean(hsv, mask=mask)[:3]  # (H, S, V)
+        H, S, V = mean_hsv
+        #print(f"Linea {i+1}: H={H:.2f}, S={S:.2f}, V={V:.2f}")
+
+    # Due range per il rosso in HSV
+    lower_red1 = np.array([0, 70, 50])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([170, 70, 50])
+    upper_red2 = np.array([180, 255, 255])
+
+    red_mask = cv2.inRange(hsv, lower_red1, upper_red1) | cv2.inRange(hsv, lower_red2, upper_red2)
+
+    filtered = []
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        
+        # Maschera per la linea
+        mask = np.zeros(red_mask.shape, dtype=np.uint8)
+        cv2.line(mask, (x1, y1), (x2, y2), 255, 3)
+        
+        # Percentuale di pixel rossi lungo la linea
+        total_pixels = np.count_nonzero(mask)
+        red_pixels = np.count_nonzero(cv2.bitwise_and(red_mask, mask))
+        if total_pixels == 0:
+            continue
+        
+        red_ratio = red_pixels / total_pixels
+
+        # Se meno del 30% della linea è rossa → la teniamo
+        if red_ratio < red_ratio_threshold:
+            filtered.append(line)
+
+    print(f"Linee totali: {len(lines)} | Linee mantenute: {len(filtered)}")
+    return filtered
 
 def process_frame(msg):
-    bridge = CvBridge()
-    frame = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-    print(f"Frame acquisito: {frame.shape}")
+    print(f"Frame acquisito: {msg.shape}")
+    frame = msg
 
-    white_area = apply_white_mask(frame)
+    white_area = apply_white_red_mask(frame)
 
     gray = cv2.cvtColor(white_area, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    #blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (35,35))
+    background = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
+    norm = cv2.divide(gray, background, scale=255)
+    blur = cv2.GaussianBlur(norm, (3,3), 1)
 
     # Rilevamento bordi
     edges = cv2.Canny(blur, 50, 150)
 
     # Rilevamento linee con Hough
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=120, minLineLength=120, maxLineGap=30)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=60, minLineLength=100, maxLineGap=50)
+
+    print(f"Linee trovate: {len(lines)}")
+    
+    debug_img = frame.copy()
+    color = (0, 255, 0)  # verde
+    thickness = 2
+
+    for line_data in lines:
+        x1, y1, x2, y2 = line_data[0]
+        cv2.line(debug_img, (x1, y1), (x2, y2), color, thickness)
+    cv2.imshow("Linee subito dopo Hough", debug_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    if lines is None:
+        print("⚠️ Nessuna linea trovata")
+        return None, None, None
+    print(f"Linee totali trovate: {len(lines)}")
+    # Filtra linee che passano per aree rosse
+    lines = filter_lines_by_red_hsv(lines, frame)
+    print(f"Linee dopo filtro rosso: {len(lines)}")
 
     best_lines = []
     if lines is None:
@@ -106,26 +264,80 @@ def process_frame(msg):
         else:
             best_lines.append([line[0], ang_coef, q, length])
 
-    print("Numero linee trovate :", len(best_lines))
-    
-    if len(best_lines) < 2:
-        print("⚠️ Non abbastanza linee trovate")
+    # Crea una copia dell'immagine per non sovrascrivere l'originale
+    debug_img = frame.copy()
+
+    # Colore e spessore delle linee
+    color = (0, 255, 0)  # verde
+    thickness = 2
+
+    # Disegna tutte le linee trovate
+    for line_data in best_lines:
+        x1, y1, x2, y2 = line_data[0]
+        cv2.line(debug_img, (x1, y1), (x2, y2), color, thickness)
+
+            # Mostra il risultato
+    cv2.imshow("Linee prima del filtro", debug_img)
+
+    # Attendi un tasto per chiudere la finestra (0 = infinito)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+   # --- Selezione delle linee principali (4 lati tavolo) ---
+    vertical_lines = []
+    horizontal_lines = []
+
+    for line_data in best_lines:
+        line, ang_coef, q, length = line_data
+        x1, y1, x2, y2 = line
+        print(f"angolo=", ang_coef)
+        if ang_coef > 0.8:
+            vertical_lines.append(line_data)
+        elif ang_coef < 0.1:
+            horizontal_lines.append(line_data)
+
+    print(f"Linee verticali trovate: {len(vertical_lines)}")
+    print(f"Linee orizzontali trovate: {len(horizontal_lines)}")
+
+    if len(vertical_lines) >= 2:
+        vertical_lines.sort(key=lambda l: (l[0][0] + l[0][2]) / 2)
+        left_line = vertical_lines[0]
+        right_line = vertical_lines[-1]
+    else:
+        print("⚠️ Non abbastanza linee verticali trovate")
         return None, None, None
 
-    # trova verticale e orizzontali
-    best_v = -1
-    v_line = None
-    for i in range(len(best_lines)):
-        if best_lines[i][1] > best_v:
-            best_v = best_lines[i][1]
-            v_line = i
-    
-    v_line = best_lines.pop(v_line)
-    h_lines = best_lines
+    if len(horizontal_lines) >= 2:
+        horizontal_lines.sort(key=lambda l: (l[0][1] + l[0][3]) / 2)
+        top_line = horizontal_lines[0]
+        bottom_line = horizontal_lines[-1]
+    else:
+        print("⚠️ Non abbastanza linee orizzontali trovate")
+        return None, None, None
+
+    final_lines = [left_line, right_line, top_line, bottom_line]
+
+    print("\n=== Linee principali selezionate ===")
+    print(f"Sinistra: {left_line[0]}")
+    print(f"Destra:   {right_line[0]}")
+    print(f"Alto:     {top_line[0]}")
+    print(f"Basso:    {bottom_line[0]}")
+
+    # Visualizza le 4 linee principali
+    debug_img = frame.copy()
+    colors = [(255, 0, 0), (0, 0, 255), (0, 255, 0), (0, 255, 255)]
+    for (line_data, color) in zip(final_lines, colors):
+        x1, y1, x2, y2 = line_data[0]
+        cv2.line(debug_img, (x1, y1), (x2, y2), color, 3)
+    cv2.imshow("Linee principali (4 lati tavolo)", debug_img)
+    cv2.imwrite("linee_principali.png", debug_img)
+
+    cv2.waitKey(0)
 
     # calcola intersezioni
     intersections = []
-    lines = h_lines + [v_line]
+    lines = final_lines
     for i in range(len(lines)):
         for j in range(i+1, len(lines)):
             pt = line_intersection(lines[i][0], lines[j][0])
@@ -171,25 +383,19 @@ def process_frame(msg):
         cv2.circle(line_img, tuple(corner), 8, color, -1)
     cv2.circle(line_img, center_table, 10, (0, 255, 255), -1)
 
-    #plt.figure(figsize=(10, 6))
-    #plt.imshow(cv2.cvtColor(line_img, cv2.COLOR_BGR2RGB))
-    #plt.title("Corner ordinati + Centro tavolo")
-    #plt.axis("off")
-    #plt.show()
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(line_img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+    plt.figure(figsize=(10, 6))
+    plt.imshow(cv2.cvtColor(line_img, cv2.COLOR_BGR2RGB))
+    plt.title("Corner ordinati + Centro tavolo")
+    plt.axis("off")
+    plt.savefig("corner_e_centro.png")
+    plt.show()
 
     return ordered_corners
 
 
 if __name__ == "__main__":
-    rospy.init_node("origin", anonymous=True)
-
-    # Prende UN SOLO frame dal topic
-    msg = rospy.wait_for_message(camera_topic, Image)
-    corners, center_px, center_cm = process_frame(msg)
-
-    # Debug finale
-    if corners is not None:
-        print("==== RISULTATI ====")
-        print(f"Corners: {corners}")
-        print(f"Centro (pixel): {center_px}")
-        print(f"Centro (cm): {center_cm}")
+    pass

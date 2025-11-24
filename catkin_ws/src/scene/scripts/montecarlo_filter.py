@@ -2,8 +2,6 @@ import numpy as np
 import yaml
 import os
 import time
-import rospy
-import rospkg
 from stl import mesh
 from shapely.geometry import Point, Polygon
 from scipy.spatial import ConvexHull
@@ -20,7 +18,7 @@ Y_MAX = config["table_height_m"]
 
 PUCK_DIAMETER = config["puck_diameter_m"]
 ROBOT_REACH = config["robot_reach_m"]
-ROBOT_BASE = config["robot_base_cameraWorld"]
+ROBOT_BASE = config["robot_base_tocorner"]
 
 GAME_POSE = config["game_pose"]
 
@@ -38,6 +36,8 @@ class MontecarloFilter:
         self.process_noise_std = process_noise_std
         self.measurement_noise_std = measurement_noise_std
         self.velocity_noise_std = velocity_noise_std
+
+        self.occlusion_state = 0
 
         self.particles = None
         self.weights = None
@@ -124,9 +124,10 @@ class MontecarloFilter:
             est_pos = np.mean(future_particles[:, 0:2], axis=0)
 
             if self.is_reachable(est_pos):  # assumendo che self.true_reach abbia un metodo 'contains'
-                rospy.logdebug(f"Prima posizione raggiungibile al passo {step+1}")
+                print(f"Prima posizione raggiungibile al passo {step+1}")
                 return est_pos
 
+        print(f"Posizione non raggiungibile: {est_pos}")
         return None
 
     def update(self, measurement, velocity):
@@ -162,7 +163,8 @@ class MontecarloFilter:
     def is_valid(self, pos):
         return (
             self.is_reachable(pos)
-            and pos[0] <= X_MAX - PUCK_DIAMETER and pos[1] <= Y_MAX - PUCK_DIAMETER
+            and pos[0] <= X_MAX - BORDER_DISTANCE and pos[1] <= Y_MAX - BORDER_DISTANCE
+            and pos[0] >= BORDER_DISTANCE and pos[1] >= BORDER_DISTANCE
         )
 
     def run(self, wx, wy, future_steps=10):
@@ -193,7 +195,7 @@ class MontecarloFilter:
 
         # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa)
         if velocity is not None and velocity[0] < RETURN_VELOCITY_X:
-            rospy.logdebug("Torna a BASE")
+            print("Torna a BASE")
             self.robot.move_to_point(*GAME_POSE)
     
         est_pos, est_vel, est_acc = self.estimate()
@@ -203,17 +205,23 @@ class MontecarloFilter:
         print(f"measurement:", measurement)
 
         if (measurement is None):
-            rospy.logdebug("Occlusione del puck (fermo)")
-            offset = OCCLUSION_MOVE_Y if self.prev_measurement[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
-            # target = [est_pos[0], est_pos[1] + offset]
-            target = [self.prev_measurement[0], self.prev_measurement[1] + offset]
-            rospy.logdebug(f"target {target}")
-            self.robot.move_to_point(target[0], target[1],wait_robot=True)
-            return
+            if self.occlusion_state > 5:
+                self.occlusion_state = 0
+                print("Occlusione del puck (fermo)")
+                offset = OCCLUSION_MOVE_Y if self.prev_measurement[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
+                # target = [est_pos[0], est_pos[1] + offset]
+                target = [self.prev_measurement[0], self.prev_measurement[1] + offset]
+                print(f"target {target}")
+                self.robot.move_to_point(target[0], target[1],wait_robot=True)
+                return
+            else:
+                self.occlusion_state += 1
+                return        
+        self.occlusion_state = 0
 
         if (velocity is None or np.linalg.norm(velocity) < 0.01) and self.is_reachable(measurement):
             # Strategia di attacco avanzata: colpo diretto verso la porta
-            rospy.logdebug("Puck fermo e raggiungibile.")
+            print("Puck fermo e raggiungibile.")
 
             # Definisci la porta come il centro del bordo opposto
             goal = np.array([0, Y_MAX/2])
@@ -224,49 +232,58 @@ class MontecarloFilter:
 
             # Posizione di partenza del robot: dietro al disco rispetto alla porta
             start_pos = measurement - direction * HIT_DISTANCE
-            rospy.logdebug(f"Start position {start_pos}")
+            #print(f"Start position {start_pos}")
                 
             # Primo tentativo: direzione diretta verso il goal
             if self.is_valid(start_pos):
-                rospy.logdebug("Attacco: colpisco il disco verso la porta con movimento unico!")
+                print("Attacco: colpisco il disco verso la porta con movimento unico!")
                 self.robot.move_to_point(*start_pos, wait_robot=True)  # Muovi il robot dietro al disco
-                rospy.logdebug("Posizione di attacco raggiunta dal robot. measurement {measurement}")
+                print(f"Posizione di attacco raggiunta dal robot. measurement {measurement}")
                 self.robot.move_to_point(*measurement, wait_robot=True)
-                rospy.logdebug("Colpo eseguito.")            
+                print("Colpo eseguito.")            
             # Secondo tentativo: direzione riflessa (rimbalzo)
             else:
                 # Puck vicino al bordo lungo del tavolo
-                rospy.logdebug("Posizione di attacco non raggiungibile dal robot. Provo colpo con rimbalzo!")      
+                print("Posizione di attacco non raggiungibile dal robot. Provo colpo con rimbalzo!")      
 
                 direction_reflected = np.array([direction[0], -direction[1]])
                 start_pos_reflected = measurement - direction_reflected * HIT_DISTANCE
 
                 if self.is_valid(start_pos_reflected):
-                    rospy.logdebug("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
+                    print("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
                     self.robot.move_to_point(*start_pos_reflected, wait_robot=True)
-                    self.robot.move_to_point(*measurement, wait_robot=True)
+                    if self.is_valid(*measurement):
+                        self.robot.move_to_point(*measurement, wait_robot=True)
+                    else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
+                        y_offset = BORDER_DISTANCE if measurement[1] < Y_MAX / 2 else -BORDER_DISTANCE
+                        self.robot.move_to_point(measurement[0], measurement[1] - y_offset, wait_robot=True)
                 else:
                     #siamo nel caso in cui il disco è vicino al bordo corto del 
-                    rospy.logdebug("Siamo al bordo corto!")                        
+                    print("Siamo al bordo corto!")                        
                     y_offset = BORDER_DISTANCE if measurement[1] < Y_MAX / 2 else -BORDER_DISTANCE
-                    safe_x = X_MAX - PUCK_DIAMETER - 0.02
+                    safe_x = X_MAX - BORDER_DISTANCE
                     safe_y = measurement[1] + y_offset
 
                     self.robot.move_to_point(safe_x, safe_y, wait_robot=True)
-                    self.robot.move_to_point(*measurement, wait_robot=True)
+                    if self.is_valid(*measurement):
+                        self.robot.move_to_point(*measurement, wait_robot=True)
+                    else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
+                        x_offset = BORDER_DISTANCE if measurement[0] < X_MAX / 2 else -BORDER_DISTANCE
+                        self.robot.move_to_point(measurement[0] - x_offset, measurement[1], wait_robot=True)
+        
             return
         
         #se non è fermo calcolo il nuovo target
         new_target = self.predict_future(steps=future_steps)
 
+        print(f"target:::: {new_target}")
+        print(f"self.prev_robot_target {self.prev_robot_target}")
         if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2)):
-                rospy.logdebug(f"Target {new_target} - Chiamata panda_move {time.perf_counter()}")
+            print(f"Target {new_target} - Chiamata panda_move {time.perf_counter()}")
+            if self.is_valid(*new_target):
                 self.robot.move_to_point(*new_target, wait_robot=True)
                 self.prev_robot_target = new_target
-        
-        
-        
-        
+            
         
         #rospy.logdebug(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
          #Calcola e stampa la precisione finale

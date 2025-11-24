@@ -3,12 +3,22 @@ import sys
 import rospy
 import moveit_commander
 import time
+import os
 from geometry_msgs.msg import Pose, PoseStamped
 from visualization_msgs.msg import Marker
 import argparse
-from moveit_msgs.msg import OrientationConstraint, Constraints
-from geometry_msgs.msg import Quaternion
-from tf.transformations import quaternion_from_euler, quaternion_from_matrix
+from tf.transformations import quaternion_from_matrix
+import yaml
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+config_path = os.path.join(script_dir, "config.yaml")
+
+with open(config_path, "r") as f:
+    config = yaml.safe_load(f)
+
+X = config["table_width_m"] / 2
+Y = config["table_height_m"] / 2
+Z = config["z"]
 
 def parse_arguments():
     """Parses command line arguments for the robot's target position."""
@@ -21,21 +31,21 @@ def parse_arguments():
         "-x",
         "--pos_x",
         type=float,
-        default=1.7,
+        default=0,
         help="Target X coordinate in table frame (float).",
     )
     parser.add_argument(
         "-y",
         "--pos_y",
         type=float,
-        default=0.425,
+        default=0.6,
         help="Target Y coordinate in table frame (float).",
     )
     parser.add_argument(
         "-z",
         "--pos_z",
         type=float,
-        default=0.0,
+        default=1,
         help="Target Z coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -56,78 +66,53 @@ def parse_arguments():
 
 class PandaArm:
     def __init__(self, frame_id="world"):
-        # Inizializza ROS e MoveIt UNA VOLTA
+        # Init ROS and MoveIt
         moveit_commander.roscpp_initialize(sys.argv)
         self.arm = moveit_commander.MoveGroupCommander("arm_group")
-        self.arm.set_max_velocity_scaling_factor(1.0)
-        self.arm.set_max_acceleration_scaling_factor(1.0)
+        self.arm.set_max_velocity_scaling_factor(0.1)
+        self.arm.set_max_acceleration_scaling_factor(0.1)
         self.arm.set_pose_reference_frame('world')
         self.frame_id = frame_id
+
+        self.arm.set_goal_position_tolerance(0.01)  # default 0.001
+        self.arm.set_goal_orientation_tolerance(0.01)
+        self.arm.set_goal_joint_tolerance(0.01)
+
         print(f"Robot reference frame: {self.arm.get_planning_frame()}")
-
-    def robot_alignment(self):
-        """
-        Impone che l'asse x dell'end-effector sia allineato con l'asse -y del frame world.
-        Permette rotazione libera attorno a x, vincola y e z.
-        """
-        rot = [
-            [0, -1, 0, 0],
-            [1, 0, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ]
-        q = quaternion_from_matrix(rot)
-
-        oc = OrientationConstraint()
-        oc.header.frame_id = self.arm.get_planning_frame()
-        oc.link_name = self.arm.get_end_effector_link()
-        oc.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
-        # Vincoli stretti su tutti gli assi: orientazione fissa
-        oc.absolute_x_axis_tolerance = 0.05
-        oc.absolute_y_axis_tolerance = 0.05
-        oc.absolute_z_axis_tolerance = 0.05
-        oc.weight = 1.0
-        constraints = Constraints()
-        constraints.orientation_constraints = [oc]
-        self.arm.set_path_constraints(constraints)
-
-    def clear_constraints(self):
-        self.arm.clear_path_constraints()
 
     @staticmethod
     def table_to_world_transform(x, y, z):
         """Applies the same transformation used for motion to map table coords to robot coords."""
-        rx = y - 0.425
-        ry = x - 0.97
-        rz = z + 0.82 + 0.15 #z + <altezza_tavolo> + <distanza punta stick e base paddle>
+        rx = Y - y
+        ry = X - x
+        rz = z + Z # z + <altezza_tavolo>
         return rx, ry, rz
     
-    def move_to_point(self, x, y, z=1.0):
-        #target_pose = PoseStamped()
-        
+    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
+        print(f"vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
+        x, y, z = self.table_to_world_transform(vx, vy, vz)
+        print(f"vx: {x}, vy:{y}, vz:{z} WORLD")
+
         rot = [
-            [0, -1, 0, 0],
-            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [-1, 0, 0, 0],
             [0, 0, 1, 0],
             [0, 0, 0, 1]
         ]
-        q = quaternion_from_matrix(rot)
-
+        
         target_pose = Pose()
 
-        # Trasformazione da tavolo a robot
+        # Imposizione della posizione finale dell'end-effector
         target_pose.position.x = x
         target_pose.position.y = y
         target_pose.position.z = z
 
-        # Quaternion valido per paddle verticale
+        # Imposizione vincolo di rotazione del frame di end-effector per posizione finale
+        q = quaternion_from_matrix(rot)
         target_pose.orientation.x = q[0]
         target_pose.orientation.y = q[1]
         target_pose.orientation.z = q[2]
         target_pose.orientation.w = q[3]
-
-        # target_pose.header.frame_id = self.frame_id
-        # target_pose.pose = pose
 
         self.arm.set_start_state_to_current_state()
         #print(time.perf_counter())
@@ -136,6 +121,7 @@ class PandaArm:
         self.arm.stop()
         self.arm.clear_pose_targets()
         #print(time.perf_counter())
+        print("Posizione raggiunta!!!")
         return success
     
 class TargetVisualizer:
@@ -188,16 +174,16 @@ if __name__ == "__main__":
     robot = PandaArm()
     visualizer = TargetVisualizer()
 
-    vx, vy, vz = robot.table_to_world_transform(args.pos_x, args.pos_y, args.pos_z)
+    # NEW
+    #robot_state = robot.get_current_state()
+    #move_group.set_start_state_to_current_state()
 
-    print(f"X:{vx} - Y:{vy} - Z:{vz}")
-
-    visualizer.publish_sphere(vx, vy, vz, diameter=args.sphere_diameter)
-
+    #vx, vy, vz = 0, 0.65, 1.1   # rispetto al WORLD
+    vx, vy, vz = 1.57, 0.425, 0  # rispetto all'angolo
+    pvx, pvy, pvz = robot.table_to_world_transform(vx, vy, vz)
+    visualizer.publish_sphere(pvx, pvy, pvz, diameter=args.sphere_diameter)
 
     # Imposta il vincolo di orientazione: x_ee allineato con -y_world
-    robot.robot_alignment()
     success = robot.move_to_point(vx, vy, vz)
-    robot.clear_constraints()
 
     moveit_commander.roscpp_shutdown()
