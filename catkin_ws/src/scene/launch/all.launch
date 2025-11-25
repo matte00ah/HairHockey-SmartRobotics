@@ -3,8 +3,7 @@
  
   	<!-- Lancia Gazebo con il robot Franka -->
 	<include file="$(find franka_gazebo)/launch/panda.launch">  
-		<!-- launch gzserver only (no GUI) to avoid display/GPU issues here -->
-		<arg name="world" value="$(find scene)/launch/my.world" doc="Filename to a SDF World for gazebo to use" />
+  		<arg name="world" value="$(find scene)/launch/my.world" doc="Filename to a SDF World for gazebo to use" />
 	</include>
 
 </launch>

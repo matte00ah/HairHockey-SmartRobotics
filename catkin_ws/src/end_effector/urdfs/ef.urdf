@@ -9,7 +9,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 3.1415 0"/>
       <geometry>
-        <mesh filename="package://end_effector/models/AD_Flangia-Asta_Assieme.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://end_effector/models/stick.stl" scale="1 1 1"/>
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1.0"/>
@@ -74,9 +74,9 @@
   <link name="paddle_link"> 
   <!-- Visualizzazione -->
     <visual>
-      <origin xyz="0 0 0" rpy="0 -2.3561 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://end_effector/models/AD_Piattello-Snodo_Assieme.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://end_effector/models/mallet.stl" scale="1 1 1"/>
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1.0"/>
@@ -194,7 +194,7 @@
   <joint name="spring_paddle_joint" type="prismatic">
     <parent link="spring_link"/>
     <child link="paddle_link"/>
-    <origin xyz="0.0 0.0 0"  rpy="0 -0.7853 0"/>
+    <origin xyz="0.0 0.0 0.0"  rpy="0 ${pi/4} 0"/>
     <axis xyz="0.0 0.0 1.0"/>
     <limit effort="100" lower="0" upper="0.05" velocity="0.1"/>
     <dynamics spring_stiffness="2500" spring_reference="-0.06" damping="20.0" friction="0.75"/>
