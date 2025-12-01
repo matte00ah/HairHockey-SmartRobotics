@@ -19,6 +19,7 @@ lower_white: [0, 0, 235]
 upper_white: [180, 25, 255]
 lower_white_right: [0, 0, 200]
 upper_white_right: [180, 50, 255]
+
 canny_threshold_min: 50
 canny_threshold_max: 150
 hough_threshold: 120
@@ -29,6 +30,18 @@ lower_red1: [0, 100, 100]
 upper_red1: [10, 255, 255]
 lower_red2: [160, 100, 100]
 upper_red2: [179, 255, 255]
+
+
+
+############################
+disk_lower_red1: [0, 150, 70]
+disk_upper_red1: [180, 250, 255]
+disk_lower_red2: [160, 150, 30]
+disk_upper_red2: [179, 255, 150]
+################################
+
+
+
 
 game_pose: [0.2, 0.445, 0] # rispetto all'angolo del tavolo[1.585, 0.425, 0]  # 0.6 + 0.985, 0 + 0.425, 1.0  0.6 è poco davanti al bordo
 

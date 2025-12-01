@@ -2,11 +2,12 @@ import numpy as np
 import yaml
 import os
 import time
+import rospy
+import rospkg
 from stl import mesh
 from shapely.geometry import Point, Polygon
 from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
-import pickle
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(script_dir, "config.yaml")
@@ -19,7 +20,7 @@ Y_MAX = config["table_height_m"]
 
 PUCK_DIAMETER = config["puck_diameter_m"]
 ROBOT_REACH = config["robot_reach_m"]
-ROBOT_BASE = config["robot_base_tocorner"]
+ROBOT_BASE = config["robot_base_cameraWorld"]
 
 GAME_POSE = config["game_pose"]
 
@@ -38,8 +39,6 @@ class MontecarloFilter:
         self.measurement_noise_std = measurement_noise_std
         self.velocity_noise_std = velocity_noise_std
 
-        self.occlusion_state = 0
-
         self.particles = None
         self.weights = None
         self.est_positions = []
@@ -51,14 +50,6 @@ class MontecarloFilter:
 
         self.robot = robot
 
-    def save_filter_state(self, filename="./src/scene/scripts/filter_state01.pkl"):
-        state = {
-            'particles': self.particles,
-            'weights': self.weights
-        }
-        with open(filename, 'wb') as f:
-            pickle.dump(state, f)
-        print(f"Filter state saved to {filename}")
 
     def initialize_at_measurement(self, measurement):
         """Inizializza le particelle attorno alla prima misura reale del puck"""
@@ -77,28 +68,6 @@ class MontecarloFilter:
 
         self.prev_measurement = measurement
 
-    def load_and_initialize(self, filename="./src/scene/scripts/filter_state.pkl", measurement=None):
-        try:
-            with open(filename, 'rb') as f:
-                state = pickle.load(f)
-                self.particles = state['particles']
-                self.weights = state['weights']
-                print("Filter state loaded.")
-            
-                # Re-weighting the loaded particles with the first measurement
-                if measurement is not None:
-                    velocity = self._compute_velocity(measurement)
-                    self.update(measurement, velocity)
-                    self.resample()
-
-        except FileNotFoundError:
-            print("No saved state found. Initializing from scratch.")
-            # Fall back to the original initialization if no file exists
-            if measurement is not None:
-                self.initialize_at_measurement(measurement)
-            else:
-                # Handle case where both saved state and first measurement are missing
-                pass
 
     def predict(self):
         process_noise = np.random.normal(0, self.process_noise_std, size=(self.N, 2))
@@ -135,7 +104,6 @@ class MontecarloFilter:
         """
         # Calcola distanza dalla base del robot
         dist = np.linalg.norm(pos - ROBOT_BASE)
-        #print(f"distanza: {dist}")
         return dist <= ROBOT_REACH
 
     
@@ -156,10 +124,9 @@ class MontecarloFilter:
             est_pos = np.mean(future_particles[:, 0:2], axis=0)
 
             if self.is_reachable(est_pos):  # assumendo che self.true_reach abbia un metodo 'contains'
-                print(f"Prima posizione raggiungibile al passo {step+1}")
+                rospy.logdebug(f"Prima posizione raggiungibile al passo {step+1}")
                 return est_pos
 
-        print(f"Posizione non raggiungibile: {est_pos}")
         return None
 
     def update(self, measurement, velocity):
@@ -195,11 +162,11 @@ class MontecarloFilter:
     def is_valid(self, pos):
         return (
             self.is_reachable(pos)
-            and pos[0] <= X_MAX - BORDER_DISTANCE and pos[1] <= Y_MAX - BORDER_DISTANCE
-            and pos[0] >= BORDER_DISTANCE and pos[1] >= BORDER_DISTANCE
+            and pos[0] <= X_MAX - PUCK_DIAMETER and pos[1] <= Y_MAX - PUCK_DIAMETER
         )
-    
-    def training(self, wx, wy):
+
+    def run(self, wx, wy, future_steps=10):
+
         measurement = None if wx is None or wy is None else np.array([wx, wy])
 
         #Gestione caso in cui nel primo frame che passo ho un'occlusione del puck
@@ -224,68 +191,32 @@ class MontecarloFilter:
             self.resample()
             self.prev_measurement = measurement
 
-
-    def run(self, wx, wy, future_steps=10):
-
-        measurement = None if wx is None or wy is None else np.array([wx, wy])
-
-        #Gestione caso in cui nel primo frame che passo ho un'occlusione del puck
-        #e non ho ancora inizializzato le particelle del filtro
-        if self.particles is None and measurement is None:
-            print("Nessuna misura valida disponibile: attendo il primo rilevamento del puck.")
-            return
-        #inizializzo le particelle del filtro, si fa solo una volta
-        if self.particles is None and measurement is not None:
-        #    print(f"Inizializzo Montecarlo con prima misura {measurement}")
-        #    self.initialize_at_measurement(measurement)
-            self.load_and_initialize(measurement=measurement)
-
-        # Predizione step
-        self.predict()
-
-        # Update step
-        # velocity = self._compute_velocity(measurement)
-        velocity = None
-        if measurement is not None:
-            velocity = self._compute_velocity(measurement)
-            self.update(measurement, velocity)
-            self.resample()
-            self.prev_measurement = measurement
-
         # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa)
         if velocity is not None and velocity[0] < RETURN_VELOCITY_X:
-            print("--- Torna a BASE. Disco va verso avversario ---")
+            rospy.logdebug("Torna a BASE")
             self.robot.move_to_point(*GAME_POSE)
     
         est_pos, est_vel, est_acc = self.estimate()
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
-
-        print(f"   velocity:", velocity)
-        print(f"   measurement:", measurement)
+        print(f"velocity:", velocity)
+        print(f"measurement:", measurement)
 
         if (measurement is None):
-            if self.occlusion_state > 5:
-                self.occlusion_state = 0
-                print("--- OCCLUSIONE del puck (fermo) ---")
-                offset = OCCLUSION_MOVE_Y if self.prev_measurement[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
-                # target = [est_pos[0], est_pos[1] + offset]
-                target = [self.prev_measurement[0], self.prev_measurement[1] + offset]
-                print(f" --> poszione laterale: {target}")
-                self.robot.move_to_point(target[0], target[1],wait_robot=True)
-                return
-            else:
-                self.occlusion_state += 1
-                return        
-        self.occlusion_state = 0
+            rospy.logdebug("Occlusione del puck (fermo)")
+            offset = OCCLUSION_MOVE_Y if self.prev_measurement[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
+            # target = [est_pos[0], est_pos[1] + offset]
+            target = [self.prev_measurement[0], self.prev_measurement[1] + offset]
+            rospy.logdebug(f"target {target}")
+            self.robot.move_to_point(target[0], target[1],wait_robot=True)
+            return
 
-        print(f"  vel norm:{np.linalg.norm(velocity)}")
         if (velocity is None or np.linalg.norm(velocity) < 0.01) and self.is_reachable(measurement):
             # Strategia di attacco avanzata: colpo diretto verso la porta
-            print("--- Puck FERMO e raggiungibile ---")
+            rospy.logdebug("Puck fermo e raggiungibile.")
 
             # Definisci la porta come il centro del bordo opposto
-            goal = np.array([X_MAX, Y_MAX/2])
+            goal = np.array([0, Y_MAX/2])
 
             # Calcola la direzione dal disco verso la porta
             direction = goal - measurement
@@ -293,62 +224,49 @@ class MontecarloFilter:
 
             # Posizione di partenza del robot: dietro al disco rispetto alla porta
             start_pos = measurement - direction * HIT_DISTANCE
-            #print(f"Start position {start_pos}")
+            rospy.logdebug(f"Start position {start_pos}")
                 
             # Primo tentativo: direzione diretta verso il goal
             if self.is_valid(start_pos):
-                print("___ ATTACCO: colpisco il disco verso la porta con movimento unico! ___")
+                rospy.logdebug("Attacco: colpisco il disco verso la porta con movimento unico!")
                 self.robot.move_to_point(*start_pos, wait_robot=True)  # Muovi il robot dietro al disco
-                print(f" 1. Posizione di attacco raggiunta dal robot. measurement {measurement}")
+                rospy.logdebug("Posizione di attacco raggiunta dal robot. measurement {measurement}")
                 self.robot.move_to_point(*measurement, wait_robot=True)
-                print(" 2.Colpo eseguito.")            
+                rospy.logdebug("Colpo eseguito.")            
             # Secondo tentativo: direzione riflessa (rimbalzo)
             else:
                 # Puck vicino al bordo lungo del tavolo
-                print("__ Posizione di attacco NON raggiungibile dal robot. Provo colpo con RIMBALZO! ___")      
+                rospy.logdebug("Posizione di attacco non raggiungibile dal robot. Provo colpo con rimbalzo!")      
 
                 direction_reflected = np.array([direction[0], -direction[1]])
                 start_pos_reflected = measurement - direction_reflected * HIT_DISTANCE
 
                 if self.is_valid(start_pos_reflected):
-                    print(" 1. Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
+                    rospy.logdebug("Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
                     self.robot.move_to_point(*start_pos_reflected, wait_robot=True)
-                    if self.is_valid(measurement):
-                        print(" 2. compisco posizione vera del disco ")
-                        self.robot.move_to_point(*measurement, wait_robot=True)
-                    else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
-                        y_offset = BORDER_DISTANCE if measurement[1] < (Y_MAX / 2) else -BORDER_DISTANCE
-                        print(" 2. compisco posizione vera del disco ")
-                        self.robot.move_to_point(measurement[0], measurement[1] - y_offset, wait_robot=True)
+                    self.robot.move_to_point(*measurement, wait_robot=True)
                 else:
                     #siamo nel caso in cui il disco è vicino al bordo corto del 
-                    print(" ___ Siamo al bordo corto! ___")                        
-                    y_offset = BORDER_DISTANCE if measurement[1] < (Y_MAX / 2) else -BORDER_DISTANCE  # aggiunge o toglie un margine per prendere la rincorsa
-                    safe_x = BORDER_DISTANCE  # estremo che possiamo
+                    rospy.logdebug("Siamo al bordo corto!")                        
+                    y_offset = BORDER_DISTANCE if measurement[1] < Y_MAX / 2 else -BORDER_DISTANCE
+                    safe_x = X_MAX - PUCK_DIAMETER - 0.02
                     safe_y = measurement[1] + y_offset
-                    print(" 1. Rinculo!")
+
                     self.robot.move_to_point(safe_x, safe_y, wait_robot=True)
-                    if self.is_valid(measurement):
-                        print(" 2. Colpo!")
-                        self.robot.move_to_point(*measurement, wait_robot=True)
-                    """else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
-                        x_offset = BORDER_DISTANCE if measurement[0] < X_MAX / 2 else -BORDER_DISTANCE
-                        self.robot.move_to_point(measurement[0] - x_offset, measurement[1], wait_robot=True)"""
+                    self.robot.move_to_point(*measurement, wait_robot=True)
             return
         
+        #se non è fermo calcolo il nuovo target
+        new_target = self.predict_future(steps=future_steps)
 
-        if velocity is None or np.linalg.norm(velocity) < 0.01:
-
-            #se non è fermo calcolo il nuovo target
-            new_target = self.predict_future(steps=future_steps)
-
-            print(f"--- Target FUTURO: {new_target} ---")
-            print(f"  self.prev_robot_target {self.prev_robot_target}")
-            if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2)):
-                print(f" --> Target {new_target} - Chiamata panda_move {time.perf_counter()}")
-                if self.is_valid(new_target):
-                    self.robot.move_to_point(*new_target, wait_robot=True)
-                    self.prev_robot_target = new_target                  
+        if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2)):
+                rospy.logdebug(f"Target {new_target} - Chiamata panda_move {time.perf_counter()}")
+                self.robot.move_to_point(*new_target, wait_robot=True)
+                self.prev_robot_target = new_target
+        
+        
+        
+        
         
         #rospy.logdebug(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")
          #Calcola e stampa la precisione finale
