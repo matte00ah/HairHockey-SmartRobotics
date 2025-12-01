@@ -9,8 +9,8 @@ default_acceleration_scaling_factor: 0.1
 # Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
 joint_limits:
   panda_joint1:
-    has_velocity_limits: true
-    max_velocity: 2.175
+    has_velocity_limits: false
+    max_velocity: 0
     has_acceleration_limits: false
     max_acceleration: 0
   panda_joint2:
@@ -41,25 +41,5 @@ joint_limits:
   panda_joint7:
     has_velocity_limits: true
     max_velocity: 2.61
-    has_acceleration_limits: false
-    max_acceleration: 0
-  spring_paddle_joint:
-    has_velocity_limits: true
-    max_velocity: 0.1
-    has_acceleration_limits: false
-    max_acceleration: 0
-  tmp0_tmp1_joint:
-    has_velocity_limits: true
-    max_velocity: 10
-    has_acceleration_limits: false
-    max_acceleration: 0
-  tmp1_tmp2_joint:
-    has_velocity_limits: true
-    max_velocity: 10
-    has_acceleration_limits: false
-    max_acceleration: 0
-  tmp2_tmp3_joint:
-    has_velocity_limits: true
-    max_velocity: 10
     has_acceleration_limits: false
     max_acceleration: 0

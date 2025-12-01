@@ -7,5 +7,5 @@ moveit_setup_assistant_config:
     relative_path: config/full_robot.srdf
   CONFIG:
     author_name: mat
-    author_email: mat@mat.it
-    generated_timestamp: 1760081734
+    author_email: mat@gmail.com
+    generated_timestamp: 1764589325

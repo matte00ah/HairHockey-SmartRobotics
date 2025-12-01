@@ -225,5 +225,3 @@ ef_group:
     - AITstar
     - ABITstar
     - BITstar
-  projection_evaluator: joints(tmp0_tmp1_joint,tmp1_tmp2_joint)
-  longest_valid_segment_fraction: 0.005

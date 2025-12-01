@@ -36,32 +36,7 @@
     </inertial>
       
   </link>
-  
-  <link name="spring_link">
-  	<!-- Visualizzazione -->
-    <!--
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://end_effector/models/airhockey_ef_spring.dae" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="red">
-        <color rgba="1 0 0 1.0"/>
-      </material>
-    </visual>
-    -->
-
-    <!-- Collisione -->
-    <!--
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://end_effector/models/airhockey_ef_spring.stl" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-    -->
-
-    <!-- Inerzia base -->
+  <link name="tmp_link">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="0.1"/>
@@ -70,8 +45,7 @@
                izz="6.541e-05"/>
     </inertial>
   </link>
-  
-  <link name="paddle_link"> 
+  <link name="mallet_link"> 
   <!-- Visualizzazione -->
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -84,12 +58,14 @@
     </visual>
 
     <!-- Collisione -->
+    <!--
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://end_effector/models/mallet.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
+    -->
     
 
     <!-- Inerzia base -->
@@ -102,116 +78,18 @@
     </inertial>
   </link>
 
-  <link name="tmp0">
-    <!-- Inerzia base -->
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.1"/>
-      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
-              iyy="3.718e-05" iyz="0.0"
-              izz="6.541e-05"/>
-    </inertial>
-  </link>
-  
-  <link name="tmp1">
-    <!-- Inerzia base -->
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.1"/>
-      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
-              iyy="3.718e-05" iyz="0.0"
-              izz="6.541e-05"/>
-    </inertial>
-  </link>
-  
-  <link name="tmp2">
-    <!-- Inerzia base -->
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.1"/>
-      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
-              iyy="3.718e-05" iyz="0.0"
-              izz="6.541e-05"/>
-    </inertial>
-  </link>
-  
-  <link name="tmp3">
-    <!-- Inerzia base -->
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.1"/>
-      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
-              iyy="3.718e-05" iyz="0.0"
-              izz="6.541e-05"/>
-    </inertial>
-  </link>
-  
-  <!--
-  <joint name="world_stick_joint" type ="fixed">
-    <parent link="world" />
-    <child link="stick_link" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </joint>
-  -->
+  <!-- JOINTS -->
 
-  <joint name="stick_tmp0_joint" type="fixed">
+  <joint name="stick_tmp_joint" type="fixed">
     <parent link="stick_link"/>
-    <child link="tmp0"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/> <!-- -0.7853 -->
+    <child link="tmp_link"/>
+    <origin xyz="0 0 0" rpy="0 ${-pi/6} 0"/> <!-- -0.7853 -->
   </joint>
 
-  <joint name="tmp0_tmp1_joint" type="revolute">
-    <parent link="tmp0"/>
-    <child link="tmp1"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit effort="100" velocity="10" lower="-1.57" upper="1.57"/>
+  <joint name="tmp_mallet_joint" type="fixed">
+    <parent link="tmp_link"/>
+    <child link="mallet_link"/>
+    <origin xyz="0 0 0.12" rpy="0 0 0"/> <!-- -0.7853 -->
   </joint>
-  
-  <joint name="tmp1_tmp2_joint" type="revolute">
-    <parent link="tmp1"/>
-    <child link="tmp2"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="100" velocity="10" lower="-1.57" upper="1.57"/>
-  </joint>
-  
-  <joint name="tmp2_tmp3_joint" type="revolute">
-    <parent link="tmp2"/>
-    <child link="tmp3"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100" velocity="10" lower="-1.57" upper="1.57"/>
-  </joint>
-  
-  <joint name="tmp3_spring_joint" type="fixed">
-    <parent link="tmp3"/>
-    <child link="spring_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
-
-  <joint name="spring_paddle_joint" type="prismatic">
-    <parent link="spring_link"/>
-    <child link="paddle_link"/>
-    <origin xyz="0 0 0"  rpy="0 ${3*pi/4} 0"/>
-    <axis xyz="0.0 0.0 1.0"/>
-    <limit effort="100" lower="0" upper="0.05" velocity="0.1"/>
-    <dynamics spring_stiffness="2500" spring_reference="-0.06" damping="20.0" friction="0.75"/>
-    <!--
-    <parent link="spring_link"/>
-    <child link="paddle_link"/>
-    <origin xyz="0.0 0.0 -0.06"  rpy="0 0 0"/>
-    <limit effort="100" lower="0" upper="0.05" velocity="0.1"/>
-    <axis xyz="0.0 0.0 1.0"/>
-    -->
-  </joint>
-  
-  <!--
-  <gazebo>
-    <joint reference="spring_paddle_joint">
-      <spring_reference>0</spring_reference>
-      <spring_stiffness>100.0</spring_stiffness>
-    </joint>
-  </gazebo> -->
   
 </robot>

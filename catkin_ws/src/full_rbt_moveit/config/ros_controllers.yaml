@@ -1,4 +1,5 @@
 robot_arm_controller:
+  contorller_manager: moveit_simple_controller_manager/MoveitSimpleControllerManager
   type: position_controllers/JointTrajectoryController
   joints:
     - panda_joint1

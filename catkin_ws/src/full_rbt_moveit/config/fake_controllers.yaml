@@ -12,10 +12,7 @@ controller_list:
   - name: fake_ef_group_controller
     type: $(arg fake_execution_type)
     joints:
-      - tmp0_tmp1_joint
-      - tmp1_tmp2_joint
-      - tmp2_tmp3_joint
-      - spring_paddle_joint
+      []
 initial:  # Define initial robot poses per group
   - group: arm_group
     pose: home
