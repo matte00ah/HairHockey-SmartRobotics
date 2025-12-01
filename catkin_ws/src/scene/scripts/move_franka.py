@@ -4,11 +4,20 @@ import rospy
 import moveit_commander
 import time
 import os
-from geometry_msgs.msg import Pose, PoseStamped
+from geometry_msgs.msg import Pose, PoseStamped, Quaternion
 from visualization_msgs.msg import Marker
 import argparse
-from tf.transformations import quaternion_from_matrix
+from tf.transformations import quaternion_from_matrix, quaternion_from_euler, euler_from_quaternion
 import yaml
+import math
+from moveit_msgs.msg import ExecuteTrajectoryAction, ExecuteTrajectoryGoal
+from franka_msgs.msg import ErrorRecoveryAction, ErrorRecoveryGoal
+from franka_msgs.msg import FrankaState
+#from franka_msgs.msg import ErrorRecovery
+from controller_manager_msgs.srv import SwitchController
+import actionlib
+
+controller_running = True
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(script_dir, "config.yaml")
@@ -19,6 +28,71 @@ with open(config_path, "r") as f:
 X = config["table_width_m"] / 2
 Y = config["table_height_m"] / 2
 Z = config["z"]
+
+
+# Nome del controller da gestire
+ARM_CONTROLLER = 'robot_arm_controller'
+
+# Stato interno
+in_recovery = False
+
+def stop_controller(controller_name):
+    try:
+        switch_srv = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+        switch_srv(stop_controllers=[controller_name],
+                   start_controllers=[],
+                   strictness=2)
+        rospy.loginfo(f"{controller_name} fermato")
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Errore stoppando {controller_name}: {e}")
+
+def start_controller(controller_name):
+    try:
+        switch_srv = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
+        switch_srv(stop_controllers=[],
+                   start_controllers=[controller_name],
+                   strictness=2)
+        rospy.loginfo(f"{controller_name} riavviato")
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Errore riavviando {controller_name}: {e}")
+
+def state_callback(msg):
+    global in_recovery
+
+    # Reflex Mode
+    if msg.robot_mode == FrankaState.ROBOT_MODE_REFLEX:
+        if not in_recovery:
+            rospy.logwarn("Reflex rilevato → recovery in corso...")
+            in_recovery = True
+
+            # Stop controller per evitare nuovi comandi
+            stop_controller(ARM_CONTROLLER)
+
+            # Esegui ErrorRecovery
+            """try:
+                recovery = rospy.ServiceProxy('/franka_control/error_recovery', ErrorRecoveryAction)
+                recovery()
+                rospy.loginfo("ErrorRecovery chiamata")
+            except rospy.ServiceException as e:
+                rospy.logerr(f"Errore chiamando ErrorRecovery: {e}")"""
+            client = actionlib.SimpleActionClient(
+                '/franka_control/error_recovery',
+                ErrorRecoveryAction
+            )
+            client.wait_for_server()
+            goal = ErrorRecoveryGoal()  # goal vuoto
+            client.send_goal(goal)
+            client.wait_for_result()
+            rospy.loginfo("ErrorRecovery completata")
+
+    # Quando torna in Idle
+    #if msg.robot_mode == FrankaState.ROBOT_MODE_IDLE and in_recovery:
+    #print(f"MODE: {msg.robot_mode}")
+    if msg.robot_mode == FrankaState.ROBOT_MODE_IDLE and in_recovery:
+        print("IDLE!")
+        rospy.loginfo("Robot tornato in IDLE → riavvio controller")
+        start_controller(ARM_CONTROLLER)
+        in_recovery = False
 
 def parse_arguments():
     """Parses command line arguments for the robot's target position."""
@@ -31,21 +105,21 @@ def parse_arguments():
         "-x",
         "--pos_x",
         type=float,
-        default=0,
+        default=0.2,
         help="Target X coordinate in table frame (float).",
     )
     parser.add_argument(
         "-y",
         "--pos_y",
         type=float,
-        default=0.6,
+        default=0.445,
         help="Target Y coordinate in table frame (float).",
     )
     parser.add_argument(
         "-z",
         "--pos_z",
         type=float,
-        default=1,
+        default=0,
         help="Target Z coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -65,9 +139,10 @@ def parse_arguments():
     return parser.parse_args()
 
 class PandaArm:
-    def __init__(self, frame_id="world"):
+    def __init__(self, frame_id="world"):  
         # Init ROS and MoveIt
         moveit_commander.roscpp_initialize(sys.argv)
+        self.robot_client = actionlib.SimpleActionClient('execute_trajectory', ExecuteTrajectoryAction)
         self.arm = moveit_commander.MoveGroupCommander("arm_group")
         self.arm.set_max_velocity_scaling_factor(0.1)
         self.arm.set_max_acceleration_scaling_factor(0.1)
@@ -80,6 +155,18 @@ class PandaArm:
 
         print(f"Robot reference frame: {self.arm.get_planning_frame()}")
 
+
+        #rospy.init_node("reflex_handler")
+        #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
+
+        """self.recovery_client = actionlib.SimpleActionClient(
+            '/franka_control/error_recovery',
+            ErrorRecoveryAction
+        )
+        rospy.loginfo("Waiting for error_recovery server...")
+        self.recovery_client.wait_for_server()
+        rospy.loginfo("ErrorRecovery server ready.")"""
+
     @staticmethod
     def table_to_world_transform(x, y, z):
         """Applies the same transformation used for motion to map table coords to robot coords."""
@@ -88,18 +175,18 @@ class PandaArm:
         rz = z + Z # z + <altezza_tavolo>
         return rx, ry, rz
     
-    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
-        print(f"vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
+    def move_to_point_old(self, vx, vy, vz=0, wait_robot=False):
+        print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
         x, y, z = self.table_to_world_transform(vx, vy, vz)
-        print(f"vx: {x}, vy:{y}, vz:{z} WORLD")
+        print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
 
         rot = [
-            [0, 1, 0, 0],
             [-1, 0, 0, 0],
-            [0, 0, 1, 0],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
             [0, 0, 0, 1]
         ]
-        
+
         target_pose = Pose()
 
         # Imposizione della posizione finale dell'end-effector
@@ -117,11 +204,85 @@ class PandaArm:
         self.arm.set_start_state_to_current_state()
         #print(time.perf_counter())
         self.arm.set_pose_target(target_pose)
+
+        #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
+
         success = self.arm.go(wait=True)
         self.arm.stop()
         self.arm.clear_pose_targets()
         #print(time.perf_counter())
-        print("Posizione raggiunta!!!")
+        print(f"     Movimento result: {success}")
+        
+        """if not success:
+            rospy.logwarn("    Move failed! Trying error recovery...")
+            self.arm.do_error_recovery()
+            
+            # Dopo la recovery, puoi riprovare a muovere il robot
+            rospy.sleep(0.5)  # piccolo delay per sicurezza
+            success = self.arm.move_to_point(vx, vy, vz)"""
+        
+        return success
+    
+    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
+        print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
+        x, y, z = self.table_to_world_transform(vx, vy, vz)
+        print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
+
+        """rot = [
+            [-0.5, 0, 0.866, 0],
+            [0, 1, 0, 0],
+            [-0.866, 0, -0.5, 0],
+            [0, 0, 0, 1]
+        ]"""
+
+        rot = [
+            [0, -1, 0, 0],
+            [-1, 0, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1]
+        ]
+
+        target_pose = Pose()
+
+        # Imposizione della posizione finale dell'end-effector
+        target_pose.position.x = x
+        target_pose.position.y = y
+        target_pose.position.z = z
+
+        # define rotation coonstraint
+        other_target = quaternion_from_matrix(rot)
+
+        target_pose.orientation.x = other_target[0]
+        target_pose.orientation.y = other_target[1]
+        target_pose.orientation.z = other_target[2]
+        target_pose.orientation.w = other_target[3]
+
+
+        self.arm.set_start_state_to_current_state()
+        #print(time.perf_counter())
+        #self.arm.set_pose_target(target_pose)
+
+        #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
+        fraction = 0.0
+        if fraction < 1.0:
+            plan_cartesian, fraction = self.arm.compute_cartesian_path([target_pose], 0.01)
+            print('completed')
+
+        robot_goal = ExecuteTrajectoryGoal()
+        robot_goal.trajectory = plan_cartesian
+        self.robot_client.send_goal(robot_goal)
+        success = self.arm.execute(plan_cartesian, wait=True)
+
+        self.arm.stop()
+        self.arm.clear_pose_targets()
+        #self.arm.stop()
+        
+        #success = self.arm.go(wait=True)
+        #self.arm.stop()
+        #self.arm.clear_pose_targets()
+        #print(time.perf_counter())
+        #print(f"     Movimento result: {success}")
+        
         return success
     
 class TargetVisualizer:
@@ -130,7 +291,10 @@ class TargetVisualizer:
         self.pub = rospy.Publisher("/visualization_marker", Marker, queue_size=1, latch=True)
         self.frame_id = frame_id
 
-    def publish_sphere(self, x, y, z, diameter=0.06, rgba=(1.0, 0.0, 0.0, 0.9), ns="target", mid=0, frame_id='world'):
+    def publish_sphere(self, vx, vy, vz, diameter=0.06, rgba=(1.0, 0.0, 0.0, 0.9), ns="target", mid=0, frame_id='world'):
+
+        x, y, z = PandaArm.table_to_world_transform(vx, vy, vz)
+
         m = Marker()
         m.header.frame_id = frame_id
         m.header.stamp = rospy.Time.now()
@@ -179,9 +343,10 @@ if __name__ == "__main__":
     #move_group.set_start_state_to_current_state()
 
     #vx, vy, vz = 0, 0.65, 1.1   # rispetto al WORLD
-    vx, vy, vz = 1.57, 0.425, 0  # rispetto all'angolo
-    pvx, pvy, pvz = robot.table_to_world_transform(vx, vy, vz)
-    visualizer.publish_sphere(pvx, pvy, pvz, diameter=args.sphere_diameter)
+    #vx, vy, vz = 1.57, 0.425, 0  # rispetto all'angolo
+    vx, vy, vz = args.pos_x, args.pos_y, args.pos_z
+    #pvx, pvy, pvz = robot.table_to_world_transform(vx, vy, vz)
+    visualizer.publish_sphere(vx, vy, vz, diameter=args.sphere_diameter)
 
     # Imposta il vincolo di orientazione: x_ee allineato con -y_world
     success = robot.move_to_point(vx, vy, vz)
