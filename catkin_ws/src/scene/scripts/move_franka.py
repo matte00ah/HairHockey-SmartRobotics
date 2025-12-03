@@ -10,7 +10,7 @@ import argparse
 from tf.transformations import quaternion_from_matrix, quaternion_from_euler, euler_from_quaternion
 import yaml
 import math
-from moveit_msgs.msg import ExecuteTrajectoryAction, ExecuteTrajectoryGoal
+from moveit_msgs.msg import ExecuteTrajectoryAction, ExecuteTrajectoryGoal, OrientationConstraint, Constraints
 from franka_msgs.msg import ErrorRecoveryAction, ErrorRecoveryGoal
 from franka_msgs.msg import FrankaState
 #from franka_msgs.msg import ErrorRecovery
@@ -119,7 +119,7 @@ def parse_arguments():
         "-z",
         "--pos_z",
         type=float,
-        default=0,
+        default=0.2,
         help="Target Z coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -250,28 +250,48 @@ class PandaArm:
         target_pose.position.z = z
 
         # define rotation coonstraint
-        other_target = quaternion_from_matrix(rot)
+        base_q = quaternion_from_matrix(rot)
 
-        target_pose.orientation.x = other_target[0]
-        target_pose.orientation.y = other_target[1]
-        target_pose.orientation.z = other_target[2]
-        target_pose.orientation.w = other_target[3]
+        target_pose.orientation.x = base_q[0]
+        target_pose.orientation.y = base_q[1]
+        target_pose.orientation.z = base_q[2]
+        target_pose.orientation.w = base_q[3]
 
+        #define orientation constraint
+        reference_frame = 'world'
+        orientation_constraint = OrientationConstraint()
+        orientation_constraint.header.frame_id = reference_frame
+        orientation_constraint.link_name = self.arm.get_end_effector_link()
+
+        # set rotation tolerances: x and y must stay fixed while robot can rotate mallet around the z axis within the (-90,90) range
+        orientation_constraint.absolute_x_axis_tolerance = 0.01
+        orientation_constraint.absolute_y_axis_tolerance = math.pi/12
+        orientation_constraint.absolute_z_axis_tolerance = math.pi/2
+        orientation_constraint.weight = 1.0
+
+        constraints = Constraints()
+        constraints.orientation_constraints.append(orientation_constraint)
+        self.arm.set_path_constraints(constraints)
 
         self.arm.set_start_state_to_current_state()
         #print(time.perf_counter())
-        #self.arm.set_pose_target(target_pose)
+        self.arm.set_pose_target(target_pose)
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         fraction = 0.0
-        if fraction < 1.0:
+        while fraction < 1.0:
+            #if fraction < 1.0:
+            print(f"".center(30, '='))
+            #print(self.arm.get_current_pose('mallet_link'))
+            
             plan_cartesian, fraction = self.arm.compute_cartesian_path([target_pose], 0.01)
-            print('completed')
+            print(f"fraction: {fraction}")
 
-        robot_goal = ExecuteTrajectoryGoal()
-        robot_goal.trajectory = plan_cartesian
-        self.robot_client.send_goal(robot_goal)
-        success = self.arm.execute(plan_cartesian, wait=True)
+            robot_goal = ExecuteTrajectoryGoal()
+            robot_goal.trajectory = plan_cartesian
+            self.robot_client.send_goal(robot_goal)
+            #self.arm.go(wait=True)
+            success = self.arm.execute(plan_cartesian, wait=True)
 
         self.arm.stop()
         self.arm.clear_pose_targets()
