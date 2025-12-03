@@ -83,7 +83,7 @@
   <joint name="stick_tmp_joint" type="fixed">
     <parent link="stick_link"/>
     <child link="tmp_link"/>
-    <origin xyz="0 0 0" rpy="0 ${-pi/3} 0"/> <!-- -0.7853 -->
+    <origin xyz="0 0 0" rpy="0 ${-pi/4} 0"/> <!-- -0.7853 -->
   </joint>
 
   <joint name="tmp_mallet_joint" type="fixed">

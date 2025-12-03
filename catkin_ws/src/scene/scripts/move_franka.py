@@ -2,17 +2,18 @@
 import sys
 import rospy
 import moveit_commander
-import time
 import os
-from geometry_msgs.msg import Pose, PoseStamped, Quaternion
+from geometry_msgs.msg import Pose, PointStamped
 from visualization_msgs.msg import Marker
 import argparse
+from tf import TransformListener
 from tf.transformations import quaternion_from_matrix, quaternion_from_euler, euler_from_quaternion
 import yaml
 import math
 from moveit_msgs.msg import ExecuteTrajectoryAction, ExecuteTrajectoryGoal, OrientationConstraint, Constraints
 from franka_msgs.msg import ErrorRecoveryAction, ErrorRecoveryGoal
 from franka_msgs.msg import FrankaState
+import numpy as np
 #from franka_msgs.msg import ErrorRecovery
 from controller_manager_msgs.srv import SwitchController
 import actionlib
@@ -171,6 +172,24 @@ class PandaArm:
         rz = z + Z # z + <altezza_tavolo>
         return rx, ry, rz
     
+    def compute_target_orientation(self, vx, vy, vz, reference_frame, robot_base_frame):
+        try:
+            yaw_angle_rad =  math.atan2(vy, vx) - (math.pi/2)
+            print(yaw_angle_rad)
+            c = np.cos(yaw_angle_rad)
+            s = np.sin(yaw_angle_rad)
+
+            Rz = np.array([
+                [c, -s, 0, 0],
+                [s,  c, 0, 0],
+                [0,  0, 1, 0],
+                [0, 0, 0, 1]
+            ])
+            return Rz
+            
+        except Exception as e:
+            rospy.logerr(f"Errore di trasformazione: {e}")
+    
     def move_to_point_old(self, vx, vy, vz=0, wait_robot=False):
         print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
         x, y, z = self.table_to_world_transform(vx, vy, vz)
@@ -231,12 +250,17 @@ class PandaArm:
             [0, 0, 0, 1]
         ]"""
 
-        rot = [
+        rot_z = self.compute_target_orientation(x, y, z, 'world', 'mallet_link')
+
+        rot = np.array([
             [0, -1, 0, 0],
             [-1, 0, 0, 0],
             [0, 0, -1, 0],
             [0, 0, 0, 1]
-        ]
+        ])
+
+        target_orientation = rot @ rot_z
+        target_orientation = target_orientation.tolist()
 
         target_pose = Pose()
 
@@ -246,7 +270,7 @@ class PandaArm:
         target_pose.position.z = z
 
         # define rotation coonstraint
-        base_q = quaternion_from_matrix(rot)
+        base_q = quaternion_from_matrix(target_orientation)
 
         target_pose.orientation.x = base_q[0]
         target_pose.orientation.y = base_q[1]
