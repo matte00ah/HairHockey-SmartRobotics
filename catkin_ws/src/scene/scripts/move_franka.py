@@ -279,7 +279,7 @@ class PandaArm:
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         fraction = 0.0
-        while fraction < 1.0:
+        while 1:
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))
