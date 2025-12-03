@@ -29,70 +29,12 @@ X = config["table_width_m"] / 2
 Y = config["table_height_m"] / 2
 Z = config["z"]
 
-
-# Nome del controller da gestire
-ARM_CONTROLLER = 'robot_arm_controller'
-
 # Stato interno
 in_recovery = False
 
-def stop_controller(controller_name):
-    try:
-        switch_srv = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
-        switch_srv(stop_controllers=[controller_name],
-                   start_controllers=[],
-                   strictness=2)
-        rospy.loginfo(f"{controller_name} fermato")
-    except rospy.ServiceException as e:
-        rospy.logerr(f"Errore stoppando {controller_name}: {e}")
-
-def start_controller(controller_name):
-    try:
-        switch_srv = rospy.ServiceProxy('/controller_manager/switch_controller', SwitchController)
-        switch_srv(stop_controllers=[],
-                   start_controllers=[controller_name],
-                   strictness=2)
-        rospy.loginfo(f"{controller_name} riavviato")
-    except rospy.ServiceException as e:
-        rospy.logerr(f"Errore riavviando {controller_name}: {e}")
-
-def state_callback(msg):
-    global in_recovery
-
-    # Reflex Mode
-    if msg.robot_mode == FrankaState.ROBOT_MODE_REFLEX:
-        if not in_recovery:
-            rospy.logwarn("Reflex rilevato → recovery in corso...")
-            in_recovery = True
-
-            # Stop controller per evitare nuovi comandi
-            stop_controller(ARM_CONTROLLER)
-
-            # Esegui ErrorRecovery
-            """try:
-                recovery = rospy.ServiceProxy('/franka_control/error_recovery', ErrorRecoveryAction)
-                recovery()
-                rospy.loginfo("ErrorRecovery chiamata")
-            except rospy.ServiceException as e:
-                rospy.logerr(f"Errore chiamando ErrorRecovery: {e}")"""
-            client = actionlib.SimpleActionClient(
-                '/franka_control/error_recovery',
-                ErrorRecoveryAction
-            )
-            client.wait_for_server()
-            goal = ErrorRecoveryGoal()  # goal vuoto
-            client.send_goal(goal)
-            client.wait_for_result()
-            rospy.loginfo("ErrorRecovery completata")
-
-    # Quando torna in Idle
-    #if msg.robot_mode == FrankaState.ROBOT_MODE_IDLE and in_recovery:
-    #print(f"MODE: {msg.robot_mode}")
-    if msg.robot_mode == FrankaState.ROBOT_MODE_IDLE and in_recovery:
-        print("IDLE!")
-        rospy.loginfo("Robot tornato in IDLE → riavvio controller")
-        start_controller(ARM_CONTROLLER)
-        in_recovery = False
+# Nome del controller da gestire
+ARM_CONTROLLER = 'robot_arm_controller'
+REFLEX_MODE = 4
 
 def parse_arguments():
     """Parses command line arguments for the robot's target position."""
@@ -138,6 +80,69 @@ def parse_arguments():
 
     return parser.parse_args()
 
+class FrankaAutoRecovery:
+    def __init__(self):
+        #rospy.init_node("franka_auto_recovery")
+
+        # Abilita subscriber allo stato del robot
+        rospy.Subscriber("/franka_state_controller/franka_states",
+                         FrankaState, self.state_callback)
+
+        # Service per controllare i controller
+        rospy.wait_for_service("/controller_manager/switch_controller")
+        self.switch_controller = rospy.ServiceProxy(
+            "/controller_manager/switch_controller", SwitchController
+        )
+
+        # Client dell’action di error recovery
+        self.recovery_client = actionlib.SimpleActionClient(
+            "/franka_control/error_recovery", ErrorRecoveryAction
+        )
+        self.recovery_client.wait_for_server()
+
+        rospy.loginfo("Franka auto recovery attivo")
+        self.my_in_recovery = False
+
+    def state_callback(self, state):
+        if state.robot_mode == REFLEX_MODE and not self.in_recovery:
+            rospy.logwarn("⚠️ Robot in REFLEX MODE! Avvio recovery...")
+            self.do_recovery()
+
+    def stop_robot_arm_controller(self):
+        rospy.loginfo("🔴 Stop robot_arm_controller...")
+        self.switch_controller([], ["robot_arm_controller"], 2, False, False)
+
+    # ---------------------------------------------------------------------- #
+    # RIAVVIO CONTROLLER
+    # ---------------------------------------------------------------------- #
+    def start_robot_arm_controller(self):
+        rospy.loginfo("🟢 Start robot_arm_controller...")
+        self.switch_controller(["robot_arm_controller"], [], 2, False, False)
+
+    # ---------------------------------------------------------------------- #
+    # PROCEDURA DI RECOVERY
+    # ---------------------------------------------------------------------- #
+    def do_recovery(self):
+        self.in_recovery = True
+
+        # Step 1: Stop controller
+        self.stop_robot_arm_controller()
+
+        # Step 2: Avvia error recovery
+        goal = ErrorRecoveryGoal()
+        rospy.loginfo("🔧 Running /franka_control/error_recovery...")
+        self.recovery_client.send_goal(goal)
+        self.recovery_client.wait_for_result()
+
+        rospy.loginfo("✔ Robot tornato in Idle")
+
+        # Step 3: Riattiva robot_arm_controller
+        self.start_robot_arm_controller()
+
+        rospy.loginfo("🟢 Recovery completata — robot pronto!")
+        self.in_recovery = False
+
+
 class PandaArm:
     def __init__(self, frame_id="world"):  
         # Init ROS and MoveIt
@@ -149,23 +154,14 @@ class PandaArm:
         self.arm.set_pose_reference_frame('world')
         self.frame_id = frame_id
 
-        self.arm.set_goal_position_tolerance(0.01)  # default 0.001
-        self.arm.set_goal_orientation_tolerance(0.01)
-        self.arm.set_goal_joint_tolerance(0.01)
+        self.arm.set_goal_position_tolerance(0.03)  # default 0.001
+        self.arm.set_goal_orientation_tolerance(0.03)
+        self.arm.set_goal_joint_tolerance(0.03)
 
         print(f"Robot reference frame: {self.arm.get_planning_frame()}")
 
 
-        #rospy.init_node("reflex_handler")
-        #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
-
-        """self.recovery_client = actionlib.SimpleActionClient(
-            '/franka_control/error_recovery',
-            ErrorRecoveryAction
-        )
-        rospy.loginfo("Waiting for error_recovery server...")
-        self.recovery_client.wait_for_server()
-        rospy.loginfo("ErrorRecovery server ready.")"""
+        FrankaAutoRecovery()
 
     @staticmethod
     def table_to_world_transform(x, y, z):
@@ -278,13 +274,13 @@ class PandaArm:
         self.arm.set_pose_target(target_pose)
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
-        fraction = 0.0
-        while 1:
+        
+        for i in range(10):
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))
             
-            plan_cartesian, fraction = self.arm.compute_cartesian_path([target_pose], 0.01)
+            plan_cartesian, fraction = self.arm.compute_cartesian_path([target_pose], 0.05)
             print(f"fraction: {fraction}")
 
             robot_goal = ExecuteTrajectoryGoal()
@@ -293,7 +289,7 @@ class PandaArm:
             #self.arm.go(wait=True)
             success = self.arm.execute(plan_cartesian, wait=True)
 
-        self.arm.stop()
+        #self.arm.stop()
         self.arm.clear_pose_targets()
         #self.arm.stop()
         

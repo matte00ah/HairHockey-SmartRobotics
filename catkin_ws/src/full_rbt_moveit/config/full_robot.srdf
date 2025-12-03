@@ -19,7 +19,7 @@
         <joint name="panda_joint3" value="0"/>
         <joint name="panda_joint4" value="-2.2874"/>
         <joint name="panda_joint5" value="0"/>
-        <joint name="panda_joint6" value="0.6757"/>
+        <joint name="panda_joint6" value="2.2567"/>
         <joint name="panda_joint7" value="0"/>
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
