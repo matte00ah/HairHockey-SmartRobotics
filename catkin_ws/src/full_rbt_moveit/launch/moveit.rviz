@@ -40,7 +40,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Acceleration_Scaling_Factor: 0.1
+    - Acceleration_Scaling_Factor: 0.5
       Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
       JointsTab_Use_Radians: true
@@ -318,7 +318,7 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
-      Velocity_Scaling_Factor: 0.1
+      Velocity_Scaling_Factor: 0.5
     - Class: rviz/TF
       Enabled: true
       Filter (blacklist): ""
@@ -326,8 +326,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        mallet_link:
-          Value: true
         panda_EE:
           Value: false
         panda_K:
@@ -368,10 +366,6 @@ Visualization Manager:
           Value: false
         panda_link8:
           Value: false
-        stick_link:
-          Value: false
-        tmp_link:
-          Value: false
         world:
           Value: false
       Marker Alpha: 1
@@ -411,10 +405,6 @@ Visualization Manager:
                               panda_EE:
                                 panda_K:
                                   {}
-                            stick_link:
-                              tmp_link:
-                                mallet_link:
-                                  {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -449,9 +439,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.13500002026557922
+      Pitch: 0.13499949872493744
       Target Frame: panda_link0
-      Yaw: 5.52495002746582
+      Yaw: 5.879948616027832
     Saved: ~
 Window Geometry:
   Displays:
@@ -469,5 +459,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 923
-  X: 72
+  X: 997
   Y: 27

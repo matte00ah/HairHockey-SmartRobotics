@@ -82,8 +82,6 @@ def single_mask(p_frame, low_w, upper_w):
         cv2.imwrite("mask_white_red.png", combined_mask)
         cv2.waitKey(0)
 
-        print(f"shape mask: {combined_mask.shape}")
-
         return combined_mask  
 
 

@@ -136,7 +136,9 @@ class MontecarloFilter:
         # Calcola distanza dalla base del robot
         dist = np.linalg.norm(pos - ROBOT_BASE)
         #print(f"distanza: {dist}")
-        return dist <= ROBOT_REACH
+        reach =  dist <= ROBOT_REACH
+        print(f"reachable? {reach}")
+        return reach
 
     
     def predict_future(self, steps=10):
@@ -156,10 +158,10 @@ class MontecarloFilter:
             est_pos = np.mean(future_particles[:, 0:2], axis=0)
 
             if self.is_reachable(est_pos):  # assumendo che self.true_reach abbia un metodo 'contains'
-                print(f"Prima posizione raggiungibile al passo {step+1}")
+                #print(f"Prima posizione raggiungibile al passo {step+1}")
                 return est_pos
 
-        print(f"Posizione non raggiungibile: {est_pos}")
+        print(f"   Posizione NON raggiungibile: {est_pos}")
         return None
 
     def update(self, measurement, velocity):
@@ -193,11 +195,11 @@ class MontecarloFilter:
         return (measurement - self.prev_measurement) / self.dt
     
     def is_valid(self, pos):
-        return (
-            self.is_reachable(pos)
+        valid = (self.is_reachable(pos)
             and pos[0] <= X_MAX - BORDER_DISTANCE and pos[1] <= Y_MAX - BORDER_DISTANCE
-            and pos[0] >= BORDER_DISTANCE and pos[1] >= BORDER_DISTANCE
-        )
+            and pos[0] >= BORDER_DISTANCE and pos[1] >= BORDER_DISTANCE)
+        print(f"Valido? {valid}")
+        return valid
     
     def training(self, wx, wy):
         measurement = None if wx is None or wy is None else np.array([wx, wy])
@@ -252,8 +254,8 @@ class MontecarloFilter:
             self.resample()
             self.prev_measurement = measurement
 
-        # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa)
-        if velocity is not None and velocity[0] < RETURN_VELOCITY_X:
+        # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa) e in posizione oltre il reachable
+        if velocity is not None and velocity[0] < RETURN_VELOCITY_X and not self.is_reachable(measurement):
             print("--- Torna a BASE. Disco va verso avversario ---")
             self.robot.move_to_point(*GAME_POSE)
     
@@ -261,8 +263,8 @@ class MontecarloFilter:
         self.est_positions.append(est_pos)
         self.real_positions.append(measurement)
 
-        print(f"   velocity:", velocity)
-        print(f"   measurement:", measurement)
+        print(f"    velocity:", velocity)
+        print(f"    measurement:", measurement)
 
         if (measurement is None):
             if self.occlusion_state > 5:
@@ -279,8 +281,8 @@ class MontecarloFilter:
                 return        
         self.occlusion_state = 0
 
-        print(f"  vel norm:{np.linalg.norm(velocity)}")
-        if (velocity is None or np.linalg.norm(velocity) < 0.01) and self.is_reachable(measurement):
+        print(f"   vel norm: {np.linalg.norm(velocity)}")
+        if (velocity is None or np.linalg.norm(velocity) < 0.025) and self.is_reachable(measurement):
             # Strategia di attacco avanzata: colpo diretto verso la porta
             print("--- Puck FERMO e raggiungibile ---")
 
@@ -299,9 +301,9 @@ class MontecarloFilter:
             if self.is_valid(start_pos):
                 print("___ ATTACCO: colpisco il disco verso la porta con movimento unico! ___")
                 self.robot.move_to_point(*start_pos, wait_robot=True)  # Muovi il robot dietro al disco
-                print(f" 1. Posizione di attacco raggiunta dal robot. measurement {measurement}")
+                print(f"    1. Posizione di attacco raggiunta dal robot. measurement {measurement}")
                 self.robot.move_to_point(*measurement, wait_robot=True)
-                print(" 2.Colpo eseguito.")            
+                print("    2.Colpo eseguito.")            
             # Secondo tentativo: direzione riflessa (rimbalzo)
             else:
                 # Puck vicino al bordo lungo del tavolo
@@ -311,14 +313,14 @@ class MontecarloFilter:
                 start_pos_reflected = measurement - direction_reflected * HIT_DISTANCE
 
                 if self.is_valid(start_pos_reflected):
-                    print(" 1. Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
+                    print("    1. Colpo con rimbalzo: posiziono il robot per colpire il disco verso il bordo!")
                     self.robot.move_to_point(*start_pos_reflected, wait_robot=True)
                     if self.is_valid(measurement):
-                        print(" 2. compisco posizione vera del disco ")
+                        print("    2. compisco posizione vera del disco ")
                         self.robot.move_to_point(*measurement, wait_robot=True)
                     else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
                         y_offset = BORDER_DISTANCE if measurement[1] < (Y_MAX / 2) else -BORDER_DISTANCE
-                        print(" 2. compisco posizione vera del disco ")
+                        print("    2. compisco posizione vera del disco ")
                         self.robot.move_to_point(measurement[0], measurement[1] - y_offset, wait_robot=True)
                 else:
                     #siamo nel caso in cui il disco è vicino al bordo corto del 
@@ -326,10 +328,10 @@ class MontecarloFilter:
                     y_offset = BORDER_DISTANCE if measurement[1] < (Y_MAX / 2) else -BORDER_DISTANCE  # aggiunge o toglie un margine per prendere la rincorsa
                     safe_x = BORDER_DISTANCE  # estremo che possiamo
                     safe_y = measurement[1] + y_offset
-                    print(" 1. Rinculo!")
+                    print("    1. Provo rinculo!")
                     self.robot.move_to_point(safe_x, safe_y, wait_robot=True)
                     if self.is_valid(measurement):
-                        print(" 2. Colpo!")
+                        print("    2. Provo colpo!")
                         self.robot.move_to_point(*measurement, wait_robot=True)
                     """else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
                         x_offset = BORDER_DISTANCE if measurement[0] < X_MAX / 2 else -BORDER_DISTANCE
@@ -337,15 +339,15 @@ class MontecarloFilter:
             return
         
 
-        if velocity is None or np.linalg.norm(velocity) < 0.01:
+        if np.linalg.norm(velocity) > 0.01: # velocity is None or np.linalg.norm(velocity) < 0.01:
 
             #se non è fermo calcolo il nuovo target
             new_target = self.predict_future(steps=future_steps)
 
             print(f"--- Target FUTURO: {new_target} ---")
-            print(f"  self.prev_robot_target {self.prev_robot_target}")
+            #print(f"  self.prev_robot_target {self.prev_robot_target}")
             if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2)):
-                print(f" --> Target {new_target} - Chiamata panda_move {time.perf_counter()}")
+                print(f" --> Target {new_target} - CHIAMATA A MOVE FRANKA {time.perf_counter()}")
                 if self.is_valid(new_target):
                     self.robot.move_to_point(*new_target, wait_robot=True)
                     self.prev_robot_target = new_target                  

@@ -13,6 +13,7 @@ from origin_detector import process_frame
 from move_franka import PandaArm
 import subprocess
 import glob
+import re
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 config_path = os.path.join(script_dir, "config.yaml")
@@ -26,8 +27,10 @@ LOWER_RED2 = np.array(config["lower_red2"], dtype=np.uint8)
 UPPER_RED2 = np.array(config["upper_red2"], dtype=np.uint8)
 
 
-DISK_LOWER_RED1 = np.array(config["disk_lower_red1"], dtype=np.uint8)
-DISK_UPPER_RED1 = np.array(config["disk_upper_red1"], dtype=np.uint8)
+DISK_LOWER_RED1_LEFT = np.array(config["disk_lower_red1_left"], dtype=np.uint8)
+DISK_UPPER_RED1_LEFT = np.array(config["disk_upper_red1_left"], dtype=np.uint8)
+DISK_LOWER_RED2_LEFT = np.array(config["disk_lower_red2_left"], dtype=np.uint8)
+DISK_UPPER_RED2_LEFT = np.array(config["disk_upper_red2_left"], dtype=np.uint8)
 DISK_LOWER_RED2 = np.array(config["disk_lower_red2"], dtype=np.uint8)
 DISK_UPPER_RED2 = np.array(config["disk_upper_red2"], dtype=np.uint8)
 
@@ -96,43 +99,6 @@ def get_video_devices():
     """Ritorna la lista dei device video es: ['/dev/video0', '/dev/video1']"""
     return sorted(glob.glob("/dev/video*"))
 
-def get_processes_using_device(device):
-    """Ritorna la lista dei PID che stanno usando il device."""
-    try:
-        result = subprocess.check_output(["lsof", device], stderr=subprocess.DEVNULL)
-        lines = result.decode().strip().split("\n")[1:]  # skip header
-        pids = {int(line.split()[1]) for line in lines}
-        return list(pids)
-    except subprocess.CalledProcessError:
-        return []  # Nessun processo sta usando il device
-
-def safe_kill_process(pid):
-    try:
-        name = subprocess.check_output(["ps", "-p", str(pid), "-o", "comm="]).decode().strip()
-        # Lista di processi da NON toccare
-        protected = ["systemd", "Xorg", "wayland", "gnome-shell", "ksysguard", "mouse", "tracker"]
-        if any(p in name for p in protected):
-            print(f"[WARN] Processo protetto, non uccido {pid} ({name})")
-            return
-        print(f"[INFO] Uccido processo PID {pid} ({name})")
-        #os.kill(pid, 9)
-
-        subprocess.run(["sudo", "modprobe", "-r", "uvcvideo"], check=True)
-        time.sleep(1)
-        subprocess.run(["sudo", "modprobe", "uvcvideo"], check=True)
-
-    except Exception as e:
-        print(f"[WARN] Impossibile uccidere {pid}: {e}")
-
-def kill_processes(pids):
-    """Termina i processi che usano la camera."""
-    for pid in pids:
-        try:
-            print(f"[INFO] Uccido processo PID {pid}")
-            safe_kill_process(pid)
-        except Exception as e:
-            print(f"[WARN] Impossibile uccidere {pid}: {e}")
-
 def open_first_free_camera():
     devices = get_video_devices()
     print("Trovate camere:", devices)
@@ -140,14 +106,9 @@ def open_first_free_camera():
         dev = devices[1]"""
     for dev in devices:
         print(f"\n[INFO] Controllo {dev}")
-        pids = get_processes_using_device(dev)
-
-        if pids:
-            print(f"[INFO] Il device {dev} è usato da {pids}, provo a killarli…")
-            kill_processes(pids)
 
         print(f"[INFO] Provo ad aprire {dev}…")
-        cap = cv2.VideoCapture(dev)
+        cap = cv2.VideoCapture(dev, cv2.CAP_V4L2)
 
         if cap.isOpened():
             print(f"[SUCCESS] Camera aperta: {dev}")
@@ -158,6 +119,7 @@ def open_first_free_camera():
 
     print("[ERROR] Nessuna camera disponibile.")
     return None
+
 
 def show_hsv(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -174,6 +136,9 @@ class DiskTracker:
         try:
             if not self.cap.isOpened():
                 return
+            
+            for i in range(10):
+                _, _ = self.cap.read()
 
             if FIND_CORNERS:
                 # Extract game table corners
@@ -181,16 +146,19 @@ class DiskTracker:
                 if not ret:
                     return
                 
+                #frame = barrel_dist_correction(frame)
                 # --- Dividi immagine stereo ZED 2i in sinistra e destra ---
                 h, w, _ = frame.shape
                 left_img = frame[:, :w//2]
                 frame = left_img
+                frame = barrel_dist_correction(frame)
 
+                print(f"shape: {frame.shape}")
+                
                 cv2.imshow("Frame per angoli",frame)
                 if (cv2.waitKey(0) & 0xFF) == ord('q'):  # TODO: mettere waitKey(1) per avere video
                     pass
-                
-                frame = barrel_dist_correction(frame)
+
                 self.corners = process_frame(frame)
 
             else:
@@ -201,7 +169,7 @@ class DiskTracker:
             robot = PandaArm()
 
             print(f"Move to Game pose... {GAME_POSE[0]}")
-            #TODO robot.move_to_point(vx=GAME_POSE[0], vy=GAME_POSE[1], vz=GAME_POSE[2], wait_robot=True)
+            robot.move_to_point(vx=GAME_POSE[0], vy=GAME_POSE[1], vz=GAME_POSE[2], wait_robot=True)
 
             self.H = compute_homography(self.corners)
 
@@ -216,6 +184,9 @@ class DiskTracker:
             self.cap.release()
         except KeyboardInterrupt:
             self.cap.release()
+        finally:
+            self.cap_release()
+            cv2.destroyAllWindows()
             
         # Thread di elaborazione
         """self.processing_thread = threading.Thread(target=self.processing_loop)
@@ -249,9 +220,18 @@ class DiskTracker:
         #while self.cap.isOpened():
         while True:
             try:
+                for _ in range(10):
+                    self.cap.grab()
+                
+                ret, frame = self.cap.retrieve()
+                """if not self.cap.grab():  # prova a scartare frame successivi
+                    break
                 #frame = self.frame_queue.get(timeout=0.1)
                 ret, frame = self.cap.read()
-                frame = barrel_dist_correction(frame)
+                if not self.cap.grab():  # prova a scartare frame successivi
+                    break"""
+
+                #frame = barrel_dist_correction(frame)
 
                 """cv2.imshow("Tracking dischi", frame)
                 if cv2.waitKey(1) == ord('q'):
@@ -262,8 +242,9 @@ class DiskTracker:
             
             h, w, _ = frame.shape
             left_img = frame[:, :w//2]
-            frame = left_img            
-            
+            frame = left_img
+            frame = barrel_dist_correction(frame)
+
             # HSV + mask
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             hsv_h, hsv_w, _ = frame.shape
@@ -275,7 +256,11 @@ class DiskTracker:
             
             mask = np.zeros(frame.shape[:2], dtype=np.uint8)
             # Maschera rossa con apertura e chiusura
-            mask[:, :hsv_w//2] = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED1, DISK_UPPER_RED1)
+            #mask[:, :hsv_w//2] = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED1_LEFT, DISK_UPPER_RED1_LEFT)
+            mask1_left = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED1_LEFT, DISK_UPPER_RED1_LEFT)
+            mask2_left = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED2_LEFT, DISK_UPPER_RED2_LEFT)
+            mask[:, :hsv_w//2] = cv2.bitwise_or(mask1_left, mask2_left)
+
             mask[:, hsv_w//2:] = cv2.inRange(hsv[:, hsv_w//2:], DISK_LOWER_RED2, DISK_UPPER_RED2)
 
             #mask1 = cv2.inRange(hsv, LOWER_RED1, UPPER_RED1)
@@ -286,8 +271,11 @@ class DiskTracker:
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
             mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
 
-            """cv2.imshow("Tracking dischi", mask)
-            if cv2.waitKey(1) == ord('q'):
+            """cv2.imshow("Tracking dischi", frame)
+            if cv2.waitKey(0) == ord('q'):
+                break
+            cv2.imshow("Tracking dischi", mask)
+            if cv2.waitKey(0) == ord('q'):
                 break"""
 
             # Connected components per centri
@@ -316,10 +304,10 @@ class DiskTracker:
                     #print(f"Disco trovato: pixel=({cx:.0f},{cy:.0f}))")
                     cv2.circle(frame, (int(cx), int(cy)), 10, (0, 255, 0), 2)   # contorno verde
                     cv2.circle(frame, (int(cx), int(cy)), 3, (0, 0, 255), -1)   # punto rosso al centro
-                    cv2.imshow("Tracking dischi", frame)
+                    """cv2.imshow("Tracking dischi", frame)
                     if cv2.waitKey(1) == ord('q'):
-                        break
-                    print(f"measurement  in pixel {cx, cy}")
+                        break"""
+                    print(f"\n\nDISCO: measurement in pixel {cx, cy}")
                     wx, wy = pixel_to_meter_fast((cx, cy), self.H)
                     if TRAINING: 
                         self.montecarlo.training(wx, wy)

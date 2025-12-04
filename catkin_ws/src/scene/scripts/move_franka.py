@@ -30,9 +30,6 @@ X = config["table_width_m"] / 2
 Y = config["table_height_m"] / 2
 Z = config["z"]
 
-# Stato interno
-in_recovery = False
-
 # Nome del controller da gestire
 ARM_CONTROLLER = 'robot_arm_controller'
 REFLEX_MODE = 4
@@ -84,6 +81,7 @@ def parse_arguments():
 class FrankaAutoRecovery:
     def __init__(self):
         #rospy.init_node("franka_auto_recovery")
+        self.in_recovery = False
 
         # Abilita subscriber allo stato del robot
         rospy.Subscriber("/franka_state_controller/franka_states",
@@ -102,7 +100,6 @@ class FrankaAutoRecovery:
         self.recovery_client.wait_for_server()
 
         rospy.loginfo("Franka auto recovery attivo")
-        self.my_in_recovery = False
 
     def state_callback(self, state):
         if state.robot_mode == REFLEX_MODE and not self.in_recovery:
@@ -147,6 +144,7 @@ class FrankaAutoRecovery:
 class PandaArm:
     def __init__(self, frame_id="world"):  
         # Init ROS and MoveIt
+        rospy.init_node("panda_move", anonymous=True, argv=[])
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot_client = actionlib.SimpleActionClient('execute_trajectory', ExecuteTrajectoryAction)
         self.arm = moveit_commander.MoveGroupCommander("arm_group")
@@ -160,7 +158,6 @@ class PandaArm:
         self.arm.set_goal_joint_tolerance(0.03)
 
         print(f"Robot reference frame: {self.arm.get_planning_frame()}")
-
 
         FrankaAutoRecovery()
 
@@ -241,7 +238,7 @@ class PandaArm:
     def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
         print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
         x, y, z = self.table_to_world_transform(vx, vy, vz)
-        print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
+        #print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
 
         """rot = [
             [-0.5, 0, 0.866, 0],
@@ -299,7 +296,7 @@ class PandaArm:
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         
-        for i in range(10):
+        for i in range(3):
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))

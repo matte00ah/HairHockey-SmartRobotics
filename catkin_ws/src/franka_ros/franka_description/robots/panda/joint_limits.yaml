@@ -2,7 +2,7 @@ joint1:
   limit:
     lower:     -2.8973
     upper:      2.8973
-    velocity:   0.0 #2.1750
+    velocity:   2.1750
     effort:    87.0
 
 joint2:
