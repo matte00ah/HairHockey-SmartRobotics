@@ -17,6 +17,7 @@ import numpy as np
 #from franka_msgs.msg import ErrorRecovery
 from controller_manager_msgs.srv import SwitchController
 import actionlib
+import time
 
 controller_running = True
 
@@ -296,7 +297,7 @@ class PandaArm:
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         
-        for i in range(3):
+        for i in range(2):
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))
@@ -306,8 +307,9 @@ class PandaArm:
 
             robot_goal = ExecuteTrajectoryGoal()
             robot_goal.trajectory = plan_cartesian
-            self.robot_client.send_goal(robot_goal)
-            #self.arm.go(wait=True)
+            #self.robot_client.send_goal(robot_goal)
+            #self.arm.go(wait=True)       
+
             success = self.arm.execute(plan_cartesian, wait=True)
 
         #self.arm.stop()

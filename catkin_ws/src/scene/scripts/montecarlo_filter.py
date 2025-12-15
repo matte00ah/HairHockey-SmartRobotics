@@ -30,7 +30,7 @@ OCCLUSION_MOVE_Y = config["occlusion_move_y"]
 
 
 class MontecarloFilter:
-    def __init__(self,robot, N=4000, dt=0.5, f=0.01, process_noise_std=0.3, measurement_noise_std=0.05, velocity_noise_std=0.2):
+    def __init__(self,robot, N=2500, dt=0.05, f=0.01, process_noise_std=0.5, measurement_noise_std=0.01, velocity_noise_std=0.05):
         self.N = N
         self.dt = dt
         self.f = f
@@ -51,11 +51,20 @@ class MontecarloFilter:
 
         self.robot = robot
 
-    def save_filter_state(self, filename="./src/scene/scripts/filter_state01.pkl"):
+        # control measurement use / update frequency
+        self.use_measurements = True       # set False to skip measurement updates entirely
+        self.update_interval = 10          # call update+resample every N frames
+        self._frame_count = 0
+
+        self.prev_run_time = None
+        self.current_run_time = None
+
+    def save_filter_state(self, filename="./scene/scripts/filter_state01.pkl"): # Se lanci da cmd: "./src/scene/scripts/filter_state.pkl"
         state = {
             'particles': self.particles,
             'weights': self.weights
         }
+        print("prova salva...")
         with open(filename, 'wb') as f:
             pickle.dump(state, f)
         print(f"Filter state saved to {filename}")
@@ -77,7 +86,7 @@ class MontecarloFilter:
 
         self.prev_measurement = measurement
 
-    def load_and_initialize(self, filename="./src/scene/scripts/filter_state.pkl", measurement=None):
+    def load_and_initialize(self, filename="./scene/scripts/filter_state.pkl", measurement=None):  # Se lanci da cmd: "./src/scene/scripts/filter_state.pkl"
         try:
             with open(filename, 'rb') as f:
                 state = pickle.load(f)
@@ -90,6 +99,7 @@ class MontecarloFilter:
                     velocity = self._compute_velocity(measurement)
                     self.update(measurement, velocity)
                     self.resample()
+                    print("Fine load?")
 
         except FileNotFoundError:
             print("No saved state found. Initializing from scratch.")
@@ -101,7 +111,9 @@ class MontecarloFilter:
                 pass
 
     def predict(self):
+        print(f"Nostro dt: {self.dt}")
         process_noise = np.random.normal(0, self.process_noise_std, size=(self.N, 2))
+        print(f"Nostro dt: {self.dt}")
         self.particles[:, 4:6] += process_noise
         self.particles[:, 2:4] += (self.particles[:, 4:6] - self.f * self.particles[:, 2:4]) * self.dt
         self.particles[:, 0:2] += self.particles[:, 2:4] * self.dt
@@ -190,9 +202,15 @@ class MontecarloFilter:
         return rmse  # array [rmse_x, rmse_y]
     
     def _compute_velocity(self, measurement):
-        if measurement is None or self.prev_measurement is None:
+        if measurement is None or self.prev_measurement is None or self.prev_run_time is None:
+            self.prev_run_time = self.current_run_time
             return np.zeros(2)
-        return (measurement - self.prev_measurement) / self.dt
+
+        self.dt = self.current_run_time - self.prev_run_time
+        
+        vel = (measurement - self.prev_measurement) / self.dt
+        self.prev_run_time = self.current_run_time
+        return vel
     
     def is_valid(self, pos):
         valid = (self.is_reachable(pos)
@@ -202,6 +220,8 @@ class MontecarloFilter:
         return valid
     
     def training(self, wx, wy):
+        self.current_run_time = time.perf_counter()
+
         measurement = None if wx is None or wy is None else np.array([wx, wy])
 
         #Gestione caso in cui nel primo frame che passo ho un'occlusione del puck
@@ -214,22 +234,30 @@ class MontecarloFilter:
             print(f"Inizializzo Montecarlo con prima misura {measurement}")
             self.initialize_at_measurement(measurement)
 
-        # Predizione step
+        # count frames and predict every frame
+        self._frame_count += 1
         self.predict()
 
-        # Update step
-        # velocity = self._compute_velocity(measurement)
+        # Update step (periodic)
         velocity = None
         if measurement is not None:
             velocity = self._compute_velocity(measurement)
-            self.update(measurement, velocity)
-            self.resample()
+            
+            if self.use_measurements and (self._frame_count % self.update_interval) == 0:
+                self.update(measurement, velocity)
+                self.resample()
+
+            # always remember last measurement for velocity computation / logic
             self.prev_measurement = measurement
 
 
     def run(self, wx, wy, future_steps=10):
+        self.current_run_time = time.perf_counter()
 
         measurement = None if wx is None or wy is None else np.array([wx, wy])
+
+        # increment frame counter
+        self._frame_count += 1
 
         #Gestione caso in cui nel primo frame che passo ho un'occlusione del puck
         #e non ho ancora inizializzato le particelle del filtro
@@ -242,22 +270,27 @@ class MontecarloFilter:
         #    self.initialize_at_measurement(measurement)
             self.load_and_initialize(measurement=measurement)
 
+        print("Inizia predict?")
+
         # Predizione step
         self.predict()
 
-        # Update step
-        # velocity = self._compute_velocity(measurement)
+        # Update step (periodic)
         velocity = None
         if measurement is not None:
             velocity = self._compute_velocity(measurement)
-            self.update(measurement, velocity)
-            self.resample()
+            
+            if self.use_measurements and (self._frame_count % self.update_interval) == 0:
+                self.update(measurement, velocity)
+                self.resample()
+
+            # always remember last measurement for velocity computation / logic
             self.prev_measurement = measurement
 
         # Se il puck sta andando verso l-avversario con una velocity alta (verso l-avversario quindi negativa) e in posizione oltre il reachable
         if velocity is not None and velocity[0] < RETURN_VELOCITY_X and not self.is_reachable(measurement):
             print("--- Torna a BASE. Disco va verso avversario ---")
-            self.robot.move_to_point(*GAME_POSE)
+            self.robot.move_to_point(*GAME_POSE, wait_robot=True)
     
         est_pos, est_vel, est_acc = self.estimate()
         self.est_positions.append(est_pos)
@@ -273,8 +306,8 @@ class MontecarloFilter:
                 offset = OCCLUSION_MOVE_Y if self.prev_measurement[1] < Y_MAX / 2 else -OCCLUSION_MOVE_Y
                 # target = [est_pos[0], est_pos[1] + offset]
                 target = [self.prev_measurement[0], self.prev_measurement[1] + offset]
-                print(f" --> poszione laterale: {target}")
-                self.robot.move_to_point(target[0], target[1],wait_robot=True)
+                print(f" --> posizione laterale: {target}")
+                self.robot.move_to_point(target[0], target[1])#,wait_robot=True)
                 return
             else:
                 self.occlusion_state += 1
@@ -302,7 +335,7 @@ class MontecarloFilter:
                 print("___ ATTACCO: colpisco il disco verso la porta con movimento unico! ___")
                 self.robot.move_to_point(*start_pos, wait_robot=True)  # Muovi il robot dietro al disco
                 print(f"    1. Posizione di attacco raggiunta dal robot. measurement {measurement}")
-                self.robot.move_to_point(*measurement, wait_robot=True)
+                self.robot.move_to_point(*measurement)#, wait_robot=True)
                 print("    2.Colpo eseguito.")            
             # Secondo tentativo: direzione riflessa (rimbalzo)
             else:
@@ -317,7 +350,7 @@ class MontecarloFilter:
                     self.robot.move_to_point(*start_pos_reflected, wait_robot=True)
                     if self.is_valid(measurement):
                         print("    2. compisco posizione vera del disco ")
-                        self.robot.move_to_point(*measurement, wait_robot=True)
+                        self.robot.move_to_point(*measurement)#, wait_robot=True)
                     else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
                         y_offset = BORDER_DISTANCE if measurement[1] < (Y_MAX / 2) else -BORDER_DISTANCE
                         print("    2. compisco posizione vera del disco ")
@@ -332,24 +365,24 @@ class MontecarloFilter:
                     self.robot.move_to_point(safe_x, safe_y, wait_robot=True)
                     if self.is_valid(measurement):
                         print("    2. Provo colpo!")
-                        self.robot.move_to_point(*measurement, wait_robot=True)
+                        self.robot.move_to_point(*measurement)#, wait_robot=True)
                     """else: #caso in cui posizione del disco sia vicino a bordo, quindi sposto il mullet vicino al disco ma in posizione sicura
                         x_offset = BORDER_DISTANCE if measurement[0] < X_MAX / 2 else -BORDER_DISTANCE
                         self.robot.move_to_point(measurement[0] - x_offset, measurement[1], wait_robot=True)"""
             return
         
 
-        if np.linalg.norm(velocity) > 0.01: # velocity is None or np.linalg.norm(velocity) < 0.01:
+        if np.linalg.norm(velocity) > 0.2: # velocity is None or np.linalg.norm(velocity) < 0.01:
 
             #se non è fermo calcolo il nuovo target
             new_target = self.predict_future(steps=future_steps)
 
             print(f"--- Target FUTURO: {new_target} ---")
             #print(f"  self.prev_robot_target {self.prev_robot_target}")
-            if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=2e-2)):
+            if new_target is not None and (self.prev_robot_target is None or not np.allclose(new_target, self.prev_robot_target, atol=0.15)):
                 print(f" --> Target {new_target} - CHIAMATA A MOVE FRANKA {time.perf_counter()}")
                 if self.is_valid(new_target):
-                    self.robot.move_to_point(*new_target, wait_robot=True)
+                    self.robot.move_to_point(*new_target)#, wait_robot=True)
                     self.prev_robot_target = new_target                  
         
         #rospy.logdebug(f"Est. vel: vx = {est_vel[0]:.3f}, vy = {est_vel[1]:.3f} | Est. acc: ax = {est_acc[0]:.3f}, ay = {est_acc[1]:.3f}")

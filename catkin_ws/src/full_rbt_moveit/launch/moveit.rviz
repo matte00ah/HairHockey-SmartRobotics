@@ -40,7 +40,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Acceleration_Scaling_Factor: 0.5
+    - Acceleration_Scaling_Factor: 0.7
       Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
       JointsTab_Use_Radians: true
@@ -318,7 +318,7 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
-      Velocity_Scaling_Factor: 0.5
+      Velocity_Scaling_Factor: 0.7
     - Class: rviz/TF
       Enabled: true
       Filter (blacklist): ""
@@ -439,9 +439,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.13499949872493744
+      Pitch: 0.6049991846084595
       Target Frame: panda_link0
-      Yaw: 5.879948616027832
+      Yaw: 5.43494176864624
     Saved: ~
 Window Geometry:
   Displays:

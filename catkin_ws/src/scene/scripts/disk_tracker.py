@@ -47,7 +47,7 @@ CORNER_3 = config["corner_3"]
 CORNER_4 = config["corner_4"]
 
 TRAINING = False
-TRAINING_ROUNDS = 1800
+TRAINING_ROUNDS = 1800 #1800
 
 def compute_homography(ordered_corners):
     real_corners = np.array([
@@ -185,7 +185,7 @@ class DiskTracker:
         except KeyboardInterrupt:
             self.cap.release()
         finally:
-            self.cap_release()
+            self.cap.release()
             cv2.destroyAllWindows()
             
         # Thread di elaborazione
@@ -218,8 +218,19 @@ class DiskTracker:
     def processing_loop(self):
         """Thread che elabora continuamente il frame più recente""" 
         #while self.cap.isOpened():
+        self.t0 = None
+        self.t1 = None
         while True:
             try:
+                """if self.t0:
+                    if (self.t1 - self.t0) * 30 > 0:
+                        n_range = (self.t1 - self.t0) * 30
+                    else:
+                        n_range = 10
+                else:
+                    n_range = 10
+
+                print(f"n_range {n_range} -> {int(n_range)}")"""
                 for _ in range(10):
                     self.cap.grab()
                 
@@ -239,7 +250,7 @@ class DiskTracker:
             except:
                 print("Ex")
                 continue  # nessun frame disponibile
-            
+
             h, w, _ = frame.shape
             left_img = frame[:, :w//2]
             frame = left_img
@@ -309,11 +320,18 @@ class DiskTracker:
                         break"""
                     print(f"\n\nDISCO: measurement in pixel {cx, cy}")
                     wx, wy = pixel_to_meter_fast((cx, cy), self.H)
-                    if TRAINING: 
+                    if TRAINING:
+                        print(f"Round: {self.counter}")
+                        self.t0 = time.perf_counter()
                         self.montecarlo.training(wx, wy)
+                        self.t1 = time.perf_counter()
+                        print(f"t1-t0: {self.t1 - self.t0} ")
                         self.counter += 1
                     else: 
+                        self.t0 = time.perf_counter()
                         self.montecarlo.run(wx, wy)   
+                        self.t1 = time.perf_counter()
+                        print(f"t1-t0: {self.t1 - self.t0} ")
             else:
                 if not TRAINING:
                     # disco non trovato → None
