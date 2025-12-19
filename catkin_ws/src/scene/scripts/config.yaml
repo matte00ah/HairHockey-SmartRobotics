@@ -1,0 +1,49 @@
+table_width_m: 1.97
+table_height_m: 0.89
+robot_reach_m: 0.98 # 0.7+0.28(cateto per angolo 45°) #0.82  # raggio massimo
+z : 0.4 #0.825 + 0,025 (altezza piano + bordo + spessore paddle + metà molla) abbiamo aggiunto 0.1
+
+robot_base_tocorner: [-0.4 , 0.445] # [2.37, 0.445]  # [1.97 + 0.40, 0 + 0.445] -> ("0 + 0.425, 1.2 + 0.97")
+
+puck_diameter_m: 0.06
+
+find_corners: false  # true, if you want find the game table corners. false, if you use the config params corner_[1:5]
+
+corner_1: [97, 82]
+corner_2: [612, 31]
+corner_3: [635, 281]
+corner_4: [114, 313]
+
+
+lower_white: [0, 0, 140]
+upper_white: [180, 25, 255]
+lower_white_right: [0, 0, 120]
+upper_white_right: [180, 50, 255]
+
+canny_threshold_min: 50
+canny_threshold_max: 150
+hough_threshold: 120
+hough_min_length: 120
+hough_max_gap: 30
+
+lower_red1: [0, 100, 100]
+upper_red1: [10, 255, 255]
+lower_red2: [160, 100, 100]
+upper_red2: [179, 255, 255]
+
+############################
+disk_lower_red1_left: [0, 150, 40]
+disk_upper_red1_left: [10, 250, 255]
+disk_lower_red2_left: [160, 150, 40]
+disk_upper_red2_left: [180, 250, 255]
+
+disk_lower_red2: [160, 150, 40]
+disk_upper_red2: [179, 255, 150]
+################################
+
+game_pose: [0.2, 0.445, 0.2] # rispetto all'angolo del tavolo[1.585, 0.425, 0]  # 0.6 + 0.985, 0 + 0.425, 1.0  0.6 è poco davanti al bordo
+
+return_vel_x: -0.2  # velocity con cui il disco torna verso avversario. Se bassa allora il robot cerca di colpirla per renderla forte
+hit_distance: 0.2  # distance by puck to make the attack
+border_distance: 0.00 #valore per evitare collisione robot bordo del tavolo. 0.10m = paddle
+occlusion_move_y: 0.15
