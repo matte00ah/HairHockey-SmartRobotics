@@ -406,7 +406,7 @@ compliance_paramConfig::GroupDescription<compliance_paramConfig::DEFAULT, compli
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __max__.translational_stiffness = 400.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __default__.translational_stiffness = 200.0;
+      __default__.translational_stiffness = 50.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       Default.abstract_parameters.push_back(compliance_paramConfig::AbstractParamDescriptionConstPtr(new compliance_paramConfig::ParamDescription<double>("translational_stiffness", "double", 0, "Cartesian translational stiffness", "", &compliance_paramConfig::translational_stiffness)));
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -414,7 +414,7 @@ compliance_paramConfig::GroupDescription<compliance_paramConfig::DEFAULT, compli
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.rotational_stiffness = 0.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __max__.rotational_stiffness = 30.0;
+      __max__.rotational_stiffness = 100.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.rotational_stiffness = 10.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -426,7 +426,7 @@ compliance_paramConfig::GroupDescription<compliance_paramConfig::DEFAULT, compli
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __max__.nullspace_stiffness = 100.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __default__.nullspace_stiffness = 0.5;
+      __default__.nullspace_stiffness = 20.0;
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       Default.abstract_parameters.push_back(compliance_paramConfig::AbstractParamDescriptionConstPtr(new compliance_paramConfig::ParamDescription<double>("nullspace_stiffness", "double", 0, "Stiffness of the joint space nullspace controller (the desired configuration is the one at startup)", "", &compliance_paramConfig::nullspace_stiffness)));
 //#line 292 "/opt/ros/noetic/lib/python3/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"

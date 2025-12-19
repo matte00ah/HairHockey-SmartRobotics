@@ -186,7 +186,7 @@ void CartesianImpedanceExampleController::update(const ros::Time& /*time*/,
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   // Desired torque
-  tau_d << tau_task + tau_nullspace + coriolis;
+  //tau_d << tau_task + tau_nullspace + coriolis;
   // Saturate torque rate to avoid discontinuities
   tau_d << saturateTorqueRate(tau_d, tau_J_d);
   for (size_t i = 0; i < 7; ++i) {
@@ -222,17 +222,30 @@ Eigen::Matrix<double, 7, 1> CartesianImpedanceExampleController::saturateTorqueR
 void CartesianImpedanceExampleController::complianceParamCallback(
     franka_example_controllers::compliance_paramConfig& config,
     uint32_t /*level*/) {
+  Eigen::Matrix3d trasl_mat;
+    trasl_mat << 1500, 0, 0,
+                  0, 1500, 0,
+                  0, 0, 1500;
+  Eigen::Matrix3d rot_mat;
+    rot_mat <<    40, 0, 0,
+                  0, 40, 0,
+                  0, 0, 40;
   cartesian_stiffness_target_.setIdentity();
   cartesian_stiffness_target_.topLeftCorner(3, 3)
+  //<< trasl_mat;
       << config.translational_stiffness * Eigen::Matrix3d::Identity();
   cartesian_stiffness_target_.bottomRightCorner(3, 3)
+  //<< rot_mat;
       << config.rotational_stiffness * Eigen::Matrix3d::Identity();
+      
   cartesian_damping_target_.setIdentity();
   // Damping ratio = 1
   cartesian_damping_target_.topLeftCorner(3, 3)
       << 2.0 * sqrt(config.translational_stiffness) * Eigen::Matrix3d::Identity();
+      //<< 0.5 * sqrt(2.0 * 1500) * Eigen::Matrix3d::Identity();
   cartesian_damping_target_.bottomRightCorner(3, 3)
       << 2.0 * sqrt(config.rotational_stiffness) * Eigen::Matrix3d::Identity();
+      //<< 0.5 * sqrt(2.0 * 40) * Eigen::Matrix3d::Identity();
   nullspace_stiffness_target_ = config.nullspace_stiffness;
 }
 

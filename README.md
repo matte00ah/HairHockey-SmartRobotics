@@ -77,3 +77,6 @@ def __init__(self,robot, N=2500, dt=0.5, f=0.01, process_noise_std=0.3, measurem
 
 roslaunch franka_example_controllers cartesian_impedance_example_controller.launch robot_ip:=172.16.0.2 load_gripper:=false
 
+
+rosrun controller_manager controller_manager stop robot_arm_controller
+

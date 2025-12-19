@@ -47,14 +47,14 @@ def parse_arguments():
         "-x",
         "--pos_x",
         type=float,
-        default=0.2,
+        default=0.0,
         help="Target X coordinate in table frame (float).",
     )
     parser.add_argument(
         "-y",
         "--pos_y",
         type=float,
-        default=0.8,
+        default=0.445,
         help="Target Y coordinate in table frame (float).",
     )
     parser.add_argument(
@@ -236,6 +236,7 @@ class PandaArm:
         rx = x + 0.40 
         ry = Y - y
         rz = z + Z # z + <altezza_tavolo>
+        print(f"coordinate Robot: {rx}, {ry}, {rz}")
         return rx, ry, rz
 
     def compute_target_orientation(self, vx, vy, vz, reference_frame, robot_base_frame):
@@ -437,7 +438,7 @@ class PandaArm:
 
     def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
         print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
-        x, y, z = self.table_to_robot(vx, vy, vz)
+        #x, y, z = self.table_to_robot(vx, vy, vz)
         #print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
 
         """rot = [
@@ -447,24 +448,32 @@ class PandaArm:
             [0, 0, 0, 1]
         ]"""
 
-        rot_z = self.compute_target_orientation(x, y, z, 'world', 'mallet_link')
+        ax, ay, az = self.table_to_world_transform(vx, vy, vz)
+        rot_z = self.compute_target_orientation(ax, ay, az, 'world', 'mallet_link')
 
-        rot = np.array([
+        rot1 = np.array([
             [0, -1, 0, 0],
             [-1, 0, 0, 0],
             [0, 0, -1, 0],
             [0, 0, 0, 1]
         ])
 
-        target_orientation = rot @ rot_z
+        rot = np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1]
+        ])
+
+        target_orientation = rot #@ rot_z
 
         target_stamped = PoseStamped()
-        target_stamped.header.frame_id = ''
+        target_stamped.header.frame_id = 'panda_link0'
         target_stamped.header.stamp = rospy.Time.now()
 
-        target_stamped.pose.position.x = x
-        target_stamped.pose.position.y = y
-        target_stamped.pose.position.z = z
+        target_stamped.pose.position.x = vx
+        target_stamped.pose.position.y = vy
+        target_stamped.pose.position.z = vz
 
         # Convert rotation matrix to quaternion
         q = quaternion_from_matrix(target_orientation.tolist())
@@ -475,7 +484,7 @@ class PandaArm:
 
         print(f"target: {target_stamped.pose}")
 
-        rate = rospy.Rate(50)
+        rate = rospy.Rate(100)
         while True:
             target_stamped.header.stamp = rospy.Time.now()
             # 3. Publish the Pose to the controller
@@ -495,12 +504,12 @@ class PandaArm:
         return
 
 class TargetVisualizer:
-    def __init__(self, frame_id="world"):
+    def __init__(self, frame_id="panda_link0"):
         # Latched publisher so the sphere persists in RViz without requiring continuous republishing
         self.pub = rospy.Publisher("/visualization_marker", Marker, queue_size=1, latch=True)
         self.frame_id = frame_id
 
-    def publish_sphere(self, vx, vy, vz, diameter=0.06, rgba=(1.0, 0.0, 0.0, 0.9), ns="target", mid=0, frame_id='world'):
+    def publish_sphere(self, vx, vy, vz, diameter=0.06, rgba=(0.0, 1.0, 0.0, 0.9), ns="target", mid=0, frame_id='panda_link0'):
 
         x, y, z = PandaArm.table_to_robot(vx, vy, vz)
 
