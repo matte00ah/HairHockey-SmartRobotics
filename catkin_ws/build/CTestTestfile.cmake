@@ -1,11 +1,13 @@
 # CMake generated Testfile for 
-# Source directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src
-# Build directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/build
+# Source directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src
+# Build directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
 subdirs("gtest")
+subdirs("end_effector")
 subdirs("franka_ros/franka_ros")
+subdirs("full_rbt_moveit")
 subdirs("franka_ros/franka_description")
 subdirs("scene")
 subdirs("franka_ros/franka_gripper")

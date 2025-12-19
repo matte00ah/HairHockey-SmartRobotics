@@ -1,8 +1,8 @@
-# Install script for directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper
+# Install script for directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/matte/HairHockey-SmartRobotics/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,127 +37,132 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/action" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Grasp.action"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Homing.action"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Stop.action"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Move.action"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Grasp.action"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Homing.action"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Stop.action"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/action/Move.action"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspAction.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionFeedback.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspAction.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspActionFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/GraspFeedback.msg"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingAction.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionFeedback.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingAction.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingActionFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/HomingFeedback.msg"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopAction.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionFeedback.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopAction.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopActionFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/StopFeedback.msg"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveAction.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionFeedback.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveGoal.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveResult.msg"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveAction.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveActionFeedback.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveGoal.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveResult.msg"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/franka_gripper/msg/MoveFeedback.msg"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/msg/GraspEpsilon.msg")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/msg" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/msg/GraspEpsilon.msg")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/cmake" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper-msg-paths.cmake")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/cmake" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper-msg-paths.cmake")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/include/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/roseus/ros/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/roseus/ros" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/roseus/ros/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/common-lisp/ros/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/common-lisp/ros/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/gennodejs/ros/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/gennodejs/ros" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/gennodejs/ros/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  execute_process(COMMAND "/usr/bin/python3" -m compileall "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  execute_process(COMMAND "/usr/bin/python3" -m compileall "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_gripper")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/python3/dist-packages/franka_gripper")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper.pc")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper.pc")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/cmake" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper-msg-extras.cmake")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/cmake" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripper-msg-extras.cmake")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper/cmake" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripperConfig.cmake"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripperConfig-version.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripperConfig.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/catkin_generated/installspace/franka_gripperConfig-version.cmake"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/package.xml")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/package.xml")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so")
     file(RPATH_CHECK
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so"
-         OLD_RPATH "/opt/ros/noetic/lib/x86_64-linux-gnu:/opt/ros/noetic/lib:"
+         OLD_RPATH "/opt/ros/noetic/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libfranka_gripper.so")
@@ -165,22 +170,22 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   endif()
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node")
     file(RPATH_CHECK
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/franka_gripper" TYPE EXECUTABLE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gripper/franka_gripper_node")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/franka_gripper" TYPE EXECUTABLE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gripper/franka_gripper_node")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node"
-         OLD_RPATH "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib:/opt/ros/noetic/lib:/opt/ros/noetic/lib/x86_64-linux-gnu:"
+         OLD_RPATH "/opt/ros/noetic/lib:/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/franka_gripper/franka_gripper_node")
@@ -188,15 +193,15 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   endif()
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/franka_gripper" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/include/franka_gripper/")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/franka_gripper" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/include/franka_gripper/")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/launch")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/launch")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/config")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_gripper" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_gripper/config")
 endif()
 

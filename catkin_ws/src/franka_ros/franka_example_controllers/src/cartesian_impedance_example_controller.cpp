@@ -177,6 +177,14 @@ void CartesianImpedanceExampleController::update(const ros::Time& /*time*/,
                     jacobian.transpose() * jacobian_transpose_pinv) *
                        (nullspace_stiffness_ * (q_d_nullspace_ - q) -
                         (2.0 * sqrt(nullspace_stiffness_)) * dq);
+                        
+  // !!!!!! COMPENSAZIONE QUI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  Eigen::Matrix<double,7,1> tau_comp;
+  tau_comp << 0.7666110992431774, -1.1455045815069342, 0.8158296585093106, 1.1696758984080802, 0.9405113560393308, 0.19704928068995708, 0.00021074612972737938;
+  // Desired torque
+  tau_d <<  coriolis + tau_nullspace + tau_task + tau_comp; // - jacobian.transpose() * Ta_pinv.transpose()*Fee; //(da usare con ROS_TEST_5) - jacobian.transpose() * Fee + tau_task
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   // Desired torque
   tau_d << tau_task + tau_nullspace + coriolis;
   // Saturate torque rate to avoid discontinuities

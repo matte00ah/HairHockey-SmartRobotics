@@ -1,8 +1,8 @@
-# Install script for directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/scene
+# Install script for directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/scene
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/matte/HairHockey-SmartRobotics/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,18 +37,23 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/scene.pc")
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/scene.pc")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/scene/cmake" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/sceneConfig.cmake"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/sceneConfig-version.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/sceneConfig.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/scene/catkin_generated/installspace/sceneConfig-version.cmake"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/scene" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/scene/package.xml")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/scene" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/scene/package.xml")
 endif()
 

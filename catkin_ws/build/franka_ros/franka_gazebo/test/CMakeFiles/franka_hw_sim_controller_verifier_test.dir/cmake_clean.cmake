@@ -1,8 +1,10 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_controller_verifier_test"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_controller_verifier_test.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_controller_verifier_test"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_hw_sim_controller_verifier_test.pdb"
   "CMakeFiles/franka_hw_sim_controller_verifier_test.dir/controller_verifier_test.cpp.o"
+  "CMakeFiles/franka_hw_sim_controller_verifier_test.dir/controller_verifier_test.cpp.o.d"
   "CMakeFiles/franka_hw_sim_controller_verifier_test.dir/main.cpp.o"
+  "CMakeFiles/franka_hw_sim_controller_verifier_test.dir/main.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

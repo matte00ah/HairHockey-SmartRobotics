@@ -7,7 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/matte/HairHockey-SmartRobotics/catkin_ws/devel:$CMAKE_PREFIX_PATH"
-export PWD='/home/matte/HairHockey-SmartRobotics/catkin_ws/build'
-export ROSLISP_PACKAGE_DIRECTORIES='/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/share/common-lisp'
-export ROS_PACKAGE_PATH="/home/matte/HairHockey-SmartRobotics/catkin_ws/src:$ROS_PACKAGE_PATH"
+export CMAKE_PREFIX_PATH="/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel:$CMAKE_PREFIX_PATH"
+export PWD='/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build'
+export ROSLISP_PACKAGE_DIRECTORIES='/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/share/common-lisp'
+export ROS_PACKAGE_PATH="/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src:$ROS_PACKAGE_PATH"

@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_example_controllers/teleop_gripper_node"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_example_controllers/teleop_gripper_node.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_example_controllers/teleop_gripper_node"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_example_controllers/teleop_gripper_node.pdb"
   "CMakeFiles/teleop_gripper_node.dir/src/teleop_gripper_node.cpp.o"
+  "CMakeFiles/teleop_gripper_node.dir/src/teleop_gripper_node.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

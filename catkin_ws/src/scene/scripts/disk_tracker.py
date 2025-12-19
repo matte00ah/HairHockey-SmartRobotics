@@ -1,149 +1,353 @@
 #!/usr/bin/env python3
-import rospy
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
 import cv2
 import numpy as np
-import json
+import yaml
 import os
+import glob
+from queue import Queue, Empty
+import threading
+import time
+import matplotlib.pyplot as plt
 from montecarlo_filter import MontecarloFilter
 from origin_detector import process_frame
+from move_franka import PandaArm
+import subprocess
+import glob
+import re
 
-script_dir = os.path.dirname(os.path.realpath(__file__))  # cartella dello script
-config_path = os.path.join(script_dir, "config.json")
+script_dir = os.path.dirname(os.path.realpath(__file__))
+config_path = os.path.join(script_dir, "config.yaml")
 
 with open(config_path, "r") as f:
-    config = json.load(f)
+    config = yaml.safe_load(f)
 
-l_red1 = config["lower_red1"]
-u_red1 = config["upper_red1"]
-l_red2 = config["lower_red2"]
-u_red2 = config["upper_red2"]
+LOWER_RED1 = np.array(config["lower_red1"], dtype=np.uint8)
+UPPER_RED1 = np.array(config["upper_red1"], dtype=np.uint8)
+LOWER_RED2 = np.array(config["lower_red2"], dtype=np.uint8)
+UPPER_RED2 = np.array(config["upper_red2"], dtype=np.uint8)
+
+
+DISK_LOWER_RED1_LEFT = np.array(config["disk_lower_red1_left"], dtype=np.uint8)
+DISK_UPPER_RED1_LEFT = np.array(config["disk_upper_red1_left"], dtype=np.uint8)
+DISK_LOWER_RED2_LEFT = np.array(config["disk_lower_red2_left"], dtype=np.uint8)
+DISK_UPPER_RED2_LEFT = np.array(config["disk_upper_red2_left"], dtype=np.uint8)
+DISK_LOWER_RED2 = np.array(config["disk_lower_red2"], dtype=np.uint8)
+DISK_UPPER_RED2 = np.array(config["disk_upper_red2"], dtype=np.uint8)
+
 Y_MAX = config["table_height_m"]
-camera_topic = config["camera_topic"]
+X_MAX = config["table_width_m"]
+
+#CAMERA_TOPIC = config["camera_topic"]
+FIND_CORNERS = config["find_corners"]
+GAME_POSE = config["game_pose"]
+
+CORNER_1 = config["corner_1"]
+CORNER_2 = config["corner_2"]
+CORNER_3 = config["corner_3"]
+CORNER_4 = config["corner_4"]
+
+TRAINING = False
+TRAINING_ROUNDS = 1800 #1800
+
+def compute_homography(ordered_corners):
+    real_corners = np.array([
+        [0, 0],
+        [X_MAX, 0],
+        [X_MAX, Y_MAX],
+        [0, Y_MAX]
+    ], dtype=np.float32)
+    pixel_corners = np.array(ordered_corners, dtype=np.float32)
+    H, _ = cv2.findHomography(pixel_corners, real_corners)
+    return H
+
+def pixel_to_meter_fast(pt, H):
+    x, y = pt
+    den = H[2,0]*x + H[2,1]*y + H[2,2]
+    wx = (H[0,0]*x + H[0,1]*y + H[0,2]) / den
+    wy = (H[1,0]*x + H[1,1]*y + H[1,2]) / den
+    return wx, wy
+
+def barrel_dist_correction(src):
+    width  = src.shape[1]
+    height = src.shape[0]
+
+    distCoeff = np.zeros((4,1),np.float64)
+
+    k1 = -1.0e-6; # negative to remove barrel distortion
+    k2 = 0.0
+    p1 = 0
+    p2 = 0
+
+    distCoeff[0,0] = k1
+    distCoeff[1,0] = k2
+    distCoeff[2,0] = p1
+    distCoeff[3,0] = p2
+
+    # assume unit matrix for camera
+    cam = np.eye(3,dtype=np.float32)
+
+    cam[0,2] = width/2.0  # define center x
+    cam[1,2] = height/2.0 # define center y
+    cam[0,0] = 2.1        # define focal length x
+    cam[1,1] = 2.1        # define focal length y
+
+    # here the undistortion will be computed
+    dst = cv2.undistort(src,cam,distCoeff)
+    return dst
+
+def get_video_devices():
+    """Ritorna la lista dei device video es: ['/dev/video0', '/dev/video1']"""
+    return sorted(glob.glob("/dev/video*"))
+
+def open_first_free_camera():
+    devices = get_video_devices()
+    print("Trovate camere:", devices)
+    """if len(devices) > 1:
+        dev = devices[1]"""
+    for dev in devices:
+        print(f"\n[INFO] Controllo {dev}")
+
+        print(f"[INFO] Provo ad aprire {dev}…")
+        cap = cv2.VideoCapture(dev, cv2.CAP_V4L2)
+
+        if cap.isOpened():
+            print(f"[SUCCESS] Camera aperta: {dev}")
+            return cap
+
+        print(f"[ERROR] Impossibile aprire {dev}, passo al successivo.")
+        cap.release()
+
+    print("[ERROR] Nessuna camera disponibile.")
+    return None
 
 
-
-def pixel_to_world(pt, corner1, corner2):
-    # Corner in pixel
-    p0 = np.array(corner1, dtype=np.float32)  # es. angolo in alto a sinistra
-    p1 = np.array(corner2, dtype=np.float32)  # es. angolo in basso a sinistra
-
-    # Assi del tavolo
-    y_axis = p1 - p0
-    y_len = np.linalg.norm(y_axis)
-    y_axis /= y_len  # normalizza
-
-    # Asse x = perpendicolare
-    x_axis = np.array([y_axis[1], -y_axis[0]])
-
-    # Trasforma punto pixel -> coord tavolo
-    pt_vec = np.array(pt, dtype=np.float32) - p0
-    wx = np.dot(pt_vec, x_axis) / np.linalg.norm(x_axis) / y_len * Y_MAX  # scala rispetto a Y_MAX
-    wy = np.dot(pt_vec, y_axis) / y_len * Y_MAX
-
-    return wx, wy, p0, x_axis, y_axis, y_len
-
-def draw_axes(frame, p0, x_axis, y_axis, y_len, scale=0.5):
-    """Disegna assi locali del tavolo su immagine"""
-    p0 = tuple(p0.astype(int))
-
-    # Asse X in rosso
-    pX = (p0[0] + int(x_axis[0]*y_len*scale),
-          p0[1] + int(x_axis[1]*y_len*scale))
-    cv2.arrowedLine(frame, p0, pX, (0,0,255), 2, tipLength=0.2)
-
-    # Asse Y in verde
-    pY = (p0[0] + int(y_axis[0]*y_len*scale),
-          p0[1] + int(y_axis[1]*y_len*scale))
-    cv2.arrowedLine(frame, p0, pY, (0,255,0), 2, tipLength=0.2)
-
-    # Origine in blu
-    cv2.circle(frame, p0, 6, (255,0,0), -1)
-
-    return frame
+def show_hsv(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        hsv_img = param
+        pixel = hsv_img[y, x]
+        print(f"POS ({x},{y}) → H:{pixel[0]} S:{pixel[1]} V:{pixel[2]}")
 
 class DiskTracker:
     def __init__(self):
-        # Nodo ROS
-        rospy.init_node("disk_tracker")
+        print("Init")
+        #cam = open_first_free_camera()
+        #print(f"cam: {cam}")
+        self.cap = open_first_free_camera()
+        try:
+            if not self.cap.isOpened():
+                return
+            
+            for i in range(10):
+                _, _ = self.cap.read()
 
-        msg = rospy.wait_for_message(camera_topic, Image)
-        corners = process_frame(msg)
-        self.corner1 = corners[0]
-        self.corner2 = corners[1]
+            if FIND_CORNERS:
+                # Extract game table corners
+                ret, frame = self.cap.read()
+                if not ret:
+                    return
+                
+                #frame = barrel_dist_correction(frame)
+                # --- Dividi immagine stereo ZED 2i in sinistra e destra ---
+                h, w, _ = frame.shape
+                left_img = frame[:, :w//2]
+                frame = left_img
+                frame = barrel_dist_correction(frame)
 
-        # CvBridge per convertire i messaggi ROS in immagini OpenCV
-        self.bridge = CvBridge()
+                print(f"shape: {frame.shape}")
+                
+                cv2.imshow("Frame per angoli",frame)
+                if (cv2.waitKey(0) & 0xFF) == ord('q'):  # TODO: mettere waitKey(1) per avere video
+                    pass
 
-        # Sottoscrizione al topic della camera
-        self.image_topic = rospy.get_param("~image_topic", "/image_raw")
-        rospy.Subscriber(self.image_topic, Image, self.image_callback)
+                self.corners = process_frame(frame)
 
-        # Parametri colore rosso in HSV
-        self.lower_red1 = np.array(l_red1)
-        self.upper_red1 = np.array(u_red1)
-        self.lower_red2 = np.array(l_red2)
-        self.upper_red2 = np.array(u_red2)
+            else:
+                self.corners = [CORNER_1, CORNER_2, CORNER_3, CORNER_4]
+            
+            self.kernel = np.ones((3, 3), np.uint8)
 
-        # Kernel per pulizia mask
-        self.kernel = np.ones((5,5), np.uint8)
-        
-        self.montecarlo = MontecarloFilter()
+            robot = PandaArm()
 
-        rospy.loginfo("Red Disk Tracker avviato su topic: %s", self.image_topic)
-        rospy.spin()
+            print(f"Move to Game pose... {GAME_POSE[0]}")
+            robot.move_to_point(vx=GAME_POSE[0], vy=GAME_POSE[1], vz=GAME_POSE[2], wait_robot=True)
 
+            self.H = compute_homography(self.corners)
 
-    def image_callback(self, msg):
-        # Converti ROS Image in OpenCV BGR
-        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+            self.montecarlo = MontecarloFilter(robot=robot)
 
-        # Converti in HSV
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            # Coda con un solo slot per frame più recente
+            self.frame_queue = Queue(maxsize=1)
 
-        # Crea mask per il rosso
-        mask1 = cv2.inRange(hsv, self.lower_red1, self.upper_red1)
-        mask2 = cv2.inRange(hsv, self.lower_red2, self.upper_red2)
-        mask = cv2.bitwise_or(mask1, mask2)
+            self.counter = 0
 
-        # Pulizia della mask
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
+            self.processing_loop()
+            self.cap.release()
+        except KeyboardInterrupt:
+            self.cap.release()
+        finally:
+            self.cap.release()
+            cv2.destroyAllWindows()
+            
+        # Thread di elaborazione
+        """self.processing_thread = threading.Thread(target=self.processing_loop)
+        self.processing_thread.daemon = True
+        self.processing_thread.start()
 
-        # Trova contorni
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        self.camera_frame()"""
 
-        if contours:
-            # Prendi il contorno più grande (disco)
-            c = max(contours, key=cv2.contourArea)
-            M = cv2.moments(c)
-            if M["m00"] != 0:
-                cx = int(M["m10"]/M["m00"])
-                cy = int(M["m01"]/M["m00"])                
+    """def camera_callback(self, msg):
+        #print("Chiamata camera_callback", time.perf_counter())
+        if not self.frame_queue.empty():
+            _ = self.frame_queue.get_nowait()  # rimuove frame vecchio
+        self.frame_queue.put_nowait(msg)"""
 
-                # Stampa posizione
-                rospy.loginfo("Posizione disco (pixel): x=%d y=%d", cx, cy)
-                # Disegna centro e contorno
-                cv2.circle(frame, (cx, cy), 5, (0,255,0), -1)
-                cv2.drawContours(frame, [c], -1, (0,255,0), 2)
+    """def camera_frame(self):
+        print("Lettura frame attivato")
+        while self.cap.isOpened():
+            try:
+                #frame = self.frame_queue.get(timeout=0.1)
+                ret, frame = self.cap.read()
 
-                wx, wy, p0, x_axis, y_axis, y_len = pixel_to_world((cx, cy), self.corner1, self.corner2)
-                rospy.loginfo("Disco in tavolo: X=%.2f m, Y=%.2f m", wx, wy)
+                if not self.frame_queue.empty():
+                    _ = self.frame_queue.get_nowait()  # rimuove frame vecchio
+                self.frame_queue.put_nowait(frame)
+            except:
+                print("Ex")
+                continue  # nessun frame disponibile"""
 
-                # Disegno assi sulla frame
-                frame = draw_axes(frame, p0, x_axis, y_axis, y_len)
+    def processing_loop(self):
+        """Thread che elabora continuamente il frame più recente""" 
+        #while self.cap.isOpened():
+        self.t0 = None
+        self.t1 = None
+        while True:
+            try:
+                """if self.t0:
+                    if (self.t1 - self.t0) * 30 > 0:
+                        n_range = (self.t1 - self.t0) * 30
+                    else:
+                        n_range = 10
+                else:
+                    n_range = 10
 
-                self.montecarlo.run(wx, wy)
+                print(f"n_range {n_range} -> {int(n_range)}")"""
+                for _ in range(10):
+                    self.cap.grab()
+                
+                ret, frame = self.cap.retrieve()
+                """if not self.cap.grab():  # prova a scartare frame successivi
+                    break
+                #frame = self.frame_queue.get(timeout=0.1)
+                ret, frame = self.cap.read()
+                if not self.cap.grab():  # prova a scartare frame successivi
+                    break"""
 
-        # Mostra immagine e mask
-        cv2.imshow("Frame", frame)
-        cv2.imshow("Mask", mask)
-        cv2.waitKey(1)
+                #frame = barrel_dist_correction(frame)
+
+                """cv2.imshow("Tracking dischi", frame)
+                if cv2.waitKey(1) == ord('q'):
+                    break"""
+            except:
+                print("Ex")
+                continue  # nessun frame disponibile
+
+            h, w, _ = frame.shape
+            left_img = frame[:, :w//2]
+            frame = left_img
+            frame = barrel_dist_correction(frame)
+
+            # HSV + mask
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            hsv_h, hsv_w, _ = frame.shape
+
+            """cv2.imshow("Image", frame)
+            cv2.setMouseCallback("Image", show_hsv, hsv)
+            if cv2.waitKey(0) == ord('q'):
+                break"""
+            
+            mask = np.zeros(frame.shape[:2], dtype=np.uint8)
+            # Maschera rossa con apertura e chiusura
+            #mask[:, :hsv_w//2] = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED1_LEFT, DISK_UPPER_RED1_LEFT)
+            mask1_left = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED1_LEFT, DISK_UPPER_RED1_LEFT)
+            mask2_left = cv2.inRange(hsv[:, :hsv_w//2], DISK_LOWER_RED2_LEFT, DISK_UPPER_RED2_LEFT)
+            mask[:, :hsv_w//2] = cv2.bitwise_or(mask1_left, mask2_left)
+
+            mask[:, hsv_w//2:] = cv2.inRange(hsv[:, hsv_w//2:], DISK_LOWER_RED2, DISK_UPPER_RED2)
+
+            #mask1 = cv2.inRange(hsv, LOWER_RED1, UPPER_RED1)
+            #mask2 = cv2.inRange(hsv, LOWER_RED2, UPPER_RED2)
+            #mask = cv2.bitwise_and(mask)
+
+            # Morfologia
+            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
+            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
+
+            """cv2.imshow("Tracking dischi", frame)
+            if cv2.waitKey(0) == ord('q'):
+                break
+            cv2.imshow("Tracking dischi", mask)
+            if cv2.waitKey(0) == ord('q'):
+                break"""
+
+            # Connected components per centri
+            num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask)
+            #print(f"Num etichette: {num_labels}")
+            cerchi = []
+            area_nuova = []
+            if num_labels > 1:
+                for i in range(1, num_labels):
+                    cx, cy = centroids[i]
+                    area = stats[i, cv2.CC_STAT_AREA]
+                    
+                    # Filtra piccoli disturbi (opzionale)
+                    if area < 25:
+                        #print("area minima")
+                        continue
+                    else:
+                        cerchi.append([cx,cy])
+                        area_nuova.append(stats[i, cv2.CC_STAT_AREA])
+
+                #print(f"Len: {len(area_nuova)}")
+                if len(area_nuova) > 0:
+                    #min_idx = 1 + np.argmin(area_nuova[1:])  # indice del cerchio più piccolo
+                    min_idx = np.argmin(area_nuova)  # indice del cerchio più piccolo
+                    cx, cy = cerchi[min_idx]
+                    #print(f"Disco trovato: pixel=({cx:.0f},{cy:.0f}))")
+                    cv2.circle(frame, (int(cx), int(cy)), 10, (0, 255, 0), 2)   # contorno verde
+                    cv2.circle(frame, (int(cx), int(cy)), 3, (0, 0, 255), -1)   # punto rosso al centro
+                    """cv2.imshow("Tracking dischi", frame)
+                    if cv2.waitKey(1) == ord('q'):
+                        break"""
+                    print(f"\n\nDISCO: measurement in pixel {cx, cy}")
+                    wx, wy = pixel_to_meter_fast((cx, cy), self.H)
+                    if TRAINING:
+                        print(f"Round: {self.counter}")
+                        self.t0 = time.perf_counter()
+                        self.montecarlo.training(wx, wy)
+                        self.t1 = time.perf_counter()
+                        print(f"t1-t0: {self.t1 - self.t0} ")
+                        self.counter += 1
+                    else: 
+                        self.t0 = time.perf_counter()
+                        self.montecarlo.run(wx, wy)   
+                        self.t1 = time.perf_counter()
+                        print(f"t1-t0: {self.t1 - self.t0} ")
+            else:
+                if not TRAINING:
+                    # disco non trovato → None
+                    self.montecarlo.run(None, None)
+                    continue
+            
+            if self.counter >= TRAINING_ROUNDS and TRAINING:
+                # Per salvare il file di allenamento
+                self.montecarlo.save_filter_state()
+                break
+
+            #time.sleep(3)  # piccola pausa per non saturare la CPU
 
 if __name__ == "__main__":
     try:
         tracker = DiskTracker()
-    except rospy.ROSInterruptException:
+    except:
         pass
     cv2.destroyAllWindows()

@@ -1,0 +1,11 @@
+<robot name="my_panda" xmlns:xacro="http://ros.org/wiki/xacro">
+  <link name="world"/>
+
+  <xacro:include filename="$(find franka_description)/robots/panda/panda.urdf.xacro"/>
+
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="panda_link0"/>
+    <origin xyz="0 1.2 0.7" rpy="0 0 -1.5708"/>
+  </joint>
+</robot>

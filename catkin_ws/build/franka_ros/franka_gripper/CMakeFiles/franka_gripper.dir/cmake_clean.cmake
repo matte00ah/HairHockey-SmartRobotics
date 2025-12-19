@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.pdb"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.so"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_gripper.so"
   "CMakeFiles/franka_gripper.dir/src/franka_gripper.cpp.o"
+  "CMakeFiles/franka_gripper.dir/src/franka_gripper.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

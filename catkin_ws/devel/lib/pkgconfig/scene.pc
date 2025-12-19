@@ -1,4 +1,4 @@
-prefix=/home/matte/HairHockey-SmartRobotics/catkin_ws/devel
+prefix=/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel
 
 Name: scene
 Description: Description of scene

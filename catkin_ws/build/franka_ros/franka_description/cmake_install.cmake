@@ -1,8 +1,8 @@
-# Install script for directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description
+# Install script for directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/matte/HairHockey-SmartRobotics/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,26 +37,31 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_description.pc")
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_description.pc")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description/cmake" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_descriptionConfig.cmake"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_descriptionConfig-version.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_descriptionConfig.cmake"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/catkin_generated/installspace/franka_descriptionConfig-version.cmake"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/package.xml")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/package.xml")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/meshes")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/meshes")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE DIRECTORY FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/robots")
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/franka_description" TYPE DIRECTORY FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_description/robots")
 endif()
 

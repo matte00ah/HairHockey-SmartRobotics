@@ -1,8 +1,8 @@
-# Install script for directory: /home/matte/HairHockey-SmartRobotics/catkin_ws/src
+# Install script for directory: /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/matte/HairHockey-SmartRobotics/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,7 +37,12 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   
       if (NOT EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
         file(MAKE_DIRECTORY "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
@@ -47,115 +52,117 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
       endif()
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/_setup_util.py")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/_setup_util.py")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE PROGRAM FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/_setup_util.py")
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE PROGRAM FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/_setup_util.py")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/env.sh")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/env.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE PROGRAM FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/env.sh")
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE PROGRAM FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/env.sh")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/setup.bash;/home/matte/HairHockey-SmartRobotics/catkin_ws/install/local_setup.bash")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/setup.bash;/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/local_setup.bash")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.bash"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.bash"
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.bash"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.bash"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/setup.sh;/home/matte/HairHockey-SmartRobotics/catkin_ws/install/local_setup.sh")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/setup.sh;/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/local_setup.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.sh"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.sh"
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.sh"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.sh"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/setup.zsh;/home/matte/HairHockey-SmartRobotics/catkin_ws/install/local_setup.zsh")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/setup.zsh;/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/local_setup.zsh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.zsh"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.zsh"
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.zsh"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.zsh"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/setup.fish;/home/matte/HairHockey-SmartRobotics/catkin_ws/install/local_setup.fish")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/setup.fish;/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/local_setup.fish")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.fish"
-    "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.fish"
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/setup.fish"
+    "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/local_setup.fish"
     )
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/matte/HairHockey-SmartRobotics/catkin_ws/install/.rosinstall")
+   "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install/.rosinstall")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/matte/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/.rosinstall")
+  file(INSTALL DESTINATION "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install" TYPE FILE FILES "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/catkin_generated/installspace/.rosinstall")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/gtest/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_ros/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/scene/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_msgs/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_visualization/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_control/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_example_controllers/cmake_install.cmake")
-  include("/home/matte/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gazebo/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/gtest/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/end_effector/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_ros/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/full_rbt_moveit/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_description/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/scene/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gripper/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_msgs/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_visualization/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_hw/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_control/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_example_controllers/cmake_install.cmake")
+  include("/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/franka_ros/franka_gazebo/cmake_install.cmake")
 
 endif()
 
@@ -167,5 +174,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/matte/HairHockey-SmartRobotics/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

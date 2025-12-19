@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/robot_joint_state_publisher"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/robot_joint_state_publisher.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/robot_joint_state_publisher"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_visualization/robot_joint_state_publisher.pdb"
   "CMakeFiles/robot_joint_state_publisher.dir/src/robot_joint_state_publisher.cpp.o"
+  "CMakeFiles/robot_joint_state_publisher.dir/src/robot_joint_state_publisher.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<robot name="end_effector">
+
+  <!-- <link name="world" /> -->
+
+  <link name="stick_link">
+    <!-- Visualizzazione -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 3.1415 0"/>
+      <geometry>
+        <mesh filename="package://end_effector/models/stick.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1.0"/>
+      </material>
+    </visual>
+
+    <!-- Collisione -->
+    <!--
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://end_effector/models/airhockey_ef_stick.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    -->
+
+    <!-- Inerzia base -->
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
+               iyy="3.718e-05" iyz="0.0"
+               izz="6.541e-05"/>
+    </inertial>
+      
+  </link>
+  <link name="tmp_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
+               iyy="3.718e-05" iyz="0.0"
+               izz="6.541e-05"/>
+    </inertial>
+  </link>
+  <link name="mallet_link"> 
+  <!-- Visualizzazione -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://end_effector/models/mallet.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1.0"/>
+      </material>
+    </visual>
+
+    <!-- Collisione -->
+    <!--
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://end_effector/models/mallet.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    -->
+    
+
+    <!-- Inerzia base -->
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="3.718e-05" ixy="0.0" ixz="0.0"
+               iyy="3.718e-05" iyz="0.0"
+               izz="6.541e-05"/>
+    </inertial>
+  </link>
+
+  <!-- JOINTS -->
+
+  <joint name="stick_tmp_joint" type="fixed">
+    <parent link="stick_link"/>
+    <child link="tmp_link"/>
+    <origin xyz="0 0 0" rpy="0 ${-pi/4} 0"/> <!-- -0.7853 -->
+  </joint>
+
+  <joint name="tmp_mallet_joint" type="fixed">
+    <parent link="tmp_link"/>
+    <child link="mallet_link"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/> <!-- -0.7853 -->
+  </joint>
+  
+</robot>

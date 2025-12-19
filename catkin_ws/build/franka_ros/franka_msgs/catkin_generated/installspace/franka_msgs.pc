@@ -1,4 +1,4 @@
-prefix=/home/matte/HairHockey-SmartRobotics/catkin_ws/install
+prefix=/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/install
 
 Name: franka_msgs
 Description: Description of franka_msgs

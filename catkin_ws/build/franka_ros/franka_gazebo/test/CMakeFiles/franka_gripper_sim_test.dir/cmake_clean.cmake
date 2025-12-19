@@ -1,8 +1,10 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_gazebo/franka_gripper_sim_test.pdb"
   "CMakeFiles/franka_gripper_sim_test.dir/franka_gripper_sim_test.cpp.o"
+  "CMakeFiles/franka_gripper_sim_test.dir/franka_gripper_sim_test.cpp.o.d"
   "CMakeFiles/franka_gripper_sim_test.dir/gripper_sim_test_setup.cpp.o"
+  "CMakeFiles/franka_gripper_sim_test.dir/gripper_sim_test_setup.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

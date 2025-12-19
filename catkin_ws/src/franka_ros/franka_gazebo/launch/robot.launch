@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-
   <!-- Gazebo & GUI Configuration -->
-  <arg name="gazebo"      default="true"  doc="Should the gazebo simulation be launched? Use false in case if you want to include this file and launch gazebo yourself" />
+  <arg name="gazebo"      default="false"  doc="Should the gazebo simulation be launched? Use false in case if you want to include this file and launch gazebo yourself" />
   <arg name="headless"    default="false" doc="Should the gazebo GUI be launched?" />
   <arg name="paused"      default="false" doc="Should the simulation directly be stopped at 0s?" />
   <arg name="world"       default="worlds/empty.world" doc="Filename to a SDF World for gazebo to use" />
@@ -11,7 +10,7 @@
   <!-- Robot Customization -->
   <arg name="robot"                       doc="Which robot to spawn (one of {panda,fr3})" />
   <arg name="arm_id"      default="$(arg robot)" doc="Name of the robot to spawn" />
-  <arg name="use_gripper" default="true"  doc="Should a franka hand be mounted on the flange?" />
+  <arg name="use_gripper" default="false"  doc="Should a franka hand be mounted on the flange?" />
   <arg name="controller"  default=" "     doc="Which example controller should be started? (One of {cartesian_impedance,model,force,joint_position,joint_velocity}_example_controller)" />
   <arg name="x"           default="0"     doc="How far forward to place the base of the robot in [m]?" />
   <arg name="y"           default="0"     doc="How far leftwards to place the base of the robot in [m]?" />
@@ -28,28 +27,35 @@
                 -J $(arg arm_id)_joint4 -2.35619449
                 -J $(arg arm_id)_joint5 0
                 -J $(arg arm_id)_joint6 1.57079632679
-                -J $(arg arm_id)_joint7 0.785398163397
+                -J $(arg arm_id)_joint7 0
                 -J $(arg arm_id)_finger_joint1 0.001
                 -J $(arg arm_id)_finger_joint2 0.001"
        />
   <arg name="interactive_marker" default="$(eval arg('controller') == 'cartesian_impedance_example_controller')" doc="Should the interactive marker node be started?" />
+  
+  <env name="GAZEBO_MODEL_PATH" value="$(find scene)/models"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(arg gazebo)">
-    <arg name="world_name" value="$(arg world)"/>
+     <arg name="world_name" value="$(arg world)"/>
     <!-- Always start in paused mode, and only unpause when spawning the model -->
     <arg name="paused" value="true"/>
     <arg name="gui" value="$(eval not arg('headless'))"/>
-    <arg name="use_sim_time" value="true"/>
+    <arg name="use_sim_time" value="false"/>
+    <arg name="physics" value="bullet"/>
   </include>
 
+	<!-- xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro -->
+	<!-- xyz:='$(arg x) $(arg y) $(arg z)' -->
+	<!-- rpy:='$(arg roll) $(arg pitch) $(arg yaw)' -->
   <param name="robot_description"
-         command="xacro $(find franka_description)/robots/$(arg robot)/$(arg robot).urdf.xacro
+         command="xacro $(find end_effector)/urdfs/robot_compose.urdf.xacro
                   gazebo:=true
                   hand:=$(arg use_gripper)
                   arm_id:=$(arg arm_id)
-                  xyz:='$(arg x) $(arg y) $(arg z)'
-                  rpy:='$(arg roll) $(arg pitch) $(arg yaw)'
-                  $(arg xacro_args)">
+                  xyz:='0 1.2 0.7'
+                  rpy:='0 0 -1.5708'
+                  $(arg xacro_args)
+                  ">
   </param>
 
   <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
@@ -62,9 +68,8 @@
         pkg="gazebo_ros"
         type="spawn_model"
         args="-param robot_description -urdf -model $(arg arm_id) $(arg unpause)
-              $(arg initial_joint_positions)
-              -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708
-              "/>
+              $(arg initial_joint_positions) 
+              "/> <!-- -x 0 -y 1.2 -z 0.7 -R 0 -P 0 -Y -1.5708 -->
 
   <!-- Spawn required ROS controllers -->
   <node pkg="controller_manager"
@@ -83,7 +88,7 @@
         args="--wait-for initialized franka_state_controller $(arg controller)"
   />
 
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />-->
   <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher">
     <rosparam param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
     <param name="rate" value="30"/>

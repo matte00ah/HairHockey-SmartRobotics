@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="scene">
+
+<!-- export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/home/edoardopottocar/Desktop/Robotics/catkin_ws/src/scene/sdf -->
+
+    <!-- Tavolo -->
+    <include>
+      <uri>model://table</uri>
+      <pose>0 0.71 0.6 0 0 1.5708</pose>
+    </include>
+    
+    <!-- Table_borders -->
+    <include>
+      <uri>model://table_borders</uri>
+      <pose>0 0.71 0.6 0 0 1.5708</pose>
+    </include>
+    
+
+  </model>
+</sdf>
+

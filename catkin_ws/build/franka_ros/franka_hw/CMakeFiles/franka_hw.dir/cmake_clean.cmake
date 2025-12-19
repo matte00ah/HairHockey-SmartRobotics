@@ -1,12 +1,18 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.pdb"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.so"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/libfranka_hw.so"
   "CMakeFiles/franka_hw.dir/src/control_mode.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/control_mode.cpp.o.d"
   "CMakeFiles/franka_hw.dir/src/franka_combinable_hw.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/franka_combinable_hw.cpp.o.d"
   "CMakeFiles/franka_hw.dir/src/franka_combined_hw.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/franka_combined_hw.cpp.o.d"
   "CMakeFiles/franka_hw.dir/src/franka_hw.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/franka_hw.cpp.o.d"
   "CMakeFiles/franka_hw.dir/src/resource_helpers.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/resource_helpers.cpp.o.d"
   "CMakeFiles/franka_hw.dir/src/trigger_rate.cpp.o"
+  "CMakeFiles/franka_hw.dir/src/trigger_rate.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

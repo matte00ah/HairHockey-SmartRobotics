@@ -1,0 +1,15 @@
+<launch>
+    <!-- Choose controller manager: fake, simple, or ros_control -->
+    <arg name="use_sim_time" default="true"/>
+    <arg name="robot_ip" default="172.16.0.2"/>
+    
+    
+    <arg name="moveit_controller_manager" default="simple"/>
+    
+    <!-- Set execution mode for fake execution controllers -->
+    <arg name="fake_execution_type" default="interpolate" />
+    
+    <include file="$(find franka_control)/launch/franka_control.launch" pass_all_args="true"/>
+
+
+</launch>

@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node"
-  "/home/matte/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node.pdb"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node"
+  "/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/lib/franka_control/franka_control_node.pdb"
   "CMakeFiles/franka_control_node.dir/src/franka_control_node.cpp.o"
+  "CMakeFiles/franka_control_node.dir/src/franka_control_node.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

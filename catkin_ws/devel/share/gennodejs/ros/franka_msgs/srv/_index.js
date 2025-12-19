@@ -1,22 +1,22 @@
 
 "use strict";
 
-let SetCartesianImpedance = require('./SetCartesianImpedance.js')
-let SetJointConfiguration = require('./SetJointConfiguration.js')
-let SetKFrame = require('./SetKFrame.js')
-let SetFullCollisionBehavior = require('./SetFullCollisionBehavior.js')
-let SetEEFrame = require('./SetEEFrame.js')
 let SetForceTorqueCollisionBehavior = require('./SetForceTorqueCollisionBehavior.js')
+let SetCartesianImpedance = require('./SetCartesianImpedance.js')
+let SetFullCollisionBehavior = require('./SetFullCollisionBehavior.js')
 let SetLoad = require('./SetLoad.js')
 let SetJointImpedance = require('./SetJointImpedance.js')
+let SetJointConfiguration = require('./SetJointConfiguration.js')
+let SetEEFrame = require('./SetEEFrame.js')
+let SetKFrame = require('./SetKFrame.js')
 
 module.exports = {
-  SetCartesianImpedance: SetCartesianImpedance,
-  SetJointConfiguration: SetJointConfiguration,
-  SetKFrame: SetKFrame,
-  SetFullCollisionBehavior: SetFullCollisionBehavior,
-  SetEEFrame: SetEEFrame,
   SetForceTorqueCollisionBehavior: SetForceTorqueCollisionBehavior,
+  SetCartesianImpedance: SetCartesianImpedance,
+  SetFullCollisionBehavior: SetFullCollisionBehavior,
   SetLoad: SetLoad,
   SetJointImpedance: SetJointImpedance,
+  SetJointConfiguration: SetJointConfiguration,
+  SetEEFrame: SetEEFrame,
+  SetKFrame: SetKFrame,
 };
