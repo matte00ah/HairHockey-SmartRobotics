@@ -88,7 +88,9 @@
         args="--wait-for initialized franka_state_controller $(arg controller)"
   />
 
-  <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />-->
+  <!--
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  -->
   <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher">
     <rosparam param="source_list">[franka_state_controller/joint_states, franka_gripper/joint_states] </rosparam>
     <param name="rate" value="30"/>

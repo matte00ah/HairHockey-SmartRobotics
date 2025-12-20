@@ -3,7 +3,7 @@ import sys
 import rospy
 import moveit_commander
 import os
-from geometry_msgs.msg import Pose, PointStamped
+from geometry_msgs.msg import Pose, PoseStamped
 from visualization_msgs.msg import Marker
 import argparse
 from tf import TransformListener
@@ -144,23 +144,29 @@ class FrankaAutoRecovery:
 
 class PandaArm:
     def __init__(self, frame_id="world"):  
+        self.pose_pub = rospy.Publisher(
+            '/desired_poses', 
+            PoseStamped, 
+            queue_size=1
+        )
+        
         # Init ROS and MoveIt
-        rospy.init_node("panda_move", anonymous=True, argv=[])
-        moveit_commander.roscpp_initialize(sys.argv)
-        self.robot_client = actionlib.SimpleActionClient('execute_trajectory', ExecuteTrajectoryAction)
-        self.arm = moveit_commander.MoveGroupCommander("arm_group")
-        self.arm.set_max_velocity_scaling_factor(0.1)
-        self.arm.set_max_acceleration_scaling_factor(0.1)
-        self.arm.set_pose_reference_frame('world')
-        self.frame_id = frame_id
+        #rospy.init_node("panda_move", anonymous=True, argv=[])
+        #moveit_commander.roscpp_initialize(sys.argv)
+        #self.robot_client = actionlib.SimpleActionClient('execute_trajectory', ExecuteTrajectoryAction)
+        #self.arm = moveit_commander.MoveGroupCommander("arm_group")
+        #self.arm.set_max_velocity_scaling_factor(0.1)
+        #self.arm.set_max_acceleration_scaling_factor(0.1)
+        #self.arm.set_pose_reference_frame('world')
+        #self.frame_id = frame_id
 
-        self.arm.set_goal_position_tolerance(0.03)  # default 0.001
-        self.arm.set_goal_orientation_tolerance(0.03)
-        self.arm.set_goal_joint_tolerance(0.03)
+        #self.arm.set_goal_position_tolerance(0.03)  # default 0.001
+        #self.arm.set_goal_orientation_tolerance(0.03)
+        #self.arm.set_goal_joint_tolerance(0.03)
 
-        print(f"Robot reference frame: {self.arm.get_planning_frame()}")
+        #print(f"Robot reference frame: {self.arm.get_planning_frame()}")
 
-        FrankaAutoRecovery()
+        #FrankaAutoRecovery()
 
     @staticmethod
     def table_to_world_transform(x, y, z):
@@ -168,6 +174,14 @@ class PandaArm:
         rx = Y - y
         ry = X - x
         rz = z + Z # z + <altezza_tavolo>
+        return rx, ry, rz
+    
+    @staticmethod
+    def table_to_robot(x, y, z):
+        rx = x + 0.40 
+        ry = Y - y
+        rz = z + Z # z + <altezza_tavolo>
+        print(f"coordinate Robot: {rx}, {ry}, {rz}")
         return rx, ry, rz
     
     def compute_target_orientation(self, vx, vy, vz, reference_frame, robot_base_frame):
@@ -188,55 +202,7 @@ class PandaArm:
         except Exception as e:
             rospy.logerr(f"Errore di trasformazione: {e}")
     
-    def move_to_point_old(self, vx, vy, vz=0, wait_robot=False):
-        print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
-        x, y, z = self.table_to_world_transform(vx, vy, vz)
-        print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
-
-        rot = [
-            [-1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, -1, 0],
-            [0, 0, 0, 1]
-        ]
-
-        target_pose = Pose()
-
-        # Imposizione della posizione finale dell'end-effector
-        target_pose.position.x = x
-        target_pose.position.y = y
-        target_pose.position.z = z
-
-        # Imposizione vincolo di rotazione del frame di end-effector per posizione finale
-        q = quaternion_from_matrix(rot)
-        target_pose.orientation.x = q[0]
-        target_pose.orientation.y = q[1]
-        target_pose.orientation.z = q[2]
-        target_pose.orientation.w = q[3]
-
-        self.arm.set_start_state_to_current_state()
-        #print(time.perf_counter())
-        self.arm.set_pose_target(target_pose)
-
-        #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
-
-        success = self.arm.go(wait=True)
-        self.arm.stop()
-        self.arm.clear_pose_targets()
-        #print(time.perf_counter())
-        print(f"     Movimento result: {success}")
-        
-        """if not success:
-            rospy.logwarn("    Move failed! Trying error recovery...")
-            self.arm.do_error_recovery()
-            
-            # Dopo la recovery, puoi riprovare a muovere il robot
-            rospy.sleep(0.5)  # piccolo delay per sicurezza
-            success = self.arm.move_to_point(vx, vy, vz)"""
-        
-        return success
-    
-    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
+    def move_to_point_old(self, vx, vy, vz=0.1, wait_robot=False):
         print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
         x, y, z = self.table_to_world_transform(vx, vy, vz)
         #print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
@@ -249,15 +215,20 @@ class PandaArm:
         ]"""
 
         rot_z = self.compute_target_orientation(x, y, z, 'world', 'mallet_link')
-
-        rot = np.array([
-            [0, -1, 0, 0],
-            [-1, 0, 0, 0],
+        rot_0 = np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
             [0, 0, -1, 0],
             [0, 0, 0, 1]
         ])
+        rot_w = np.array([
+            [0, -1, 0, 0],
+            [-1, 0, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
 
-        target_orientation = rot @ rot_z
+        target_orientation = rot_w @ rot_0 @ rot_z
         target_orientation = target_orientation.tolist()
 
         target_pose = Pose()
@@ -297,7 +268,7 @@ class PandaArm:
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         
-        for i in range(2):
+        for i in range(10):
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))
@@ -324,6 +295,44 @@ class PandaArm:
         
         return success
     
+    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
+        print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
+        x, y, z = self.table_to_robot(vx, vy, vz)
+
+        rot_z = self.compute_target_orientation(x, y, z, 'world', 'mallet_link')
+
+        rot = np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1]
+        ])
+
+        target_orientation = rot @ rot_z
+
+        target_stamped = PoseStamped()
+        target_stamped.header.frame_id = 'panda_link0'
+        target_stamped.header.stamp = rospy.Time.now()
+
+        target_stamped.pose.position.x = x
+        target_stamped.pose.position.y = y
+        target_stamped.pose.position.z = z
+
+        # Convert rotation matrix to quaternion
+        q = quaternion_from_matrix(target_orientation.tolist())
+        target_stamped.pose.orientation.x = q[0]
+        target_stamped.pose.orientation.y = q[1]
+        target_stamped.pose.orientation.z = q[2]
+        target_stamped.pose.orientation.w = q[3]
+
+        print(f"target: {target_stamped.pose}")
+
+        rate = rospy.Rate(100)
+        target_stamped.header.stamp = rospy.Time.now()
+        self.pose_pub.publish(target_stamped)
+        print("Pose published")
+        rate.sleep()
+
 class TargetVisualizer:
     def __init__(self, frame_id="world"):
         # Latched publisher so the sphere persists in RViz without requiring continuous republishing
