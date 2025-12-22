@@ -583,6 +583,30 @@ src/cartesian_pose_example_controller.cpp.s:
 	cd /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build && $(MAKE) $(MAKESILENT) -f franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/build.make franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller.cpp.s
 .PHONY : src/cartesian_pose_example_controller.cpp.s
 
+src/cartesian_pose_example_controller_mod.o: src/cartesian_pose_example_controller_mod.cpp.o
+.PHONY : src/cartesian_pose_example_controller_mod.o
+
+# target to build an object file
+src/cartesian_pose_example_controller_mod.cpp.o:
+	cd /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build && $(MAKE) $(MAKESILENT) -f franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/build.make franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller_mod.cpp.o
+.PHONY : src/cartesian_pose_example_controller_mod.cpp.o
+
+src/cartesian_pose_example_controller_mod.i: src/cartesian_pose_example_controller_mod.cpp.i
+.PHONY : src/cartesian_pose_example_controller_mod.i
+
+# target to preprocess a source file
+src/cartesian_pose_example_controller_mod.cpp.i:
+	cd /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build && $(MAKE) $(MAKESILENT) -f franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/build.make franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller_mod.cpp.i
+.PHONY : src/cartesian_pose_example_controller_mod.cpp.i
+
+src/cartesian_pose_example_controller_mod.s: src/cartesian_pose_example_controller_mod.cpp.s
+.PHONY : src/cartesian_pose_example_controller_mod.s
+
+# target to generate assembly for a file
+src/cartesian_pose_example_controller_mod.cpp.s:
+	cd /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/build && $(MAKE) $(MAKESILENT) -f franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/build.make franka_ros/franka_example_controllers/CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller_mod.cpp.s
+.PHONY : src/cartesian_pose_example_controller_mod.cpp.s
+
 src/cartesian_velocity_example_controller.o: src/cartesian_velocity_example_controller.cpp.o
 .PHONY : src/cartesian_velocity_example_controller.o
 
@@ -892,6 +916,9 @@ help:
 	@echo "... src/cartesian_pose_example_controller.o"
 	@echo "... src/cartesian_pose_example_controller.i"
 	@echo "... src/cartesian_pose_example_controller.s"
+	@echo "... src/cartesian_pose_example_controller_mod.o"
+	@echo "... src/cartesian_pose_example_controller_mod.i"
+	@echo "... src/cartesian_pose_example_controller_mod.s"
 	@echo "... src/cartesian_velocity_example_controller.o"
 	@echo "... src/cartesian_velocity_example_controller.i"
 	@echo "... src/cartesian_velocity_example_controller.s"

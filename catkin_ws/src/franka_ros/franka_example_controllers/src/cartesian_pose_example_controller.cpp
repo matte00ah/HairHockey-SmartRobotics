@@ -50,6 +50,7 @@ bool CartesianPoseExampleController::init(hardware_interface::RobotHW* robot_har
     auto state_handle = state_interface->getHandle(arm_id + "_robot");
 
     std::array<double, 7> q_start{{0, -M_PI_4, 0, -3 * M_PI_4, 0, M_PI_2, M_PI_4}};
+    
     for (size_t i = 0; i < q_start.size(); i++) {
       if (std::abs(state_handle.getRobotState().q_d[i] - q_start[i]) > 0.1) {
         ROS_ERROR_STREAM(
@@ -81,6 +82,8 @@ void CartesianPoseExampleController::update(const ros::Time& /* time */,
   double angle = M_PI / 4 * (1 - std::cos(M_PI / 5.0 * elapsed_time_.toSec()));
   double delta_x = radius * std::sin(angle);
   double delta_z = radius * (std::cos(angle) - 1);
+  ROS_INFO_STREAM("Angle: " << angle);
+  //ROS_INFO_STREAM("dx: " << delta_x << " dz: " << delta_z);
   std::array<double, 16> new_pose = initial_pose_;
   new_pose[12] -= delta_x;
   new_pose[14] -= delta_z;

@@ -1,7 +1,7 @@
 table_width_m: 1.97
 table_height_m: 0.89
 robot_reach_m: 0.98 # 0.7+0.28(cateto per angolo 45°) #0.82  # raggio massimo
-z : 0.4 #0.825 + 0,025 (altezza piano + bordo + spessore paddle + metà molla) abbiamo aggiunto 0.1
+z : 0.83 #0.825 + 0,025 (altezza piano + bordo + spessore paddle + metà molla) abbiamo aggiunto 0.1
 
 robot_base_tocorner: [-0.4 , 0.445] # [2.37, 0.445]  # [1.97 + 0.40, 0 + 0.445] -> ("0 + 0.425, 1.2 + 0.97")
 

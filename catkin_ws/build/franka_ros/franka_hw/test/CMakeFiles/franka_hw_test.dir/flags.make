@@ -6,5 +6,5 @@ CXX_DEFINES = -DENABLE_BASE_ACCELERATION -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUIL
 
 CXX_INCLUDES = -I/home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/src/franka_ros/franka_hw/include -isystem /home/autolab/Desktop/github/HairHockey-SmartRobotics/catkin_ws/devel/include -isystem /opt/ros/noetic/include -isystem /opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -isystem /usr/src/googletest/googletest/include -isystem /usr/src/googletest/googletest
 
-CXX_FLAGS = -std=gnu++14 -DGTEST_HAS_PTHREAD=1
+CXX_FLAGS = -std=gnu++14 -DGTEST_HAS_PTHREAD=1 -pthread
 

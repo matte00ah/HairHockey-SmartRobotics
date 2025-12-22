@@ -11,30 +11,38 @@
 #include <hardware_interface/robot_hw.h>
 #include <ros/node_handle.h>
 #include <ros/time.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include <franka_hw/franka_cartesian_command_interface.h>
 
 namespace franka_example_controllers {
 
-class CartesianPoseExampleController
+class CartesianPoseExampleController_Mod
     : public controller_interface::MultiInterfaceController<franka_hw::FrankaPoseCartesianInterface,
                                                             franka_hw::FrankaStateInterface> {
  public:
   bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
   void starting(const ros::Time&) override;
   void update(const ros::Time&, const ros::Duration& period) override;
-  void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) override;
-  std::array<double, 16> poseToArray(const geometry_msgs::Pose& pose) override;
+  //void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+  void topicCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+  std::array<double, 16> poseToArray(const geometry_msgs::Pose& pose);
 
  private:
   franka_hw::FrankaPoseCartesianInterface* cartesian_pose_interface_;
   std::unique_ptr<franka_hw::FrankaCartesianPoseHandle> cartesian_pose_handle_;
   ros::Duration elapsed_time_;
   std::array<double, 16> initial_pose_{};
+  std::array<double, 3> target_position_{};
+  double s_prev_ = 0.0;
+  double motion_duration_ = 5.0;
   ros::Subscriber pose_sub_;
-  geometry_msgs::PoseStamped received_pose_;
+  double movement_time;
+  double T = 5.0;
+  double sigma;
   std::mutex pose_mutex_;
-  bool pose_received_ = false;
+  bool pose_received_ = true;
+  int movements = 0;
 };
 
 }  // namespace franka_example_controllers

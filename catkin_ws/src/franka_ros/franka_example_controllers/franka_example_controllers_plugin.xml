@@ -9,6 +9,11 @@
       A controller that executes a short motion based on joint positions to demonstrate correct usage
     </description>
   </class>
+  <class name="franka_example_controllers/CartesianPoseExampleController_Mod" type="franka_example_controllers::CartesianPoseExampleController_Mod" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A modified controller that executes motion based on cartesian poses received from a ROS topic.
+    </description>
+  </class>
   <class name="franka_example_controllers/CartesianPoseExampleController" type="franka_example_controllers::CartesianPoseExampleController" base_class_type="controller_interface::ControllerBase">
     <description>
       A controller that executes a short motion based on cartesian poses to demonstrate correct usage

@@ -7,7 +7,7 @@ from geometry_msgs.msg import Pose, PoseStamped
 from visualization_msgs.msg import Marker
 import argparse
 from tf import TransformListener
-from tf.transformations import quaternion_from_matrix, quaternion_from_euler, euler_from_quaternion
+from tf.transformations import quaternion_from_matrix
 import yaml
 import math
 from moveit_msgs.msg import ExecuteTrajectoryAction, ExecuteTrajectoryGoal, OrientationConstraint, Constraints
@@ -145,7 +145,7 @@ class FrankaAutoRecovery:
 class PandaArm:
     def __init__(self, frame_id="world"):  
         self.pose_pub = rospy.Publisher(
-            '/desired_poses', 
+            '/cartesian_pose_example_controller_mod/desired_poses', 
             PoseStamped, 
             queue_size=1
         )
@@ -180,7 +180,7 @@ class PandaArm:
     def table_to_robot(x, y, z):
         rx = x + 0.40 
         ry = Y - y
-        rz = z + Z # z + <altezza_tavolo>
+        rz = z + (Z-0.71) # z + <altezza_tavolo>
         print(f"coordinate Robot: {rx}, {ry}, {rz}")
         return rx, ry, rz
     
@@ -301,14 +301,21 @@ class PandaArm:
 
         rot_z = self.compute_target_orientation(x, y, z, 'world', 'mallet_link')
 
+        #rot = np.array([
+        #    [1, 0, 0, 0],
+        #    [0, 1, 0, 0],
+        #    [0, 0, -1, 0],
+        #    [0, 0, 0, 1]
+        #])
+
         rot = np.array([
             [1, 0, 0, 0],
             [0, 1, 0, 0],
-            [0, 0, -1, 0],
+            [0, 0, 1, 0],
             [0, 0, 0, 1]
         ])
 
-        target_orientation = rot @ rot_z
+        target_orientation = rot #@ rot_z
 
         target_stamped = PoseStamped()
         target_stamped.header.frame_id = 'panda_link0'
@@ -326,12 +333,15 @@ class PandaArm:
         target_stamped.pose.orientation.w = q[3]
 
         print(f"target: {target_stamped.pose}")
+        print(target_orientation)
 
         rate = rospy.Rate(100)
-        target_stamped.header.stamp = rospy.Time.now()
-        self.pose_pub.publish(target_stamped)
-        print("Pose published")
-        rate.sleep()
+        while True:
+            
+            target_stamped.header.stamp = rospy.Time.now()
+            self.pose_pub.publish(target_stamped)
+            #print("Pose published")
+            rate.sleep()
 
 class TargetVisualizer:
     def __init__(self, frame_id="world"):
@@ -398,5 +408,3 @@ if __name__ == "__main__":
 
     # Imposta il vincolo di orientazione: x_ee allineato con -y_world
     success = robot.move_to_point(vx, vy, vz)
-
-    moveit_commander.roscpp_shutdown()

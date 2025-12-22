@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_impedance_example_controller.cpp.o.d"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller.cpp.o"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller.cpp.o.d"
+  "CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller_mod.cpp.o"
+  "CMakeFiles/franka_example_controllers.dir/src/cartesian_pose_example_controller_mod.cpp.o.d"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_velocity_example_controller.cpp.o"
   "CMakeFiles/franka_example_controllers.dir/src/cartesian_velocity_example_controller.cpp.o.d"
   "CMakeFiles/franka_example_controllers.dir/src/dual_arm_cartesian_impedance_example_controller.cpp.o"
