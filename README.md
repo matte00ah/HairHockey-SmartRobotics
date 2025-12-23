@@ -1,6 +1,6 @@
-<p align="center">
-  <img src="resources/copertina.png" alt="Tumbnail" width="300" heigth="150/>
-</p>
+<div align="center">
+  <img src="resources/copertina.png" alt="Copertina" width="300" height="300"/>
+</div>
 
 # HairHockey‑SmartRobotics
 
