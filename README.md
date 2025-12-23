@@ -28,11 +28,31 @@ Brief project for autonomous puck tracking and Franka Panda control in simulatio
   - Teleop / PD follower example: [`franka_example_controllers::TeleopJointPDExampleController`](catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h) and implementation [catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp](catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp).
   - Various example controllers and CMake targets: [catkin_ws/src/franka_ros/franka_example_controllers/CMakeLists.txt](catkin_ws/src/franka_ros/franka_example_controllers/CMakeLists.txt).
 
-## Quickstart (simulated workflow)
-1. Build and install libfranka (example in repo README).  
-2. Build workspace:
-   - source ROS (e.g. `source /opt/ros/noetic/setup.bash`) then run `catkin_make` in `catkin_ws`.
-3. Launch stack (example terminals):
+## Setup environment
+1. Build and install libfranka in the home directory:
+      `git clone --recursive https://github.com`
+      `frankaemika/libfranka --branch 0.8.0`
+      `cd libfranka`
+      `mkdir build`
+      `cd build`
+      `cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF ..`
+      `cmake --build .`
+      `cpack -G DEB`
+      `sudo dpkg -i libfranka-0.8.0-amd64.deb`
+2. Installare ros controllers: 
+      `sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers`
+3. Installare boost-sml:
+      `sudo apt-get install ros-noetic-boost-sml`
+4. Clone the repository in the home direcotory and open terminal 
+5. Build workspace:
+      `cd ./HairHockey-SmartRobotics/catkin_ws`
+      `catkin_make`
+## Start execution
+1. Move inside repo directory:
+      `cd ~/HairHockey-SmartRobotics/catkin_ws`
+      `source devel/setup.bash`
+2. Start control:
+      - For just virtual simulation modify the file in 
    - franka control: `roslaunch franka_control franka_control.launch robot_ip:=172.16.0.2 load_gripper:=false` — see [catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp](catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp).
    - Gazebo with Panda: `roslaunch scene all.launch` — scene launch files in [catkin_ws/src/scene/launch](catkin_ws/src/scene/).
    - MoveIt + RViz: `roslaunch scene my.launch`.
