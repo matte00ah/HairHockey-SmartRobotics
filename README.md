@@ -1,4 +1,5 @@
-!(resources/copertina.png)
+![Tumbnail](resources/copertina.png)
+<img src="resources/copertina.png" alt="Tumbnail" width="300" heigth="150/>
 # HairHockey‑SmartRobotics
 
 Brief project for autonomous puck tracking and Franka Panda control in simulation (Gazebo) + MoveIt. The repository integrates scene perception, particle‑filter based tracking and attack logic with Franka control stacks and example controllers.
