@@ -1,3 +1,4 @@
+!(resources/copertina.png)
 # HairHockey‑SmartRobotics
 
 Brief project for autonomous puck tracking and Franka Panda control in simulation (Gazebo) + MoveIt. The repository integrates scene perception, particle‑filter based tracking and attack logic with Franka control stacks and example controllers.
