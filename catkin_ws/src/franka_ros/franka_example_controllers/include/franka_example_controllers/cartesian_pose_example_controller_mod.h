@@ -25,7 +25,7 @@ class CartesianPoseExampleController_Mod
   void starting(const ros::Time&) override;
   void update(const ros::Time&, const ros::Duration& period) override;
   //void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
-  void topicCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+  //void topicCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
   std::array<double, 16> poseToArray(const geometry_msgs::Pose& pose);
 
  private:
@@ -38,7 +38,6 @@ class CartesianPoseExampleController_Mod
   double motion_duration_ = 5.0;
   ros::Subscriber pose_sub_;
   double movement_time;
-  double T = 5.0;
   double sigma;
   std::mutex pose_mutex_;
   bool pose_received_ = true;

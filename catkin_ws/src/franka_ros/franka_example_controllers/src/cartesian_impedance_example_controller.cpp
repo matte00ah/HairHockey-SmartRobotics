@@ -171,7 +171,7 @@ void CartesianImpedanceExampleController::update(const ros::Time& /*time*/,
 
   // Cartesian PD control with damping ratio = 1
   tau_task << jacobian.transpose() *
-                  (-cartesian_stiffness_ * error - cartesian_damping_ * (jacobian * dq));
+                  (-cartesian_stiffness_ * error - cartesian_damping_ * (jacobian * dq)); 
   // nullspace PD control with damping ratio = 1
   tau_nullspace << (Eigen::MatrixXd::Identity(7, 7) -
                     jacobian.transpose() * jacobian_transpose_pinv) *

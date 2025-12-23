@@ -14,12 +14,13 @@
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <Eigen/Dense>
+#include <cmath>
 
 namespace franka_example_controllers {
 
 bool CartesianPoseExampleController_Mod::init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) {
 
-  pose_sub_ = node_handle.subscribe("desired_poses", 1, &CartesianPoseExampleController_Mod::topicCallback, this);
+  //pose_sub_ = node_handle.subscribe("desired_poses", 1, &CartesianPoseExampleController_Mod::topicCallback, this);
   cartesian_pose_interface_ = robot_hardware->get<franka_hw::FrankaPoseCartesianInterface>();
   if (cartesian_pose_interface_ == nullptr) {
     ROS_ERROR(
@@ -54,7 +55,7 @@ bool CartesianPoseExampleController_Mod::init(hardware_interface::RobotHW* robot
 
     std::array<double, 7> q_start = state_handle.getRobotState().q;
     for (size_t i = 0; i < q_start.size(); i++) {
-      if (std::abs(state_handle.getRobotState().q[i] - q_start[i]) > 0.1) {
+      if (std::abs(state_handle.getRobotState().q_d[i] - q_start[i]) > 0.1) {
         ROS_ERROR_STREAM(
             "CartesianPoseExampleController_Mod: Robot is not in the expected starting position for "
             "running this example. Run `roslaunch franka_example_controllers move_to_start.launch "
@@ -72,10 +73,10 @@ bool CartesianPoseExampleController_Mod::init(hardware_interface::RobotHW* robot
 }
 
 void CartesianPoseExampleController_Mod::starting(const ros::Time& /* time */) {
-  initial_pose_ = cartesian_pose_handle_->getRobotState().O_T_EE_d;
-  target_position_[0] = initial_pose_[12]+0.2;
+  initial_pose_ = cartesian_pose_handle_->getRobotState().O_T_EE;
+  target_position_[0] = initial_pose_[12] + 0.1;
   target_position_[1] = initial_pose_[13];
-  target_position_[2] = initial_pose_[14];
+  target_position_[2] = initial_pose_[14] + 0.1;
   ROS_INFO_STREAM("target position set to x: " << target_position_[0] << " y: " << target_position_[1] << " z: " << target_position_[2]);
   motion_duration_= 5.0;
   elapsed_time_ = ros::Duration(0.0);
@@ -101,11 +102,73 @@ std::array<double, 16> CartesianPoseExampleController_Mod::poseToArray(const geo
 }
 
 
+//void CartesianPoseExampleController_Mod::update(const ros::Time& /* time */,
+//                                     const ros::Duration& period) {
+//  elapsed_time_ += period;
+//  std::array<double, 16> new_pose = cartesian_pose_handle_->getRobotState().O_T_EE_d;
+//  double t;
+//  std::array<double, 3> distance = {
+//      std::abs(target_position_[0] - new_pose[12]),
+//      std::abs(target_position_[1] - new_pose[13]),
+//      std::abs(target_position_[2] - new_pose[14])
+//  };
+//
+//  //ROS_INFO_STREAM("Distance to target x: " << distance[0] << " y: " << distance[1] << " z: " << distance[2]);
+//  
+//  if (distance[0] <= 0.002) {
+//    //pose_received_ = false; // target raggiunto
+//    ROS_INFO_STREAM("Target reached");
+//    ROS_INFO_STREAM("Final position x: " << new_pose[12] << " y: " << new_pose[13] << " z: " << new_pose[14]);
+//    initial_pose_ = new_pose;
+//    t = 0.0;
+//    return;
+//  }
+//  
+//  if (pose_received_) {
+//    ROS_INFO_STREAM("pose received: " << pose_received_);
+//    double norm_distance = std::sqrt(distance[0]*distance[0] + distance[1]*distance[1] + distance[2]*distance[2]);
+//    ROS_INFO_STREAM(" norm distance: " << norm_distance);
+//    double v_max = 0.2;   //raggio 9.55/2      // m/s
+//    sigma = norm_distance / (v_max * std::sqrt(M_PI));
+//    ROS_INFO_STREAM(" sigma: " << sigma);
+//    norm_distance = norm_distance * 100;
+//    double r = norm_distance / 10;
+//    T = (r*1.5) * sigma;
+//    if (T <= 0.0) {
+//      T = 1.0;
+//    }
+//    ROS_INFO_STREAM(" T: " << T);
+//    //ROS_INFO_STREAM("s: " << s);
+//    //s = std::min(s, 1.0);
+//
+//    //double ds = s - s_prev_;
+//    //s_prev_ = s;
+//    pose_received_ = false;
+//
+//  }
+//  t = std::min(elapsed_time_.toSec(), T);
+//  double tau = (t - T / 2.0) / sigma;
+//  double s = 0.5 * (1.0 + std::erf(tau));
+//
+//  double target_delta_x = 0.001;
+//  //double target_delta_z = 0.10;
+//
+//    for (int i = 0; i < 1; i++) {
+//      //double delta = ds * (target_position_[i] - initial_pose_[12 + i]);
+//      double delta = s * target_delta_x;
+//      new_pose[12 + i] += delta;
+//    } 
+//  cartesian_pose_handle_->setCommand(new_pose);
+//}
+
 void CartesianPoseExampleController_Mod::update(const ros::Time& /* time */,
                                      const ros::Duration& period) {
   elapsed_time_ += period;
   std::array<double, 16> new_pose = cartesian_pose_handle_->getRobotState().O_T_EE_d;
-  double t;
+  //ROS_INFO_STREAM("Current position x: " << new_pose[12] << " y: " << new_pose[13] << " z: " << new_pose[14]);
+  double t = elapsed_time_.toSec();
+  //double T = motion_duration_;
+  double T = 1.0; 
   std::array<double, 3> distance = {
       std::abs(target_position_[0] - new_pose[12]),
       std::abs(target_position_[1] - new_pose[13]),
@@ -114,103 +177,75 @@ void CartesianPoseExampleController_Mod::update(const ros::Time& /* time */,
 
   //ROS_INFO_STREAM("Distance to target x: " << distance[0] << " y: " << distance[1] << " z: " << distance[2]);
   
-  if (distance[0] <= 0.002) {
+  //if (distance[0] <= 0.01 && distance[2] <= 0.01 && distance[1] <= 0.01) {
     //pose_received_ = false; // target raggiunto
-    ROS_INFO_STREAM("Target reached");
-    ROS_INFO_STREAM("Final position x: " << new_pose[12] << " y: " << new_pose[13] << " z: " << new_pose[14]);
-    initial_pose_ = new_pose;
-    t = 0.0;
-    return;
-  }
-  
-  if (pose_received_) {
-    ROS_INFO_STREAM("pose received: " << pose_received_);
-    double norm_distance = std::sqrt(distance[0]*distance[0] + distance[1]*distance[1] + distance[2]*distance[2]);
-    double v_max = 0.55;         // m/s
-    sigma = norm_distance / (v_max * std::sqrt(M_PI));
-    T = 6.0 * sigma;
-    ROS_INFO_STREAM(" T: " << T);
+    //ROS_INFO_STREAM("Target reached");
+    //ROS_INFO_STREAM("Final position x: " << new_pose[12] << " y: " << new_pose[13] << " z: " << new_pose[14]);
+    //initial_pose_ = new_pose;
+    //t = 0.0;
+  //}
+  //else if (pose_received_) {
+    //if (pose_received_) {
+
+    //double s = 0.5 * (1.0 - std::cos(M_PI * t / T));     questa funziona
     //ROS_INFO_STREAM("s: " << s);
     //s = std::min(s, 1.0);
 
+    double tau = t / T;  // t normalizzato tra 0 e 1
+    double s = 6.0 * (tau*tau*tau*tau*tau)
+         - 15.0 * (tau*tau*tau*tau)
+         + 10.0 * (tau*tau*tau);
+    s = std::min(s, 1.0);
+
+    //ROS_INFO_STREAM("s: " << s);
     //double ds = s - s_prev_;
     //s_prev_ = s;
-    pose_received_ = false;
 
-  }
-  t = std::min(elapsed_time_.toSec(), T);
-  double tau = (t - T / 2.0) / sigma;
-  double s = 0.5 * (1.0 + std::erf(tau));
+    //double target_delta_x = 0.001;
+    //double target_delta_z = 0.10;
 
-  double target_delta_x = 0.001;
-  double target_delta_z = 0.10;
+    //for (int i = 0; i < 3; i++) {
+    //  //double delta = ds * (target_position_[i] - initial_pose_[12 + i]);
+    //  double delta = s * target_delta_x;
+    //  new_pose[12 + i] += delta;
+    //}
 
-    for (int i = 0; i < 1; i++) {
-      //double delta = ds * (target_position_[i] - initial_pose_[12 + i]);
-      double delta = s * target_delta_x;
-      new_pose[12 + i] += delta;
-    } 
+
+    new_pose[12] = initial_pose_[12] + s * (target_position_[0] - initial_pose_[12]);
+    new_pose[13] = initial_pose_[13] + s * (target_position_[1] - initial_pose_[13]);
+    new_pose[14] = initial_pose_[14] + s * (target_position_[2] - initial_pose_[14]);
+  //}  
   cartesian_pose_handle_->setCommand(new_pose);
 }
-
 //void CartesianPoseExampleController_Mod::update(const ros::Time& /* time */,
-//                                     const ros::Duration& period) {
+//                                            const ros::Duration& period) {
 //  elapsed_time_ += period;
-//  std::array<double, 16> new_pose = cartesian_pose_handle_->getRobotState().O_T_EE_d;
-//  double t = elapsed_time_.toSec();
-//  double T = motion_duration_;
-//  std::array<double, 3> distance = {
-//      std::abs(target_position_[0] - new_pose[12]),
-//      std::abs(target_position_[1] - new_pose[13]),
-//      std::abs(target_position_[2] - new_pose[14])
-//  };
 //
-//  ROS_INFO_STREAM("Distance to target x: " << distance[0] << " y: " << distance[1] << " z: " << distance[2]);
-//  
-//  if (distance[0] <= 0.002 && distance[2] <= 0.002) {
-//    pose_received_ = false; // target raggiunto
-//    ROS_INFO_STREAM("Target reached");
-//    ROS_INFO_STREAM("Final position x: " << new_pose[12] << " y: " << new_pose[13] << " z: " << new_pose[14]);
-//    initial_pose_ = new_pose;
-//    t = 0.0;
-//    return;
-//  }
-//  
-//  //if (pose_received_) {
-//
-//    double s = 0.5 * (1.0 - std::cos(M_PI * t / T));
-//    //ROS_INFO_STREAM("s: " << s);
-//    //s = std::min(s, 1.0);
-//
-//    //double ds = s - s_prev_;
-//    //s_prev_ = s;
-//
-//    double target_delta_x = 0.001;
-//    double target_delta_z = 0.10;
-//
-//    for (int i = 0; i < 3; i++) {
-//      //double delta = ds * (target_position_[i] - initial_pose_[12 + i]);
-//      double delta = s * target_delta_x;
-//      new_pose[12 + i] += delta;
-//    }
-//
-//  //}
+//  double radius = 0.15;
+//  double angle = M_PI / 4 * (1 - std::cos(M_PI / 5.0 * elapsed_time_.toSec()));
+//  double delta_x = radius * std::sin(angle);
+//  double delta_z = radius * (std::cos(angle) - 1);
+//  ROS_INFO_STREAM("Angle: " << angle);
+//  //ROS_INFO_STREAM("dx: " << delta_x << " dz: " << delta_z);
+//  std::array<double, 16> new_pose = initial_pose_;
+//  new_pose[12] -= delta_x;
+//  new_pose[14] -= delta_z;
 //  cartesian_pose_handle_->setCommand(new_pose);
 //}
 
 // Callback per ricevere i comandi da ROS
-void CartesianPoseExampleController_Mod::topicCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-  // Aggiorniamo il target. La logica di "update" si occuperà di raggiungerlo dolcemente.
-  target_position_[0] = msg->pose.position.x;
-  target_position_[1] = msg->pose.position.y;
-  target_position_[2] = msg->pose.position.z;
-  s_prev_ = 0.0;
-  elapsed_time_ = ros::Duration(0.0);
-  pose_received_ = true;
- 
-  // Nota: Questo codice mantiene l'orientamento fisso a quello iniziale.
-  // Se vuoi cambiare orientamento, devi passare un geometry_msgs::Pose.
-}
+//void CartesianPoseExampleController_Mod::topicCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
+//  // Aggiorniamo il target. La logica di "update" si occuperà di raggiungerlo dolcemente.
+//  target_position_[0] = msg->pose.position.x;
+//  target_position_[1] = msg->pose.position.y;
+//  target_position_[2] = msg->pose.position.z;
+//  s_prev_ = 0.0;
+//  elapsed_time_ = ros::Duration(0.0);
+//  pose_received_ = true;
+// 
+//  // Nota: Questo codice mantiene l'orientamento fisso a quello iniziale.
+//  // Se vuoi cambiare orientamento, devi passare un geometry_msgs::Pose.
+//}
 
 }  // namespace franka_controllers
 PLUGINLIB_EXPORT_CLASS(franka_example_controllers::CartesianPoseExampleController_Mod,
