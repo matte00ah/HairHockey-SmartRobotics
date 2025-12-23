@@ -1,62 +1,64 @@
-# HairHockey-SmartRobotics
+# HairHockey‑SmartRobotics
 
-# Terminale 0: franka control
-roslaunch franka_control franka_control.launch robot_ip:=172.16.0.2 load_gripper:=false
+Brief project for autonomous puck tracking and Franka Panda control in simulation (Gazebo) + MoveIt. The repository integrates scene perception, particle‑filter based tracking and attack logic with Franka control stacks and example controllers.
 
-# Terminale 1: Gazebo con Panda
-roslaunch scene all.launch
+## Main functionalities
+- Real‑time puck detection & table homography
+  - Tracker and homography: [`process_frame`](catkin_ws/src/scene/scripts/origin_detector.py) / [`compute_homography`](catkin_ws/src/scene/scripts/disk_tracker.py) — see [catkin_ws/src/scene/scripts/origin_detector.py](catkin_ws/src/scene/scripts/origin_detector.py) and [catkin_ws/src/scene/scripts/disk_tracker.py](catkin_ws/src/scene/scripts/disk_tracker.py).
+  - Pixel→meter conversion: [`pixel_to_meter_fast`](catkin_ws/src/scene/scripts/disk_tracker.py).
+- Monte‑Carlo filtering and decision making for puck prediction / robot attack
+  - Filter class: [`MontecarloFilter`](catkin_ws/src/scene/scripts/montecarlo_filter.py) (and modified variant: [catkin_ws/src/scene/scripts/montecarlo_filter_modified.py](catkin_ws/src/scene/scripts/montecarlo_filter_modified.py)).
+  - Attack strategies and robot reach checks implemented in the filter's `run` / `update` methods — see [catkin_ws/src/scene/scripts/montecarlo_filter.py](catkin_ws/src/scene/scripts/montecarlo_filter.py).
+- Robot motion and visualization
+  - Panda arm wrapper: [`PandaArm`](catkin_ws/src/scene/scripts/move_franka.py) — [catkin_ws/src/scene/scripts/move_franka.py](catkin_ws/src/scene/scripts/move_franka.py).
+  - Example scripts to move to start / visualize sphere in RViz: [catkin_ws/src/franka_ros/franka_example_controllers/scripts/move_to_start.py](catkin_ws/src/franka_ros/franka_example_controllers/scripts/move_to_start.py).
+- Simulation utilities
+  - Gazebo puck bounce / physics helper: [catkin_ws/src/scene/scripts/bounce.py](catkin_ws/src/scene/scripts/bounce.py).
+  - Scene manager to synchronize models and MoveIt: [catkin_ws/src/scene/scripts/scene_manager.py](catkin_ws/src/scene/scripts/scene_manager.py).
 
-# Terminale 2: MoveIt + RViz
-roslaunch scene my.launch
+## Key services & controllers (Franka)
+- Hardware + services container and helpers:
+  - Service wrapper / container: [`franka_hw::ServiceContainer`](catkin_ws/src/franka_ros/franka_hw/include/franka_hw/services.h) and service helper [`franka_hw::advertiseService`](catkin_ws/src/franka_ros/franka_hw/include/franka_hw/services.h).
+  - Service setup implementations: [`franka_hw::setupServices`](catkin_ws/src/franka_ros/franka_hw/src/services.cpp).
+  - Combinable HW service/action setup: [`FrankaCombinableHW::setupServicesAndActionServers`](catkin_ws/src/franka_ros/franka_hw/src/franka_combinable_hw.cpp).
+- Control node and lifecycle:
+  - Main control node: [catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp](catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp).
+  - Gripper node & action servers: [catkin_ws/src/franka_ros/franka_gripper/src/franka_gripper_node.cpp](catkin_ws/src/franka_ros/franka_gripper/src/franka_gripper_node.cpp).
+- Example controllers and teleoperation:
+  - Teleop / PD follower example: [`franka_example_controllers::TeleopJointPDExampleController`](catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h) and implementation [catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp](catkin_ws/src/franka_ros/franka_example_controllers/src/teleop_joint_pd_example_controller.cpp).
+  - Various example controllers and CMake targets: [catkin_ws/src/franka_ros/franka_example_controllers/CMakeLists.txt](catkin_ws/src/franka_ros/franka_example_controllers/CMakeLists.txt).
 
-# Terminale 3: SceneManager.py
-rosrun scene scene_manager.py
+## Quickstart (simulated workflow)
+1. Build and install libfranka (example in repo README).  
+2. Build workspace:
+   - source ROS (e.g. `source /opt/ros/noetic/setup.bash`) then run `catkin_make` in `catkin_ws`.
+3. Launch stack (example terminals):
+   - franka control: `roslaunch franka_control franka_control.launch robot_ip:=172.16.0.2 load_gripper:=false` — see [catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp](catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp).
+   - Gazebo with Panda: `roslaunch scene all.launch` — scene launch files in [catkin_ws/src/scene/launch](catkin_ws/src/scene/).
+   - MoveIt + RViz: `roslaunch scene my.launch`.
+   - Start perception + tracking: run disk tracker script [catkin_ws/src/scene/scripts/disk_tracker.py](catkin_ws/src/scene/scripts/disk_tracker.py).
+   - Optional: run `scene_manager.py` ([catkin_ws/src/scene/scripts/scene_manager.py](catkin_ws/src/scene/scripts/scene_manager.py)) to manage models.
 
-#Prima di lanciare disk_tracker
-jobs -l
-kill -9 {pid}
+## Build / CI / tooling
+- CMake + catkin: packages include CMakeLists in respective folders (example: [catkin_ws/src/franka_ros/franka_hw/CMakeLists.txt](catkin_ws/src/franka_ros/franka_hw/CMakeLists.txt), [catkin_ws/src/franka_ros/franka_gazebo/CMakeLists.txt](catkin_ws/src/franka_ros/franka_gazebo/CMakeLists.txt)).
+- Formatting and static checks: Clang/pep tooling included via [catkin_ws/src/franka_ros/cmake/ClangTools.cmake](catkin_ws/src/franka_ros/cmake/ClangTools.cmake) and [catkin_ws/src/franka_ros/cmake/PepTools.cmake](catkin_ws/src/franka_ros/cmake/PepTools.cmake).
+- CI pipeline example: [catkin_ws/src/franka_ros/Jenkinsfile](catkin_ws/src/franka_ros/Jenkinsfile).
 
-# Framesc
-disk_tracker: converte da pixel a metri
-move_franka: sposta dall'angolo a sinistra del tavolo al WORLD frame
+## Useful entry points (files)
+- Scene / perception:
+  - [catkin_ws/src/scene/scripts/disk_tracker.py](catkin_ws/src/scene/scripts/disk_tracker.py) — main tracker.
+  - [catkin_ws/src/scene/scripts/origin_detector.py](catkin_ws/src/scene/scripts/origin_detector.py) — corner/line detection and `process_frame`.
+  - [catkin_ws/src/scene/scripts/montecarlo_filter.py](catkin_ws/src/scene/scripts/montecarlo_filter.py) — particle filter (`MontecarloFilter`).
+  - [catkin_ws/src/scene/scripts/move_franka.py](catkin_ws/src/scene/scripts/move_franka.py) — `PandaArm` + MoveIt helpers.
+  - [catkin_ws/src/scene/scripts/bounce.py](catkin_ws/src/scene/scripts/bounce.py) — Gazebo puck motion helper.
+- Franka stack:
+  - [catkin_ws/src/franka_ros/franka_hw/include/franka_hw/services.h](catkin_ws/src/franka_ros/franka_hw/include/franka_hw/services.h)
+  - [catkin_ws/src/franka_ros/franka_hw/src/services.cpp](catkin_ws/src/franka_ros/franka_hw/src/services.cpp)
+  - [catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp](catkin_ws/src/franka_ros/franka_control/src/franka_control_node.cpp)
+  - [catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h](catkin_ws/src/franka_ros/franka_example_controllers/include/franka_example_controllers/teleop_joint_pd_example_controller.h)
 
+## Notes & tips
+- If `FrankaConfig.cmake` not found, build and install `libfranka` (see current README instructions in this repo).
+- Before first `catkin_make`, remove `build` and `devel` folders and source ROS setup: `source /opt/ros/noetic/setup.bash`.
 
-# In caso di errore su catkin_make fatto la prima volta che si clona il git: 
-
-# Could not find a package configuration file provided by "Franka" (requested
-# version 0.8.0) with any of the following names:
-#
-#   FrankaConfig.cmake
-#   franka-config.cmake
-
-# si deve fare la build di libfrakna come segue
-git clone --recursive https://github.com/frankaemika/libfranka --branch 0.8.0
-cd libfranka
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF ..
-cmake --build .
-cpack -G DEB
-sudo dpkg -i libfranka-0.8.0-amd64.deb
-
-# Per installare ros-controllers
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
-# Per installare boost-sml
-sudo apt-get install ros-noetic-boost-sml
-
-
-# Modificato joint_limit.yaml messo in joint_1 la velocity a 0
-
-# Comando per leggere lo stato attuale del robot
-rostopic echo /franka_state_controller/franka_states | grep robot_mode
-
-
-# Prima del catkin_make
-cancella le cartelle build e devel
-source /opt/ros/noetic/setup.bash
-catkin_make
-
-
-# modifica fatta in franka_arm.xacro
-<joint name="${arm_id}_joint6" type="revolute">
-      <origin rpy="${pi/2} 0 0" xyz="0 0 0" />  # rpy="${pi/2} ${-pi/2} 0"
+For details on any item above, open the referenced file links.
