@@ -32,17 +32,21 @@ cmake --build .
 cpack -G DEB
 sudo dpkg -i libfranka-0.8.0-amd64.deb
 ```
-3. Installare ros controllers:
+2. Install ros controllers:
 ```bash
 sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
 ```
-5. Installare boost-sml:
+3. Install boost-sml:
 ```bash
 sudo apt-get install ros-noetic-boost-sml
 ```
-7. Clone the repository in the home direcotory and open terminal 
+4. Install Moveit:
+```bash
+sudo apt install ros-noetic-moveit
+```
+5. Clone the repository in the home direcotory and open terminal 
 
-8. Build workspace:
+6. Build workspace:
 ```bash
 cd ./HairHockey-SmartRobotics/catkin_ws
 catkin_make
@@ -77,4 +81,6 @@ roslaunch scene my.launch
 rosrun scene disk_tracker.py
 ```
 
-For details on any item above, open the referenced file links.
+## Further project specifications
+
+The movement of the robot is managed and controlled via MoveIt, which is not ideal for this task since it's not real-time compatible, and more suited for task where high complexity trajectory planing is required, such as those where movement in all 3 dimensions is needed, and where there are a lot of environment obstacles that the robot must avoid. Since here the only obstacle to avoid is the border of the table, and the movement can be semplified to planar, the use of the Cartesia Pose Controller would be better: the low level of the controller coupled with no planning and continuous stream reading, makes it real-time compliant. Unfortunately, due to time restrictions, and possible defects in the robot and its joints velocities initialization, it was impossible for us to use it effectively. The code implementation we made for the CartesianPoseExampleController can be seen however in the develop branch, with some specifications on how to run that and a possible solution to make it work.
