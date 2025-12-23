@@ -236,7 +236,7 @@ class PandaArm:
         
         return success
     
-    def move_to_point(self, vx, vy, vz=0.1, wait_robot=False):
+    def move_to_point(self, vx, vy, vz=0.0, wait_robot=False):
         print(f"    vx: {vx}, vy:{vy}, vz:{vz} ANGOLO")
         x, y, z = self.table_to_world_transform(vx, vy, vz)
         #print(f"    vx: {x}, vy:{y}, vz:{z} WORLD")
@@ -297,7 +297,7 @@ class PandaArm:
 
         #rospy.Subscriber("/franka_state_controller/franka_states", FrankaState, state_callback)
         
-        for i in range(2):
+        for i in range(1):
             #if fraction < 1.0:
             print(f"".center(30, '='))
             #print(self.arm.get_current_pose('mallet_link'))

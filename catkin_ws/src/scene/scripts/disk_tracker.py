@@ -151,14 +151,17 @@ class DiskTracker:
                 h, w, _ = frame.shape
                 left_img = frame[:, :w//2]
                 frame = left_img
+                #cv2.imwrite("./image_with_distortion.png", frame)
+
                 frame = barrel_dist_correction(frame)
 
                 print(f"shape: {frame.shape}")
                 
-                cv2.imshow("Frame per angoli",frame)
-                if (cv2.waitKey(0) & 0xFF) == ord('q'):  # TODO: mettere waitKey(1) per avere video
-                    pass
+                #cv2.imshow("Frame per angoli",frame)
+                #if (cv2.waitKey(0) & 0xFF) == ord('q'):  # TODO: mettere waitKey(1) per avere video
+                #    pass
 
+                #cv2.imwrite("./image_without_distorntion.png", frame)
                 self.corners = process_frame(frame)
 
             else:
@@ -282,12 +285,10 @@ class DiskTracker:
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
             mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
 
-            """cv2.imshow("Tracking dischi", frame)
-            if cv2.waitKey(0) == ord('q'):
-                break
-            cv2.imshow("Tracking dischi", mask)
-            if cv2.waitKey(0) == ord('q'):
-                break"""
+            #cv2.imshow("Tracking dischi", mask)
+            #if cv2.waitKey(0) == ord('q'):
+            #    break
+            #cv2.imwrite("./disk_mask.png", mask)
 
             # Connected components per centri
             num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask)
@@ -315,9 +316,11 @@ class DiskTracker:
                     #print(f"Disco trovato: pixel=({cx:.0f},{cy:.0f}))")
                     cv2.circle(frame, (int(cx), int(cy)), 10, (0, 255, 0), 2)   # contorno verde
                     cv2.circle(frame, (int(cx), int(cy)), 3, (0, 0, 255), -1)   # punto rosso al centro
-                    """cv2.imshow("Tracking dischi", frame)
-                    if cv2.waitKey(1) == ord('q'):
-                        break"""
+                    #cv2.imshow("Tracking dischi", frame)
+                    #if cv2.waitKey(1) == ord('q'):
+                    #    break
+                    #cv2.imwrite("./disk_tracking.png", frame)
+                    
                     print(f"\n\nDISCO: measurement in pixel {cx, cy}")
                     wx, wy = pixel_to_meter_fast((cx, cy), self.H)
                     if TRAINING:

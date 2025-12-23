@@ -79,7 +79,7 @@ def single_mask(p_frame, low_w, upper_w):
         combined_mask = cv2.bitwise_or(mask_white, mask_red)
 
         cv2.imshow("Maschera bianca + rossa", combined_mask)
-        cv2.imwrite("mask_white_red.png", combined_mask)
+        cv2.imwrite("./mask_white_red.png", combined_mask)
         cv2.waitKey(0)
 
         return combined_mask  
@@ -123,7 +123,7 @@ def apply_white_red_mask(frame):
 
     # --- Mostra e salva ---
     cv2.imshow("Maschera bianca + rossa", mask)
-    cv2.imwrite("mask_white_red.png", mask)
+    cv2.imwrite("./mask_white_red.png", mask)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -329,7 +329,7 @@ def process_frame(msg):
         x1, y1, x2, y2 = line_data[0]
         cv2.line(debug_img, (x1, y1), (x2, y2), color, 3)
     cv2.imshow("Linee principali (4 lati tavolo)", debug_img)
-    cv2.imwrite("linee_principali.png", debug_img)
+    cv2.imwrite("./linee_principali.png", debug_img)
 
     cv2.waitKey(0)
 
