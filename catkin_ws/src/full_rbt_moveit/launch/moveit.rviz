@@ -40,7 +40,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Acceleration_Scaling_Factor: 0.7
+    - Acceleration_Scaling_Factor: 0.7999999999999999
       Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
       JointsTab_Use_Radians: true
@@ -318,7 +318,7 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
-      Velocity_Scaling_Factor: 0.7
+      Velocity_Scaling_Factor: 0.7999999999999999
     - Class: rviz/TF
       Enabled: true
       Filter (blacklist): ""
@@ -423,7 +423,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.147038698196411
+      Distance: 2.6902098655700684
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -431,17 +431,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.75
       Focal Point:
-        X: -0.10000000149011612
-        Y: 0.25
-        Z: 0.30000001192092896
+        X: 0.28684040904045105
+        Y: 0.4828850328922272
+        Z: 0.5160686373710632
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6049991846084595
+      Pitch: 0.02999948337674141
       Target Frame: panda_link0
-      Yaw: 5.43494176864624
+      Yaw: 5.239930629730225
     Saved: ~
 Window Geometry:
   Displays:
